@@ -3,3 +3,6 @@ pyyaml
 tornado
 pyzmq
 pyjwt
+requests
+simplejson
+peewee

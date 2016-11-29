@@ -1,11 +1,52 @@
 {
+  "name": "Survey Classifier",
+  "license": "BSD-3-Clause",
   "scripts": {
     "build": "webpack"
   },
   "dependencies": {
-    "webpack": "latest"
+    "react": "^15.1.0",
+    "react-addons": "latest",
+    "react-dom": "^15.1.0",
+    "react-modal": "latest",
+    "react-tabs": "latest",
+    "react-addons-css-transition-group": "latest",
+    "jquery": "latest",
+    "jquery-form": "latest",
+    "bootstrap": "latest",
+    "bootstrap-css": "latest",
+    "filter-values": "latest",
+    "redux": "latest",
+    "react-redux": "latest",
+    "redux-thunk": "latest",
+    "redux-logger": "latest",
+    "whatwg-fetch": "latest",
+    "redux-form": "^5.3.3",
+    "webpack": "latest",
+    "react-tooltip": "latest"
   },
   "devDependencies": {
+    "babel": "latest",
+    "babel-core": "latest",
+    "babel-eslint": "^6.1.2",
+    "babel-loader": "latest",
+    "babel-preset-es2015": "latest",
+    "babel-preset-react": "latest",
+    "babel-preset-stage-2": "latest",
+    "css-loader": "latest",
+    "cwise": "latest",
+    "eslint": "latest",
+    "eslint-config-airbnb": "latest",
+    "eslint-loader": "latest",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsx-a11y": "latest",
+    "eslint-plugin-react": "latest",
+    "exports-loader": "latest",
+    "glslify": "latest",
+    "ify-loader": "latest",
+    "imports-loader": "latest",
+    "style-loader": "latest",
+    "webpack-dev-server": "latest"
   },
   "browserify": {
     "transform": [
@@ -14,5 +55,7 @@
     ]
   },
   "repository": {
+    "type": "git",
+    "url": "https://github.com/cesium-ml/cesium_web.git"
   }
 }
