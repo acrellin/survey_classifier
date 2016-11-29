@@ -3,7 +3,13 @@ import tornado.web
 import sys
 
 
-from .handlers import SocketAuthTokenHandler
+from .handlers import (
+    SocketAuthTokenHandler,
+    ProjectHandler,
+    DatasetHandler,
+    PredictionHandler
+    )
+
 
 
 def make_app():
@@ -16,6 +22,10 @@ def make_app():
         }
 
     handlers = [
+        (r'/project(/.*)?', ProjectHandler),
+        (r'/dataset(/.*)?', DatasetHandler),
+        (r'/predictions(/[0-9]+)?', PredictionHandler),
+        (r'/predictions/([0-9]+)/(download)', PredictionHandler),
         (r'/socket_auth_token', SocketAuthTokenHandler),
         (r'/(.*)', tornado.web.StaticFileHandler,
          {'path': 'public/', 'default_filename': 'index.html'})

@@ -2,6 +2,7 @@ import tornado.web
 import tornado.escape
 import tornado.ioloop
 
+from ..json_util import to_json
 from ..flow import Flow
 
 import time
@@ -47,7 +48,7 @@ class BaseHandler(tornado.web.RequestHandler):
         if action is not None:
             self.action(action, payload)
 
-        self.write(tornado.escape.json_encode(
+        self.write(to_json(
             {
                 "status": "success",
                 "data": data

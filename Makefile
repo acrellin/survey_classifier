@@ -1,5 +1,5 @@
 SHELL = /bin/bash
-APP_NAME = webapp
+APP_NAME = survey_app
 SUPERVISORD=supervisord
 
 .DEFAULT_GOAL := run
@@ -10,6 +10,15 @@ webpack = ./node_modules/.bin/webpack
 dependencies:
 	@./tools/install_deps.py requirements.txt
 	@./tools/install_npm_deps.py package.json
+
+db_init:
+	./tools/db_create.sh
+
+db_drop:
+	PYTHONPATH=. ./tools/db_drop.py
+
+db_test_data:
+	PYTHONPATH=. python ./survey_app/models.py
 
 $(bundle): webpack.config.js
 	$(webpack)
@@ -42,4 +51,5 @@ clean:
 
 status:
 	PYTHONPATH='.' ./tools/supervisor_status.py
+
 

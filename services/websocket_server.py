@@ -5,7 +5,7 @@ import json
 import zmq
 import jwt
 
-from webapp import config
+from survey_app import config
 secret = config.cfg['app']['secret-key']
 
 ctx = zmq.Context()
@@ -78,7 +78,7 @@ class WebSocket(websocket.WebSocketHandler):
 
 
 if __name__ == "__main__":
-    PORT = 64000
+    PORT = 64001
     LOCAL_OUTPUT = 'ipc:///tmp/message_flow_out'
 
     import zmq

@@ -1,4 +1,4 @@
-"""Config file for webapp."""
+"""Config file for survey_app."""
 
 from __future__ import print_function
 import os, sys
@@ -47,11 +47,11 @@ class warn_defaultdict(dict):
 
 # Load configuration
 config_files = [
-    os.path.expanduser('~/.config/webapp/webapp.yaml'),
+    os.path.expanduser('~/.config/survey_app/survey_app.yaml'),
     ]
 
 config_files.extend(glob.glob(
-    os.path.join(os.path.dirname(__file__), '../webapp-*.yaml')))
+    os.path.join(os.path.dirname(__file__), '../survey_app-*.yaml')))
 
 config_files = [os.path.abspath(cf) for cf in config_files]
 
@@ -59,12 +59,12 @@ config_files = [os.path.abspath(cf) for cf in config_files]
 # Load example config file as default template
 cfg = warn_defaultdict()
 cfg.update(yaml.load(open(os.path.join(os.path.dirname(__file__),
-                                       "../webapp.yaml.example"))))
+                                       "../survey_app.yaml.example"))))
 
 for cf in config_files:
     try:
         more_cfg = yaml.load(open(cf))
-        print('[webapp] Loaded {}'.format(cf))
+        print('[survey_app] Loaded {}'.format(cf))
         cfg.update(more_cfg)
     except IOError:
         pass
@@ -105,14 +105,14 @@ for path_name, path in cfg['paths'].items():
 
 del yaml, os, sys, print_function, config_files, multiprocessing
 
-cfg['webapp'] = locals()
+cfg['survey_app'] = locals()
 
 
 def show_config():
     """Print config settings to stdout (run on app start)."""
     print()
     print("=" * 78)
-    print("webapp configuration")
+    print("survey_app configuration")
 
     for key in ('paths', 'database', 'testing', 'docker'):
         if key in cfg:

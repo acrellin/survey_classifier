@@ -94,7 +94,7 @@ watched.extend(logs_from_config(pjoin(basedir, 'conf/supervisord.conf')))
 sys.path.insert(0, basedir)
 
 with nostdout():
-    from webapp.config import cfg
+    from survey_app.config import cfg
 
 watched.append(cfg['paths']['err_log_path'])
 watched.append('log/error.log')
