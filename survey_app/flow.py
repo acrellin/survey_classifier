@@ -1,5 +1,5 @@
 import zmq
-import tornado.escape
+from tornado.escape import json_encode
 
 
 class Flow(object):
@@ -18,7 +18,7 @@ class Flow(object):
 
         """
         print('Pushing action {} to {}'.format(action_type, user))
-        self._pub.send(b"0 " + tornado.escape.json_encode(
+        self._pub.send(b"0 " + json_encode(
             {'user': user,
              'action': action_type,
              'payload': payload}).encode('utf-8'))

@@ -1,6 +1,6 @@
 import tornado.web
-import tornado.escape
 import tornado.ioloop
+from tornado.escape import json_decode
 
 from ..json_util import to_json
 from ..flow import Flow
@@ -20,7 +20,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.flow.push(self.get_username(), action, payload)
 
     def get_json(self):
-        return tornado.escape.json_decode(self.request.body)
+        return json_decode(self.request.body)
 
     def prepare(self):
         # Remove slash prefixes from arguments
