@@ -4,7 +4,7 @@
 
 A light curve survey classification web app built on
 [`cesium`](https://github.com/cesium-ml/cesium),
-[`cesium-web`](https://github.com/cesium-ml/cesium_web), and
+[`cesium_web`](https://github.com/cesium-ml/cesium_web), and
 [`baselayer`](https://github.com/cesium-ml/baselayer).
 
 ## Running the app locally
