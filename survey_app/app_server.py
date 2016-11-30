@@ -7,6 +7,7 @@ from .handlers import (
     SocketAuthTokenHandler,
     ProjectHandler,
     DatasetHandler,
+    ModelHandler,
     PredictionHandler
     )
 
@@ -24,6 +25,7 @@ def make_app():
     handlers = [
         (r'/project(/.*)?', ProjectHandler),
         (r'/dataset(/.*)?', DatasetHandler),
+        (r'/models(/.*)?', ModelHandler),
         (r'/predictions(/[0-9]+)?', PredictionHandler),
         (r'/predictions/([0-9]+)/(download)', PredictionHandler),
         (r'/socket_auth_token', SocketAuthTokenHandler),
