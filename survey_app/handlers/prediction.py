@@ -3,12 +3,16 @@ from ..models import Prediction, Dataset, Project
 from ..config import cfg
 
 import tornado.gen
+from tornado.escape import json_decode
 
 from os.path import join as pjoin
 import uuid
 import datetime
 import os
 import tempfile
+import time
+import requests
+import json
 
 
 class PredictionHandler(BaseHandler):
@@ -24,31 +28,37 @@ class PredictionHandler(BaseHandler):
         return d
 
     @tornado.gen.coroutine
-    def _await_prediction(self, future, prediction):
+    def _await_prediction(self, prediction, cesium_app_prediction_id):
         try:
-            result = yield future._result()
-
-            prediction.task_id = None
-            prediction.finished = datetime.datetime.now()
-            prediction.save()
+            while True:
+                r = requests.get('{}/predictions'.format(
+                    cfg['cesium_app']['url'])).json()
+                pred_info = [p for p in r['data'] if p['id'] ==
+                             cesium_app_prediction_id][0]
+                if pred_info['finished']:
+                    prediction.task_id = None
+                    prediction.finished = datetime.datetime.now()
+                    prediction.model_type = pred_info['model_type']
+                    prediction.model_name = pred_info['model_name']
+                    prediction.save()
+                    break
+                else:
+                    time.sleep(1)
 
             self.action('survey_app/SHOW_NOTIFICATION',
                         payload={
                             "note": "Prediction '{}/{}' completed.".format(
-                                prediction.dataset.name,
-                                prediction.model.name)
+                                pred_info['dataset_name'],
+                                pred_info['model_name'])
                             })
 
         except Exception as e:
             prediction.delete_instance()
             self.action('survey_app/SHOW_NOTIFICATION',
                         payload={
-                            "note": "Prediction '{}/{}'" " failed "
-                            "with error {}. Please try again.".format(
-                                prediction.dataset.name,
-                                prediction.model.name, e),
-                             "type": "error"
-                            })
+                            "note": "Prediction failed "
+                            "with error {}. Please try again.".format(e),
+                            "type": "error"})
 
         self.action('survey_app/FETCH_PREDICTIONS')
 
@@ -61,38 +71,27 @@ class PredictionHandler(BaseHandler):
 
         username = self.get_username()
 
-        fset = model.featureset
-        if (model.finished is None) or (fset.finished is None):
-            return self.error('Computation of model or feature set still in progress')
+        dataset = Dataset.get(Dataset.id == dataset_id)
+        cesium_dataset_id = Dataset.get(Dataset.id == dataset_id).cesium_app_id
 
-        prediction_path = pjoin(cfg['paths']['predictions_folder'],
-                                '{}_prediction.nc'.format(uuid.uuid4()))
-        prediction_file = File.create(uri=prediction_path)
-        prediction = Prediction.create(file=prediction_file, dataset=dataset,
-                                       project=dataset.project, model=model)
+        data = {'datasetID': cesium_dataset_id,
+                'modelID': model_id}
+        # POST prediction to cesium_web
+        r = requests.post('{}/predictions'.format(cfg['cesium_app']['url']),
+                          data=json.dumps(data)).json()
+        if r['status'] != 'success':
+            return self.error('An error occurred while processing the request'
+                              'to cesium_web: {}'.format(r['message']))
 
-        executor = yield self._get_executor()
+        prediction = Prediction.create(dataset=dataset, project=dataset.project,
+                                       model_id=model_id)
 
-        all_time_series = executor.map(cesium.time_series.from_netcdf,
-                                       dataset.uris)
-        all_features = executor.map(cesium.featurize.featurize_single_ts,
-                                    all_time_series,
-                                    features_to_use=fset.features_list,
-                                    custom_script_path=fset.custom_features_script)
-        fset_data = executor.submit(cesium.featurize.assemble_featureset,
-                                    all_features, all_time_series)
-        fset_data = executor.submit(cesium.featureset.Featureset.impute, fset_data)
-        model_data = executor.submit(joblib.load, model.file.uri)
-        predset = executor.submit(cesium.predict.model_predictions,
-                                  fset_data, model_data)
-        future = executor.submit(xr.Dataset.to_netcdf, predset,
-                                 prediction_path, engine=cfg['xr_engine'])
-
-        prediction.task_id = future.key
+        prediction.task_id = str(uuid.uuid4())
+        prediction.cesium_app_id = r['data']['id']
         prediction.save()
 
         loop = tornado.ioloop.IOLoop.current()
-        loop.spawn_callback(self._await_prediction, future, prediction)
+        loop.spawn_callback(self._await_prediction, prediction, r['data']['id'])
 
         return self.success(prediction, 'survey_app/FETCH_PREDICTIONS')
 
@@ -115,6 +114,16 @@ class PredictionHandler(BaseHandler):
             else:
                 prediction = self._get_prediction(prediction_id)
                 prediction_info = prediction.display_info()
+
+            if isinstance(prediction_info, list):
+                for prediction in prediction_info:
+                    r = requests.get('{}/predictions'.format(
+                        cfg['cesium_app']['url'])).json()
+                    cesium_pred_info = [
+                        p for p in r['data'] if int(p['id']) ==
+                        int(prediction['cesium_app_id'])][0]
+                    prediction['results'] = cesium_pred_info['results']
+                    prediction['isProbabilistic'] = cesium_pred_info['isProbabilistic']
 
             return self.success(prediction_info)
 
