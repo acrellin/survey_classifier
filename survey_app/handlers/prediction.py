@@ -3,7 +3,6 @@ from ..models import Prediction, Dataset, Project
 from ..config import cfg
 
 import tornado.gen
-from tornado.web import RequestHandler
 
 from os.path import join as pjoin
 import uuid
@@ -33,7 +32,7 @@ class PredictionHandler(BaseHandler):
             prediction.finished = datetime.datetime.now()
             prediction.save()
 
-            self.action('cesium/SHOW_NOTIFICATION',
+            self.action('survey_app/SHOW_NOTIFICATION',
                         payload={
                             "note": "Prediction '{}/{}' completed.".format(
                                 prediction.dataset.name,
@@ -42,7 +41,7 @@ class PredictionHandler(BaseHandler):
 
         except Exception as e:
             prediction.delete_instance()
-            self.action('cesium/SHOW_NOTIFICATION',
+            self.action('survey_app/SHOW_NOTIFICATION',
                         payload={
                             "note": "Prediction '{}/{}'" " failed "
                             "with error {}. Please try again.".format(
@@ -51,7 +50,7 @@ class PredictionHandler(BaseHandler):
                              "type": "error"
                             })
 
-        self.action('cesium/FETCH_PREDICTIONS')
+        self.action('survey_app/FETCH_PREDICTIONS')
 
     @tornado.gen.coroutine
     def post(self):
@@ -60,13 +59,7 @@ class PredictionHandler(BaseHandler):
         dataset_id = data['datasetID']
         model_id = data['modelID']
 
-        dataset = Dataset.get(Dataset.id == data["datasetID"])
-        model = Model.get(Model.id == data["modelID"])
-
         username = self.get_username()
-
-        if not (dataset.is_owned_by(username) and model.is_owned_by(username)):
-            return self.error('No access to dataset or model')
 
         fset = model.featureset
         if (model.finished is None) or (fset.finished is None):
@@ -101,7 +94,7 @@ class PredictionHandler(BaseHandler):
         loop = tornado.ioloop.IOLoop.current()
         loop.spawn_callback(self._await_prediction, future, prediction)
 
-        return self.success(prediction, 'cesium/FETCH_PREDICTIONS')
+        return self.success(prediction, 'survey_app/FETCH_PREDICTIONS')
 
     def get(self, prediction_id=None, action=None):
         if action == 'download':
@@ -111,7 +104,7 @@ class PredictionHandler(BaseHandler):
                 with open(tf.name) as f:
                     self.set_header("Content-Type", 'text/csv; charset="utf-8"')
                     self.set_header("Content-Disposition",
-                                    "attachment; filename=cesium_prediction_results.csv")
+                                    "attachment; filename=survey_app_prediction_results.csv")
                     self.write(f.read())
         else:
             if prediction_id is None:
@@ -128,4 +121,4 @@ class PredictionHandler(BaseHandler):
     def delete(self, prediction_id):
         prediction = self._get_prediction(prediction_id)
         prediction.delete_instance()
-        return self.success(action='cesium/FETCH_PREDICTIONS')
+        return self.success(action='survey_app/FETCH_PREDICTIONS')
