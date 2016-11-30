@@ -128,7 +128,7 @@ let DatasetInfo = props => (
     <tbody>
       <tr>
         <td>
-          {props.dataset.files.join(', ')}
+          {props.dataset.file_names.join(', ')}
         </td>
         <td>
           {props.dataset.meta_features.join(', ')}

@@ -18,13 +18,6 @@ export const RECEIVE_DATASETS = 'survey_app/RECEIVE_DATASETS';
 export const UPLOAD_DATASET = 'survey_app/UPLOAD_DATASET';
 export const DELETE_DATASET = 'survey_app/DELETE_DATASET';
 
-export const FETCH_FEATURES = 'survey_app/FETCH_FEATURES';
-export const FETCH_FEATURESETS = 'survey_app/FETCH_FEATURESETS';
-export const RECEIVE_FEATURES = 'survey_app/RECEIVE_FEATURES';
-export const RECEIVE_FEATURESETS = 'survey_app/RECEIVE_FEATURESETS';
-export const COMPUTE_FEATURES = 'survey_app/COMPUTE_FEATURES';
-export const DELETE_FEATURESET = 'survey_app/DELETE_FEATURESET';
-
 export const FETCH_MODELS = 'survey_app/FETCH_MODELS';
 export const RECEIVE_MODELS = 'survey_app/RECEIVE_MODELS';
 export const CREATE_MODEL = 'survey_app/CREATE_MODEL';
@@ -39,13 +32,7 @@ export const TOGGLE_EXPANDER = 'survey_app/TOGGLE_EXPANDER';
 export const HIDE_EXPANDER = 'survey_app/HIDE_EXPANDER';
 export const SHOW_EXPANDER = 'survey_app/SHOW_EXPANDER';
 
-export const FETCH_SKLEARN_MODELS = 'survey_app/FETCH_SKLEARN_MODELS';
-export const RECEIVE_SKLEARN_MODELS = 'survey_app/RECEIVE_SKLEARN_MODELS';
-
 export const SPIN_LOGO = 'survey_app/SPIN_LOGO';
-export const GROUP_TOGGLE_FEATURES = 'survey_app/GROUP_TOGGLE_FEATURES';
-export const CLICK_FEATURE_TAG_CHECKBOX = 'survey_app/CLICK_FEATURE_TAG_CHECKBOX';
-
 
 import { showNotification, reduceNotifications } from './Notifications';
 import promiseAction from './action_tools';
@@ -228,64 +215,6 @@ function receiveDatasets(datasets) {
 }
 
 
-// Download featuresets
-export function fetchFeaturesets() {
-  return dispatch =>
-    promiseAction(
-      dispatch,
-      FETCH_FEATURESETS,
-
-      fetch('/features')
-        .then(response => response.json())
-        .then((json) => {
-          if (json.status == 'success') {
-            return dispatch(receiveFeaturesets(json.data));
-          } else {
-            return dispatch(
-              showNotification(
-                'Error downloading feature sets ({})'.format(json.message)
-              ));
-          }
-        }
-        ).catch(ex => console.log('fetchFeaturesets', ex))
-  );
-}
-
-// Receive list of featuresets
-function receiveFeaturesets(featuresets) {
-  return {
-    type: RECEIVE_FEATURESETS,
-    payload: featuresets
-  };
-}
-
-
-export function createModel(form) {
-  return dispatch =>
-    promiseAction(
-      dispatch,
-      CREATE_MODEL,
-
-      fetch('/models',
-            { method: 'POST',
-             body: JSON.stringify(form),
-             headers: new Headers({
-               'Content-Type': 'application/json'
-             }) })
-        .then(response => response.json())
-        .then((json) => {
-          if (json.status == 'success') {
-            dispatch(resetForm('newModel'));
-            dispatch(hideExpander('newModelExpander'));
-            dispatch(showNotification('Model training begun.'));
-          } else {
-            return Promise.reject({ _error: json.message });
-          }
-          return json;
-        })
-  );
-}
-
 
 export function hideExpander(id) {
   return {
@@ -324,65 +253,6 @@ export function selectProject(id=null) {
       payload: { id }
     });
   };
-}
-
-
-export function fetchFeatures() {
-  return dispatch =>
-    promiseAction(
-      dispatch,
-      FETCH_FEATURES,
-
-      fetch('/features_list')
-        .then(response => response.json())
-        .then((json) => {
-          if (json.status == 'success') {
-            dispatch(receiveFeatures(json.data));
-          } else {
-            dispatch(
-              showNotification(
-                'Error downloading features ({})'.format(json.message)
-              ));
-          }
-          return json;
-        }
-        ).catch(ex => console.log('fetchFeatures exception:', ex))
-    );
-}
-
-// Receive list of featuresets
-function receiveFeatures(features) {
-  return {
-    type: RECEIVE_FEATURES,
-    payload: features,
-  };
-}
-
-
-export function computeFeatures(form) {
-  return dispatch =>
-    promiseAction(
-      dispatch,
-      COMPUTE_FEATURES,
-
-      fetch('/features',
-            { method: 'POST',
-             body: JSON.stringify(form),
-             headers: new Headers({
-               'Content-Type': 'application/json'
-             }) }
-      ).then(response => response.json()
-      ).then((json) => {
-        if (json.status == 'success') {
-          dispatch(resetForm('featurize'));
-          dispatch(showNotification('Feature computation begun.'));
-          dispatch(hideExpander('featsetFormExpander'));
-        } else {
-          return Promise.reject({ _error: json.message });
-        }
-        return json;
-      })
-    );
 }
 
 
@@ -430,37 +300,6 @@ export function deleteFeatureset(id) {
 }
 
 
-export function fetchSklearnModels() {
-  return dispatch =>
-    promiseAction(
-      dispatch,
-      FETCH_SKLEARN_MODELS,
-
-      fetch('/sklearn_models')
-        .then(response => response.json())
-        .then((json) => {
-          if (json.status == 'success') {
-            dispatch(receiveSklearnModels(json.data));
-          } else {
-            dispatch(
-              showNotification(
-                'Error downloading sklearn models ({})'.format(json.message)
-              ));
-          }
-          return json;
-        }
-        ).catch(ex => console.log('fetchSklearnModels exception:', ex))
-      );
-}
-
-function receiveSklearnModels(sklearn_models) {
-  return {
-    type: RECEIVE_SKLEARN_MODELS,
-    payload: sklearn_models
-  };
-}
-
-
 // Download models
 export function fetchModels() {
   return dispatch =>
@@ -490,28 +329,6 @@ function receiveModels(models) {
     type: RECEIVE_MODELS,
     payload: models
   };
-}
-
-
-export function deleteModel(id) {
-  return dispatch =>
-    promiseAction(
-      dispatch,
-      DELETE_MODEL,
-
-      fetch(`/models/${id}`, { method: 'DELETE' })
-        .then(response => response.json())
-        .then((json) => {
-          if (json.status == 'success') {
-            dispatch(showNotification('Model deleted'));
-          } else {
-            dispatch(
-              showNotification(
-                'Error deleting model ({})'.format(json.message)
-              ));
-          }
-        })
-  );
 }
 
 
@@ -600,21 +417,6 @@ export function spinLogo() {
 }
 
 
-export function groupToggleCheckedFeatures(list_of_feats_in_category) {
-  return {
-    type: GROUP_TOGGLE_FEATURES,
-    payload: { ctgy_list: list_of_feats_in_category }
-  };
-}
-
-
-export function clickFeatureTagCheckbox(tag) {
-  return {
-    type: CLICK_FEATURE_TAG_CHECKBOX,
-    payload: { tag }
-  };
-}
-
 
 export function hydrate() {
   return (dispatch) => {
@@ -622,7 +424,8 @@ export function hydrate() {
       .then((proj) => {
         Promise.all([
           dispatch(fetchDatasets()),
-          dispatch(fetchPredictions())
+          dispatch(fetchPredictions()),
+          dispatch(fetchModels())
         ]).then(() => {
           dispatch(spinLogo());
         });
