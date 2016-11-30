@@ -101,30 +101,18 @@ class Prediction(BaseModel):
     dataset = pw.ForeignKeyField(Dataset, on_delete='CASCADE')
     model_id = pw.CharField(null=True)
     created = pw.DateTimeField(default=datetime.datetime.now)
-    file = pw.CharField()
     task_id = pw.CharField(null=True)
+    cesium_app_id = pw.CharField(null=True)
     finished = pw.DateTimeField(null=True)
+    model_type = pw.CharField(null=True)
+    model_name = pw.CharField(null=True)
+    results = BinaryJSONField(default={})
 
     def is_owned_by(self, username):
         return self.project.is_owned_by(username)
 
     def display_info(self):
         info = self.__dict__()
-        info['model_type'] = self.model.type
-        info['dataset_name'] = self.dataset.name
-        info['model_name'] = self.model.name
-        info['featureset_name'] = self.model.featureset.name
-        if self.task_id is None:
-            try:
-                with xr.open_dataset(self.file.uri, engine=cfg['xr_engine']) as pset:
-                    info['results'] = pset.load()
-            except (RuntimeError, OSError):
-                info['results'] = None
-        if 'results' in info and info['results']:
-            first_result = info['results'].sel(name=info['results'].name.values[0])
-            if 'prediction' in first_result:
-                info['isProbabilistic'] = 'class_label' in\
-                                          first_result.prediction
         return info
 
 
@@ -156,36 +144,3 @@ if __name__ == "__main__":
     drop_tables()
     print("Creating tables: {}".format([m.__name__ for m in models]))
     create_tables()
-
-    USERNAME = 'testuser@gmail.com'
-    print("Inserting dummy projects...")
-    for i in range(5):
-        p = Project.create(name='test project {}'.format(i))
-        print(p)
-
-    print("Creating dummy project owners...")
-    for i in range(3):
-        p = Project.get(Project.id == i + 1)
-        u = UserProject.create(username=USERNAME, project=p)
-        print(u)
-
-    print('ASSERT User should have 3 projects')
-    print(to_json(p.all('testuser@gmail.com')))
-    assert(len(list(p.all('testuser@gmail.com'))) == 3)
-
-    print("Inserting dummy dataset and time series...")
-    file_uris = ['/dir/ts{}.nc'.format(i) for i in range(3)]
-    d = Dataset.add(name='test dataset', project=p, file_uris=file_uris)
-
-    print("Inserting dummy featureset...")
-    test_file = File.get()
-    f = Featureset.create(project=p, dataset=d, name='test featureset',
-                          features_list=['amplitude'], file=test_file)
-
-    print("Inserting dummy model...")
-    m = Model.create(project=p, featureset=f, name='test model',
-                     params={'n_estimators': 10}, type='RFC',
-                     file=test_file)
-
-    print("Inserting dummy prediction...")
-    pr = Prediction.create(project=p, model=m, file=test_file, dataset=d)
