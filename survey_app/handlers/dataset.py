@@ -7,6 +7,7 @@ from os.path import join as pjoin
 import uuid
 import tempfile
 import requests
+import cesium
 
 
 class DatasetHandler(BaseHandler):
@@ -25,9 +26,9 @@ class DatasetHandler(BaseHandler):
         if not 'tarFile' in self.request.files:
             return self.error('No tar file uploaded')
 
-        zipfile = self.request.files['tarFile'][0]
+        tarfile = self.request.files['tarFile'][0]
 
-        if zipfile.filename == '':
+        if tarfile.filename == '':
             return self.error('Empty tar file uploaded')
 
         dataset_name = self.get_argument('datasetName')
@@ -36,34 +37,39 @@ class DatasetHandler(BaseHandler):
         # Header file is optional for unlabled data w/o metafeatures
         if 'headerFile' in self.request.files:
             headerfile = self.request.files['headerFile'][0]
-            print(self.request.files['headerFile'])
         else:
             headerfile = None
 
+        data = {'datasetName': dataset_name,
+                'projectID': project_id}
+        files = {}
         with tempfile.TemporaryDirectory() as temp_dir:
-            for f in [x for x in (headerfile, zipfile) if x is not None]:
-                with open(os.path.join(temp_dir, f.filename), 'wb') as fout:
-                    fout.write(f['body'])
-                    print(os.path.join(temp_dir, f.filename))
+            for posted_file, key in [[f, k] for f, k in [[headerfile, 'headerFile'],
+                                     [tarfile, 'tarFile']] if f is not None]:
+                tmp_path = os.path.join(temp_dir, posted_file.filename)
+                with open(tmp_path, 'wb') as fout:
+                    fout.write(posted_file['body'])
+                files[key] = open(tmp_path, 'rb')
+                if key == 'tarFile':
+                    tarfile_path = tmp_path
+            # Post to cesium_web
+            r = requests.post(cfg['cesium_app']['url'] + '/dataset',
+                              files=files, data=data).json()
+            if r['status'] != 'success':
+                return self.error(r['message'])
+
+            with cesium.util.extract_time_series(
+                    tarfile_path, cleanup_archive=False, cleanup_files=True,
+                    extract_dir=temp_dir) as ts_paths:
+                file_names = [os.path.basename(ts_path) for ts_path in ts_paths]
 
         p = Project.get(Project.id == project_id)
-        # TODO this should give unique names to the time series files
-        ts_paths = parse_ts_data(
-            zipfile_path,
-            cfg['paths']['ts_data_folder'],
-            headerfile_path)
-        meta_features = list(time_series.from_netcdf(ts_paths[0])
-                             .meta_features.keys())
-        unique_ts_paths = [os.path.join(os.path.dirname(ts_path),
-                                        str(uuid.uuid4()) + "_" +
-                                        util.secure_filename(ts_path))
-                           for ts_path in ts_paths]
-        for old_path, new_path in zip(ts_paths, unique_ts_paths):
-            os.rename(old_path, new_path)
-        file_names = [os.path.basename(ts_path) for ts_path in ts_paths]
-        d = Dataset.add(name=dataset_name, project=p, file_names=file_names)
+        d = Dataset.add(name=dataset_name, project=p, file_names=file_names,
+                        meta_features=r['data']['meta_features'],
+                        cesium_app_id=r['data']['id'],
+                        cesium_app_project_id=r['data']['project'])
 
-        return self.success(d, 'cesium/FETCH_DATASETS')
+        return self.success(d, 'survey_app/FETCH_DATASETS')
 
     def get(self, dataset_id=None):
         if dataset_id is not None:
@@ -79,4 +85,4 @@ class DatasetHandler(BaseHandler):
     def delete(self, dataset_id):
         d = self._get_dataset(dataset_id)
         d.delete_instance()
-        return self.success(action='cesium/FETCH_DATASETS')
+        return self.success(action='survey_app/FETCH_DATASETS')

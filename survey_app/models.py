@@ -71,12 +71,19 @@ class Dataset(BaseModel):
                                  related_name='datasets')
     name = pw.CharField()
     file_names = ArrayField(field_class=pw.CharField)
+    meta_features = ArrayField(pw.CharField)
     created = pw.DateTimeField(default=datetime.datetime.now)
+    cesium_app_id = pw.IntegerField()
+    cesium_app_project_id = pw.IntegerField()
 
     @staticmethod
-    def add(name, project, file_names=[]):
+    def add(name, project, cesium_app_id, cesium_app_project_id, file_names=[],
+            meta_features=[]):
         with db.atomic():
-            d = Dataset.create(name=name, project=project, file_names=file_names)
+            d = Dataset.create(name=name, project=project,
+                               cesium_app_id=cesium_app_id,
+                               cesium_app_project_id=cesium_app_project_id,
+                               file_names=file_names, meta_features=meta_features)
         return d
 
     def is_owned_by(self, username):
