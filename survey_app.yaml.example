@@ -59,6 +59,10 @@ server:
 
 cesium_app:
     url: http://localhost:5000
+    survey_classifier_project_id: 1
+    survey_classifier_featureset_id: 1
+    survey_classifier_model_id: 1
+
 
 xr_engine: netcdf4
 ##xr_engine: h5netcdf
