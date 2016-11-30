@@ -30,7 +30,7 @@ class ProjectHandler(BaseHandler):
                            data.get('projectDescription', ''),
                            self.get_username())
 
-        return self.success({"id": p.id}, 'cesium/FETCH_PROJECTS')
+        return self.success({"id": p.id}, 'survey_app/FETCH_PROJECTS')
 
     def put(self, project_id):
         # This ensures that the user has access to the project they
@@ -44,10 +44,10 @@ class ProjectHandler(BaseHandler):
             ).where(Project.id == project_id)
         query.execute()
 
-        return self.success(action='cesium/FETCH_PROJECTS')
+        return self.success(action='survey_app/FETCH_PROJECTS')
 
     def delete(self, project_id):
         p = self._get_project(project_id)
         p.delete_instance()
 
-        return self.success(action='cesium/FETCH_PROJECTS')
+        return self.success(action='survey_app/FETCH_PROJECTS')
