@@ -5,6 +5,7 @@ from ..config import cfg
 import tornado.gen
 from tornado.escape import json_decode
 
+import cesium
 from os.path import join as pjoin
 import uuid
 import datetime
@@ -40,6 +41,9 @@ class PredictionHandler(BaseHandler):
                     prediction.finished = datetime.datetime.now()
                     prediction.model_type = pred_info['model_type']
                     prediction.model_name = pred_info['model_name']
+                    prediction.results = json.dumps(pred_info['results'])
+                    prediction.isProbabilistic = pred_info['isProbabilistic']
+                    prediction.file_path = pred_info['file']
                     prediction.save()
                     break
                 else:
@@ -97,7 +101,7 @@ class PredictionHandler(BaseHandler):
 
     def get(self, prediction_id=None, action=None):
         if action == 'download':
-            prediction = cesium.featureset.from_netcdf(self._get_prediction(prediction_id).file.uri)
+            prediction = cesium.featureset.from_netcdf(self._get_prediction(prediction_id).file_path)
             with tempfile.NamedTemporaryFile() as tf:
                 util.prediction_to_csv(prediction, tf.name)
                 with open(tf.name) as f:
@@ -114,16 +118,6 @@ class PredictionHandler(BaseHandler):
             else:
                 prediction = self._get_prediction(prediction_id)
                 prediction_info = prediction.display_info()
-
-            if isinstance(prediction_info, list):
-                for prediction in prediction_info:
-                    r = requests.get('{}/predictions'.format(
-                        cfg['cesium_app']['url'])).json()
-                    cesium_pred_info = [
-                        p for p in r['data'] if int(p['id']) ==
-                        int(prediction['cesium_app_id'])][0]
-                    prediction['results'] = cesium_pred_info['results']
-                    prediction['isProbabilistic'] = cesium_pred_info['isProbabilistic']
 
             return self.success(prediction_info)
 

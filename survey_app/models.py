@@ -3,6 +3,7 @@ import inspect
 import os
 import sys
 import time
+import json
 
 import peewee as pw
 from playhouse.postgres_ext import ArrayField, BinaryJSONField
@@ -106,13 +107,16 @@ class Prediction(BaseModel):
     finished = pw.DateTimeField(null=True)
     model_type = pw.CharField(null=True)
     model_name = pw.CharField(null=True)
-    results = BinaryJSONField(default={})
+    results = pw.BlobField(null=True)
+    isProbabilistic = pw.BooleanField(null=True)
+    file_path = pw.CharField(null=True)
 
     def is_owned_by(self, username):
         return self.project.is_owned_by(username)
 
     def display_info(self):
         info = self.__dict__()
+        info['results'] = json.loads(self.results.tobytes().decode())
         return info
 
 
