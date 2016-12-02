@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 
-export const SHOW_NOTIFICATION = 'cesium/SHOW_NOTIFICATION';
-export const HIDE_NOTIFICATION = 'cesium/HIDE_NOTIFICATION';
+export const SHOW_NOTIFICATION = 'survey_app/SHOW_NOTIFICATION';
+export const HIDE_NOTIFICATION = 'survey_app/HIDE_NOTIFICATION';
 
 export function hideNotification(id) {
   return {
