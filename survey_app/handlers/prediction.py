@@ -45,6 +45,7 @@ class PredictionHandler(BaseHandler):
                     prediction.results = json.dumps(pred_info['results'])
                     prediction.isProbabilistic = pred_info['isProbabilistic']
                     prediction.file_path = pred_info['file']
+                    prediction.dataset_name = pred_info['dataset_name']
                     prediction.save()
                     break
                 else:
@@ -130,5 +131,8 @@ class PredictionHandler(BaseHandler):
 
     def delete(self, prediction_id):
         prediction = self._get_prediction(prediction_id)
+        # Make request to delete prediction in cesium_web
+        r = requests.delete('{}/predictions/{}'.format(
+            cfg['cesium_app']['url'], prediction.cesium_app_id)).json()
         prediction.delete_instance()
         return self.success(action='survey_app/FETCH_PREDICTIONS')

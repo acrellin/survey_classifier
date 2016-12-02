@@ -110,6 +110,7 @@ class Prediction(BaseModel):
     results = pw.BlobField(null=True)
     isProbabilistic = pw.BooleanField(null=True)
     file_path = pw.CharField(null=True)
+    dataset_name = pw.CharField(null=True)
 
     def is_owned_by(self, username):
         return self.project.is_owned_by(username)
