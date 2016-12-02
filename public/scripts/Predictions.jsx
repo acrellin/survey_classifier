@@ -71,13 +71,12 @@ const mapStateToProps = (state, ownProps) => {
     (dataset.project === ownProps.selectedProject.id));
   const zerothDataset = filteredDatasets[0];
 
-  const filteredModels = state.models.filter(model =>
-    (model.project === ownProps.selectedProject.id));
-  const zerothModel = filteredModels[0];
+  const models = JSON.parse(JSON.stringify(state.models));
+  const zerothModel = models[0];
 
   return {
     datasets: filteredDatasets,
-    models: filteredModels,
+    models,
     fields: ['modelID', 'datasetID'],
     initialValues: { modelID: zerothModel ? zerothModel.id : '',
                     datasetID: zerothDataset ? zerothDataset.id : '' }
