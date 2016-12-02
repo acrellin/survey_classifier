@@ -53,7 +53,7 @@ class DatasetHandler(BaseHandler):
                 if key == 'tarFile':
                     tarfile_path = tmp_path
             # Post to cesium_web
-            r = requests.post(cfg['cesium_app']['url'] + '/dataset',
+            r = requests.post('{}/dataset'.format(cfg['cesium_app']['url']),
                               files=files, data=data).json()
             if r['status'] != 'success':
                 return self.error(r['message'])
@@ -84,7 +84,7 @@ class DatasetHandler(BaseHandler):
 
     def delete(self, dataset_id):
         d = self._get_dataset(dataset_id)
-        # Make request to delete prediction in cesium_web
+        # Make request to delete dataset in cesium_web
         r = requests.delete('{}/dataset/{}'.format(
             cfg['cesium_app']['url'], d.cesium_app_id)).json()
         d.delete_instance()

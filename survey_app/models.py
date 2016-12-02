@@ -34,6 +34,7 @@ class Project(BaseModel):
     name = pw.CharField()
     description = pw.CharField(null=True)
     created = pw.DateTimeField(default=datetime.datetime.now)
+    cesium_app_id = pw.CharField(null=True)
 
     @staticmethod
     def all(username):
@@ -44,9 +45,10 @@ class Project(BaseModel):
                 .order_by(Project.created))
 
     @staticmethod
-    def add_by(name, description, username):
+    def add_by(name, description, cesium_app_id, username):
         with db.atomic():
-            p = Project.create(name=name, description=description)
+            p = Project.create(name=name, description=description,
+                               cesium_app_id=cesium_app_id)
             UserProject.create(username=username, project=p)
         return p
 
@@ -104,6 +106,7 @@ class Prediction(BaseModel):
     created = pw.DateTimeField(default=datetime.datetime.now)
     task_id = pw.CharField(null=True)
     cesium_app_id = pw.CharField(null=True)
+    cesium_app_project_id = pw.CharField(null=True)
     finished = pw.DateTimeField(null=True)
     model_type = pw.CharField(null=True)
     model_name = pw.CharField(null=True)

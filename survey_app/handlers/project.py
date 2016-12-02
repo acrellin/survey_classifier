@@ -1,5 +1,9 @@
 from .base import BaseHandler, AccessError
 from ..models import Project
+from ..config import cfg
+
+import requests
+import json
 
 
 class ProjectHandler(BaseHandler):
@@ -22,12 +26,14 @@ class ProjectHandler(BaseHandler):
 
         return self.success(proj_info)
 
-
     def post(self):
         data = self.get_json()
-
+        cesium_app_id = requests.post(
+            '{}/project'.format(cfg['cesium_app']['url']),
+            data=json.dumps(data)).json()['data']['id']
         p = Project.add_by(data['projectName'],
                            data.get('projectDescription', ''),
+                           cesium_app_id,
                            self.get_username())
 
         return self.success({"id": p.id}, 'survey_app/FETCH_PROJECTS')
@@ -48,6 +54,9 @@ class ProjectHandler(BaseHandler):
 
     def delete(self, project_id):
         p = self._get_project(project_id)
+        # Make request to delete project in cesium_web
+        r = requests.delete('{}/project/{}'.format(
+            cfg['cesium_app']['url'], p.cesium_app_id)).json()
         p.delete_instance()
 
         return self.success(action='survey_app/FETCH_PROJECTS')
