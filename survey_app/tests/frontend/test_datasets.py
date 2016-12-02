@@ -3,8 +3,9 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import uuid
 import os
+import time
 from os.path import join as pjoin
-from cesium_app.tests.fixtures import create_test_project, create_test_dataset
+from survey_app.tests.fixtures import create_test_project, create_test_dataset
 
 test_dataset_name = str(uuid.uuid4())
 
@@ -36,6 +37,8 @@ def test_add_new_dataset(driver):
         status_td = driver.find_element_by_xpath(
             "//div[contains(text(),'Successfully uploaded new dataset')]")
         assert test_dataset_name in driver.page_source
+        driver.find_element_by_partial_link_text('Delete').click()
+        time.sleep(0.1)
 
 
 def test_dataset_info_display(driver):

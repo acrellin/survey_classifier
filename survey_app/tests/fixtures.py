@@ -49,9 +49,7 @@ def create_test_dataset(project, label_type='class'):
                     'data', 'asas_training_subset.tar.gz')
     header = shutil.copy2(header, cfg['paths']['upload_folder'])
     tarball = shutil.copy2(tarball, cfg['paths']['upload_folder'])
-    ts_paths = data_management.parse_and_store_ts_data(
-        tarball, cfg['paths']['ts_data_folder'], header)
-    d = m.Dataset.add(name='test_ds', project=project, file_uris=ts_paths)
+    d = m.Dataset.add('test_ds', project, 3, 3, file_names=[])
     d.save()
     try:
         yield d
