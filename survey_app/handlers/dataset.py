@@ -33,6 +33,7 @@ class DatasetHandler(BaseHandler):
 
         dataset_name = self.get_argument('datasetName')
         project_id = self.get_argument('projectID')
+        cesium_app_project_id = Project.get(Project.id == project_id).cesium_app_id
 
         # Header file is optional for unlabled data w/o metafeatures
         if 'headerFile' in self.request.files:
@@ -41,7 +42,7 @@ class DatasetHandler(BaseHandler):
             headerfile = None
 
         data = {'datasetName': dataset_name,
-                'projectID': project_id}
+                'projectID': cesium_app_project_id}
         files = {}
         with tempfile.TemporaryDirectory() as temp_dir:
             for posted_file, key in [[f, k] for f, k in [[headerfile, 'headerFile'],
