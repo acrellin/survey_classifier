@@ -6,3 +6,5 @@ pyjwt
 requests
 simplejson
 peewee
+cesium
+joblib
