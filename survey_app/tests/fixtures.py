@@ -4,7 +4,7 @@ import uuid
 import os
 from os.path import join as pjoin
 from contextlib import contextmanager
-from cesium_app import models as m
+from survey_app import models as m
 from cesium import predict
 from cesium import data_management
 from survey_app.config import cfg
@@ -17,7 +17,7 @@ import joblib
 @contextmanager
 def create_test_project():
     """Create and yield test project, then delete."""
-    p = m.Project.add_by('test_proj', 'test_desc', 'testuser@gmail.com')
+    p = m.Project.add_by('test_proj', 'test_desc', 2, 'testuser1@gmail.com')
     p.save()
     try:
         yield p
