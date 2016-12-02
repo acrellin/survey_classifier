@@ -102,7 +102,13 @@ class PredictionHandler(BaseHandler):
 
     def get(self, prediction_id=None, action=None):
         if action == 'download':
-            prediction = cesium.featureset.from_netcdf(self._get_prediction(prediction_id).file_path)
+            try:
+                prediction = cesium.featureset.from_netcdf(
+                    self._get_prediction(prediction_id).file_path)
+            except OSError:
+                return self.error('The requested file could not be found. '
+                                  'The cesium_web app must be running on the '
+                                  'same machine to download prediction results.')
             with tempfile.NamedTemporaryFile() as tf:
                 util.prediction_to_csv(prediction, tf.name)
                 with open(tf.name) as f:
