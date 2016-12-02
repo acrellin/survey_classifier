@@ -84,5 +84,8 @@ class DatasetHandler(BaseHandler):
 
     def delete(self, dataset_id):
         d = self._get_dataset(dataset_id)
+        # Make request to delete prediction in cesium_web
+        r = requests.delete('{}/dataset/{}'.format(
+            cfg['cesium_app']['url'], d.cesium_app_id)).json()
         d.delete_instance()
         return self.success(action='survey_app/FETCH_DATASETS')
