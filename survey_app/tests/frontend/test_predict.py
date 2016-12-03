@@ -7,17 +7,16 @@ import os
 from os.path import join as pjoin
 import numpy as np
 import numpy.testing as npt
-from cesium_app.tests.fixtures import (create_test_project, create_test_dataset,
-                                       create_test_featureset, create_test_model,
-                                       create_test_prediction)
+from survey_app.tests.fixtures import create_test_project, create_test_dataset
 
 
 def _add_prediction(proj_id, driver):
     driver.refresh()
+    time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_value(str(proj_id))
 
-    driver.find_element_by_id('react-tabs-8').click()
+    driver.find_element_by_id('react-tabs-4').click()
     driver.find_element_by_partial_link_text('Predict Targets').click()
 
     driver.find_element_by_class_name('btn-primary').click()
@@ -36,9 +35,10 @@ def _add_prediction(proj_id, driver):
 
 def _click_prediction_row(proj_id, driver):
     driver.refresh()
+    time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_value(str(proj_id))
-    driver.find_element_by_id('react-tabs-8').click()
+    driver.find_element_by_id('react-tabs-4').click()
     driver.find_element_by_xpath("//td[contains(text(),'Completed')]").click()
 
 
@@ -52,96 +52,39 @@ def _grab_pred_results_table_rows(driver, text_to_look_for):
     return rows
 
 
-def test_add_prediction_rfc(driver):
+def test_add_prediction(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds,\
-         create_test_featureset(p) as fs, create_test_model(fs) as m:
+    with create_test_project() as p, create_test_dataset(p) as ds:
         _add_prediction(p.id, driver)
+        driver.find_element_by_partial_link_text('Delete').click()
 
 
-def test_pred_results_table_rfc(driver):
+def test_pred_results_table(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds,\
-         create_test_featureset(p) as fs, create_test_model(fs) as m,\
-         create_test_prediction(ds, m):
+    with create_test_project() as p, create_test_dataset(p) as ds:
+        _add_prediction(p.id, driver)
         _click_prediction_row(p.id, driver)
         try:
-            rows = _grab_pred_results_table_rows(driver, 'Mira')
+            rows = _grab_pred_results_table_rows(driver, 'ASAS')
             for row in rows:
                 probs = [float(v.text)
-                         for v in row.find_elements_by_tag_name('td')[3::2]]
+                         for v in row.find_elements_by_tag_name('td')[2::2]]
                 assert sorted(probs, reverse=True) == probs
             driver.find_element_by_xpath("//th[contains(text(),'Time Series')]")
         except:
             driver.save_screenshot("/tmp/pred_click_tr_fail.png")
             raise
-
-
-def test_add_prediction_lsgdc(driver):
-    driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds,\
-         create_test_featureset(p) as fs,\
-         create_test_model(fs, model_type='LinearSGDClassifier') as m:
-        _add_prediction(p.id, driver)
-
-
-def test_pred_results_table_lsgdc(driver):
-    driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds,\
-         create_test_featureset(p) as fs,\
-         create_test_model(fs, model_type='LinearSGDClassifier') as m,\
-         create_test_prediction(ds, m):
-        _click_prediction_row(p.id, driver)
-        try:
-            rows = _grab_pred_results_table_rows(driver, 'Mira')
-            rows = [row.text for row in rows]
-            npt.assert_array_equal(
-                ['0 Mira Mira', '1 Classical_Cepheid Classical_Cepheid',
-                 '2 Mira Mira', '3 Classical_Cepheid Classical_Cepheid',
-                 '4 Mira Mira'],
-                rows)
-        except:
-            driver.save_screenshot("/tmp/pred_click_tr_fail.png")
-            raise
-
-
-def test_add_prediction_rfr(driver):
-    driver.get('/')
-    with create_test_project() as p, create_test_dataset(p, label_type='regr') as ds,\
-         create_test_featureset(p, label_type='regr') as fs,\
-         create_test_model(fs, model_type='RandomForestRegressor') as m:
-        _add_prediction(p.id, driver)
-
-
-def test_pred_results_table_regr(driver):
-    driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds,\
-         create_test_featureset(p, label_type='regr') as fs,\
-         create_test_model(fs, model_type='LinearRegressor') as m,\
-         create_test_prediction(ds, m):
-        _click_prediction_row(p.id, driver)
-        try:
-            rows = _grab_pred_results_table_rows(driver, '3.4')
-            rows = [[float(el) for el in row.text.split(' ')] for row in rows]
-            npt.assert_array_almost_equal(
-                [[0.0, 2.2, 2.2000000000000006], [1.0, 3.4, 3.4000000000000004],
-                 [2.0, 4.4, 4.400000000000001], [3.0, 2.2, 2.1999999999999993],
-                 [4.0, 3.1, 3.099999999999999]],
-                rows)
-        except:
-            driver.save_screenshot("/tmp/pred_click_tr_fail.png")
-            raise
+        driver.find_element_by_partial_link_text('Delete').click()
 
 
 def test_delete_prediction(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds,\
-         create_test_featureset(p) as fs, create_test_model(fs) as m,\
-         create_test_prediction(ds, m):
+    with create_test_project() as p, create_test_dataset(p) as ds:
+        _add_prediction(p.id, driver)
         driver.refresh()
         proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
         proj_select.select_by_value(str(p.id))
-        driver.find_element_by_id('react-tabs-8').click()
+        driver.find_element_by_id('react-tabs-4').click()
         driver.implicitly_wait(1)
         driver.find_element_by_xpath("//td[contains(text(),'Completed')]").click()
         time.sleep(0.2)
@@ -153,9 +96,10 @@ def test_delete_prediction(driver):
 
 def _click_download(proj_id, driver):
     driver.refresh()
+    time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_value(str(proj_id))
-    driver.find_element_by_id('react-tabs-8').click()
+    driver.find_element_by_id('react-tabs-4').click()
     driver.implicitly_wait(1)
     driver.find_element_by_partial_link_text('Download').click()
     time.sleep(0.5)
@@ -163,44 +107,21 @@ def _click_download(proj_id, driver):
 
 def test_download_prediction_csv_class(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds,\
-         create_test_featureset(p) as fs,\
-         create_test_model(fs, model_type='LinearSGDClassifier') as m,\
-         create_test_prediction(ds, m):
+    with create_test_project() as p, create_test_dataset(p) as ds:
+        _add_prediction(p.id, driver)
         _click_download(p.id, driver)
-        assert os.path.exists('/tmp/cesium_prediction_results.csv')
+        assert os.path.exists('/tmp/survey_app_prediction_results.csv')
         try:
             npt.assert_equal(
-                np.genfromtxt('/tmp/cesium_prediction_results.csv', dtype='str'),
-                ['ts_name,true_target,prediction',
-                 '0,Mira,Mira',
-                 '1,Classical_Cepheid,Classical_Cepheid',
-                 '2,Mira,Mira',
-                 '3,Classical_Cepheid,Classical_Cepheid',
-                 '4,Mira,Mira'])
+                np.genfromtxt('/tmp/survey_app_prediction_results.csv',
+                              dtype='str'),
+                ['ts_name,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability',
+       '257141,ASAS,0.814,CoRoT,0.0,HATNet,0.0,Hipparcos,0.0,KELT,0.0,Kepler,0.0,LINEAR,0.044,OGLE-III,0.119,SuperWASP,0.023,TrES,0.0',
+       '247327,ASAS,0.846,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.008,OGLE-III,0.142,SuperWASP,0.003,TrES,0.0',
+       '243412,ASAS,0.773,CoRoT,0.0,HATNet,0.0,Hipparcos,0.0,KELT,0.0,Kepler,0.0,LINEAR,0.044,OGLE-III,0.162,SuperWASP,0.021,TrES,0.0',
+       '235913,ASAS,0.794,CoRoT,0.0,HATNet,0.0,Hipparcos,0.002,KELT,0.0,Kepler,0.0,LINEAR,0.056,OGLE-III,0.127,SuperWASP,0.021,TrES,0.0',
+       '232798,ASAS,0.765,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.048,OGLE-III,0.166,SuperWASP,0.02,TrES,0.0',
+       '224635,ASAS,0.732,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.047,OGLE-III,0.201,SuperWASP,0.019,TrES,0.0',
+       '217801,ASAS,0.751,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.011,OGLE-III,0.23,SuperWASP,0.007,TrES,0.0'])
         finally:
-            os.remove('/tmp/cesium_prediction_results.csv')
-
-
-def test_download_prediction_csv_regr(driver):
-    driver.get('/')
-    with create_test_project() as p, create_test_dataset(p, label_type='regr') as ds,\
-         create_test_featureset(p, label_type='regr') as fs,\
-         create_test_model(fs, model_type='LinearRegressor') as m,\
-         create_test_prediction(ds, m):
-        _click_download(p.id, driver)
-        assert os.path.exists('/tmp/cesium_prediction_results.csv')
-        try:
-            results = np.genfromtxt('/tmp/cesium_prediction_results.csv',
-                                    dtype='str', delimiter=',')
-            npt.assert_equal(results[0],
-                             ['ts_name', 'true_target', 'prediction'])
-            npt.assert_array_almost_equal(
-                [[float(e) for e in row] for row in results[1:]],
-                [[0, 2.2, 2.2],
-                 [1, 3.4, 3.4],
-                 [2, 4.4, 4.4],
-                 [3, 2.2, 2.2],
-                 [4, 3.1, 3.1]])
-        finally:
-            os.remove('/tmp/cesium_prediction_results.csv')
+            os.remove('/tmp/survey_app_prediction_results.csv')
