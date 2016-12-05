@@ -12,40 +12,70 @@ from cesium.tests import fixtures as cesium_fixtures
 from survey_app.config import cfg
 import shutil
 import peewee
-import datetime
 import joblib
+from selenium.webdriver.support.ui import Select
 
 
 @contextmanager
-def create_test_project():
-    """Create and yield test project, then delete."""
-    p = m.Project.add_by('test_proj', 'test_desc', 2, 'testuser1@gmail.com')
-    p.save()
+def create_test_project(driver):
+    """Create test project and yield name, then delete."""
+    driver.get("/")
+    driver.implicitly_wait(1)
+    driver.find_element_by_partial_link_text('Or click here to add a new one').click()
+
+    project_name_field = driver.find_element_by_css_selector('[name=projectName]')
+    proj_name = str(uuid.uuid4())
+    project_name_field.send_keys(proj_name)
+    project_desc = driver.find_element_by_css_selector('[name=projectDescription]')
+    project_desc.send_keys("Test Description")
+
+    driver.find_element_by_class_name('btn-primary').click()
+
+    driver.implicitly_wait(1)
+    status_td = driver.find_element_by_xpath(
+        "//div[contains(text(),'Added new project')]")
     try:
-        yield p
+        yield proj_name
     finally:
-        p.delete_instance()
+        driver.refresh()
+        proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
+        proj_select.select_by_visible_text(proj_name)
+        driver.find_element_by_partial_link_text('Delete Project').click()
 
 
 @contextmanager
-def create_test_dataset(project):
-    """Create and yield test labeled dataset, then delete.
+def create_test_dataset(driver, proj_name):
+    """Create and yield test labeled dataset, then delete."""
+    driver.refresh()
+    proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
+    proj_select.select_by_visible_text(proj_name)
+    driver.find_element_by_id('react-tabs-2').click()
+    driver.find_element_by_partial_link_text('Upload new dataset').click()
 
-    Params
-    ------
-    project : `models.Project` instance
-        The project under which to create test dataset.
+    dataset_name = driver.find_element_by_css_selector('[name=datasetName]')
+    dataset_name.send_keys(test_dataset_name)
 
-    """
-    header = pjoin(os.path.dirname(__file__),
-                   'data', 'asas_training_subset_classes.dat')
-    tarball = pjoin(os.path.dirname(__file__),
-                    'data', 'asas_training_subset.tar.gz')
-    header = shutil.copy2(header, cfg['paths']['upload_folder'])
-    tarball = shutil.copy2(tarball, cfg['paths']['upload_folder'])
-    d = m.Dataset.add('test_ds', project, 3, 3, file_names=[])
-    d.save()
+    header_file = driver.find_element_by_css_selector('[name=headerFile]')
+    header_file.send_keys(pjoin(os.path.dirname(os.path.dirname(__file__)), 'data',
+                                'asas_training_subset_classes.dat'))
+
+    tar_file = driver.find_element_by_css_selector('[name=tarFile]')
+    tar_file.send_keys(pjoin(os.path.dirname(os.path.dirname(__file__)), 'data',
+                             'asas_training_subset.tar.gz'))
+
+    driver.find_element_by_class_name('btn-primary').click()
+
+    driver.implicitly_wait(1)
+    status_td = driver.find_element_by_xpath(
+        "//div[contains(text(),'Successfully uploaded new dataset')]")
     try:
-        yield d
+        yield dataset_name
     finally:
-        d.delete_instance()
+        driver.refresh()
+        proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
+        proj_select.select_by_visible_text(proj_name)
+        driver.find_element_by_id('react-tabs-2').click()
+        driver.find_element_by_partial_link_text('Delete').click()
+        driver.implicitly_wait(1)
+        status_td = driver.find_element_by_xpath(
+            "//div[contains(text(),'Dataset deleted')]")
