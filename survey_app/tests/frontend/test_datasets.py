@@ -42,8 +42,8 @@ def test_add_new_dataset(driver):
 
 
 def test_dataset_info_display(driver):
-    with (create_test_project(driver) as proj_name,
-          create_test_dataset(driver, proj_name) as ds_name):
+    with create_test_project(driver) as proj_name,\
+         create_test_dataset(driver, proj_name) as ds_name:
         driver.refresh()
         proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
         proj_select.select_by_visible_text(proj_name)
@@ -58,8 +58,8 @@ def test_dataset_info_display(driver):
 
 
 def test_delete_dataset(driver):
-    with (create_test_project(driver) as proj_name,
-          create_test_dataset(driver, proj_name) as ds_name):
+    with create_test_project(driver) as proj_name,\
+         create_test_dataset(driver, proj_name) as ds_name:
         driver.refresh()
         proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
         proj_select.select_by_visible_text(proj_name)
