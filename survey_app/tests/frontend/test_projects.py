@@ -60,6 +60,16 @@ def test_edit_project(driver):
         assert driver.find_element_by_css_selector('[name=projectDescription]').\
             get_attribute("value") == "New Test Description"
 
+        # Change name back for successful context manager cleanup
+        proj_select.select_by_visible_text(test_proj_name)
+        project_name = driver.find_element_by_css_selector('[name=projectName]')
+        project_name.clear()
+        project_name.send_keys(proj_name)
+        driver.find_element_by_class_name('btn-primary').click()
+        driver.implicitly_wait(1)
+        status_td = driver.find_element_by_xpath(
+            "//div[contains(text(),'Successfully updated project')]")
+
 
 def test_delete_project(driver):
     driver.get("/")
