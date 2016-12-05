@@ -5,8 +5,6 @@ import os
 from os.path import join as pjoin
 from contextlib import contextmanager
 from survey_app import models as m
-from cesium import predict
-from cesium import data_management
 import shutil
 import peewee
 import joblib
