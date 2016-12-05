@@ -8,3 +8,4 @@ simplejson
 peewee
 cesium
 joblib
+psycopg2
