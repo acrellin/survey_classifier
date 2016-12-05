@@ -6,7 +6,7 @@ from survey_app.tests.fixtures import create_test_project
 
 def test_tab_tooltips(driver):
     driver.get('/')
-    with create_test_project() as p:
+    with create_test_project(driver) as proj_name:
         driver.refresh()
 
         hover = ActionChains(driver).move_to_element(
@@ -36,7 +36,7 @@ def test_tab_tooltips(driver):
 
 def test_file_upload_tooltips(driver):
     driver.get('/')
-    with create_test_project() as p:
+    with create_test_project(driver) as proj_name:
         driver.refresh()
         driver.find_element_by_id('react-tabs-2').click()
         driver.find_element_by_partial_link_text('Upload new dataset').click()
