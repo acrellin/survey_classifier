@@ -7,9 +7,6 @@ from contextlib import contextmanager
 from survey_app import models as m
 from cesium import predict
 from cesium import data_management
-from cesium.features import CADENCE_FEATS
-from cesium.tests import fixtures as cesium_fixtures
-from survey_app.config import cfg
 import shutil
 import peewee
 import joblib

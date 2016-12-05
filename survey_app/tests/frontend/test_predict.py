@@ -10,11 +10,11 @@ import numpy.testing as npt
 from survey_app.tests.fixtures import create_test_project, create_test_dataset
 
 
-def _add_prediction(proj_id, driver):
+def _add_prediction(proj_name, driver):
     driver.refresh()
     time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
-    proj_select.select_by_value(str(proj_id))
+    proj_select.select_by_visible_text(proj_name)
 
     driver.find_element_by_id('react-tabs-4').click()
     driver.find_element_by_partial_link_text('Predict Targets').click()
@@ -33,11 +33,11 @@ def _add_prediction(proj_id, driver):
         raise
 
 
-def _click_prediction_row(proj_id, driver):
+def _click_prediction_row(proj_name, driver):
     driver.refresh()
     time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
-    proj_select.select_by_value(str(proj_id))
+    proj_select.select_by_visible_text(proj_name)
     driver.find_element_by_id('react-tabs-4').click()
     driver.find_element_by_xpath("//td[contains(text(),'Completed')]").click()
 
@@ -54,21 +54,23 @@ def _grab_pred_results_table_rows(driver, text_to_look_for):
 
 def test_add_prediction(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds:
-        _add_prediction(p.id, driver)
+    with create_test_project(driver) as proj_name,\
+         create_test_dataset(driver, proj_name) as ds_name:
+        _add_prediction(proj_name, driver)
         driver.find_element_by_partial_link_text('Delete').click()
 
 
 def test_pred_results_table(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds:
-        _add_prediction(p.id, driver)
-        _click_prediction_row(p.id, driver)
+    with create_test_project(driver) as proj_name,\
+         create_test_dataset(driver, proj_name) as ds_name:
+        _add_prediction(proj_name, driver)
+        _click_prediction_row(proj_name, driver)
         try:
             rows = _grab_pred_results_table_rows(driver, 'ASAS')
             for row in rows:
                 probs = [float(v.text)
-                         for v in row.find_elements_by_tag_name('td')[2::2]]
+                         for v in row.find_elements_by_tag_name('td')[3::2]]
                 assert sorted(probs, reverse=True) == probs
             driver.find_element_by_xpath("//th[contains(text(),'Time Series')]")
         except:
@@ -79,11 +81,12 @@ def test_pred_results_table(driver):
 
 def test_delete_prediction(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds:
-        _add_prediction(p.id, driver)
+    with create_test_project(driver) as proj_name,\
+         create_test_dataset(driver, proj_name) as ds_name:
+        _add_prediction(proj_name, driver)
         driver.refresh()
         proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
-        proj_select.select_by_value(str(p.id))
+        proj_select.select_by_visible_text(proj_name)
         driver.find_element_by_id('react-tabs-4').click()
         driver.implicitly_wait(1)
         driver.find_element_by_xpath("//td[contains(text(),'Completed')]").click()
@@ -94,11 +97,11 @@ def test_delete_prediction(driver):
             "//div[contains(text(),'Prediction deleted')]")
 
 
-def _click_download(proj_id, driver):
+def _click_download(proj_name, driver):
     driver.refresh()
     time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
-    proj_select.select_by_value(str(proj_id))
+    proj_select.select_by_visible_text(proj_name)
     driver.find_element_by_id('react-tabs-4').click()
     driver.implicitly_wait(1)
     driver.find_element_by_partial_link_text('Download').click()
@@ -107,21 +110,24 @@ def _click_download(proj_id, driver):
 
 def test_download_prediction_csv_class(driver):
     driver.get('/')
-    with create_test_project() as p, create_test_dataset(p) as ds:
-        _add_prediction(p.id, driver)
-        _click_download(p.id, driver)
+    with create_test_project(driver) as proj_name,\
+         create_test_dataset(driver, proj_name) as ds_name:
+        _add_prediction(proj_name, driver)
+        _click_download(proj_name, driver)
         assert os.path.exists('/tmp/survey_app_prediction_results.csv')
         try:
-            npt.assert_equal(
-                np.genfromtxt('/tmp/survey_app_prediction_results.csv',
-                              dtype='str'),
-                ['ts_name,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability,predicted_class,probability',
-       '257141,ASAS,0.814,CoRoT,0.0,HATNet,0.0,Hipparcos,0.0,KELT,0.0,Kepler,0.0,LINEAR,0.044,OGLE-III,0.119,SuperWASP,0.023,TrES,0.0',
-       '247327,ASAS,0.846,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.008,OGLE-III,0.142,SuperWASP,0.003,TrES,0.0',
-       '243412,ASAS,0.773,CoRoT,0.0,HATNet,0.0,Hipparcos,0.0,KELT,0.0,Kepler,0.0,LINEAR,0.044,OGLE-III,0.162,SuperWASP,0.021,TrES,0.0',
-       '235913,ASAS,0.794,CoRoT,0.0,HATNet,0.0,Hipparcos,0.002,KELT,0.0,Kepler,0.0,LINEAR,0.056,OGLE-III,0.127,SuperWASP,0.021,TrES,0.0',
-       '232798,ASAS,0.765,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.048,OGLE-III,0.166,SuperWASP,0.02,TrES,0.0',
-       '224635,ASAS,0.732,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.047,OGLE-III,0.201,SuperWASP,0.019,TrES,0.0',
-       '217801,ASAS,0.751,CoRoT,0.0,HATNet,0.0,Hipparcos,0.001,KELT,0.0,Kepler,0.0,LINEAR,0.011,OGLE-III,0.23,SuperWASP,0.007,TrES,0.0'])
+            text_lines = np.genfromtxt('/tmp/survey_app_prediction_results.csv',
+                                       dtype='str')
+            assert text_lines[0] == (
+                'ts_name,true_target,predicted_class,probability,predicted_class,'
+                'probability,predicted_class,probability,predicted_class,'
+                'probability,predicted_class,probability,predicted_class,'
+                'probability,predicted_class,probability,predicted_class,'
+                'probability,predicted_class,probability,predicted_class,'
+                'probability')
+
+            line2_els = text_lines[1].split(',')
+            npt.assert_equal(line2_els[:3],
+                             ['217801', 'ASAS', 'ASAS'])
         finally:
             os.remove('/tmp/survey_app_prediction_results.csv')
