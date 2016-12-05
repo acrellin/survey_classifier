@@ -1,5 +1,5 @@
 {
-  "name": "Survey Classifier",
+  "name": "SurveyClassifier",
   "license": "BSD-3-Clause",
   "scripts": {
     "build": "webpack"
