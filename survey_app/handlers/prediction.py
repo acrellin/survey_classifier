@@ -33,10 +33,9 @@ class PredictionHandler(BaseHandler):
     def _await_prediction(self, prediction, cesium_app_prediction_id):
         try:
             while True:
-                r = requests.get('{}/predictions'.format(
-                    cfg['cesium_app']['url'])).json()
-                pred_info = [p for p in r['data'] if p['id'] ==
-                             cesium_app_prediction_id][0]
+                pred_info = requests.get('{}/predictions/{}'.format(
+                    cfg['cesium_app']['url'],
+                    cesium_app_prediction_id)).json()['data']
                 if pred_info['finished']:
                     prediction.task_id = None
                     prediction.finished = datetime.datetime.now()
