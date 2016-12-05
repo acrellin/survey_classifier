@@ -49,6 +49,12 @@ attach:
 clean:
 	rm $(bundle)
 
+test_headless: paths dependencies
+	PYTHONPATH='.' xvfb-run ./tools/frontend_tests.py
+
+test: paths dependencies
+	PYTHONPATH='.' ./tools/frontend_tests.py
+
 status:
 	PYTHONPATH='.' ./tools/supervisor_status.py
 
