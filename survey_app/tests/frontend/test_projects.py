@@ -1,5 +1,4 @@
 import pytest
-from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 import uuid
@@ -9,7 +8,6 @@ from survey_app.tests.fixtures import create_test_project
 
 def test_create_project(driver):
     driver.get("/")
-
     # Add new project
     driver.implicitly_wait(1)
     driver.find_element_by_partial_link_text('Or click here to add a new one').click()
@@ -41,10 +39,10 @@ def test_create_project(driver):
 
 
 def test_edit_project(driver):
-    with create_test_project() as p:
+    with create_test_project(driver) as proj_name:
         driver.refresh()
         proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
-        proj_select.select_by_value(str(p.id))
+        proj_select.select_by_visible_text(proj_name)
         project_name = driver.find_element_by_css_selector('[name=projectName]')
         project_name.clear()
         test_proj_name = str(uuid.uuid4())
