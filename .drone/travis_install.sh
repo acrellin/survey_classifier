@@ -10,26 +10,25 @@ pip install --retries 3 -q requests
 section_end "install.base.requirements"
 
 
-section "install.cesium.requirements"
+section "install.python.requirements"
 pip install --retries 3 -r requirements.txt
 pip list
-section_end "install.cesium.requirements"
+section_end "install.python.requirements"
 
 
-section "install.cesium_web.requirements"
+section "install.npm.requirements"
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 npm --version
 node --version
 make dependencies
-section_end "install.cesium_web.requirements"
+section_end "install.npm.requirements"
 
 
-section "init.cesium_web"
+section "init.survey_app"
 make paths
-make db_init
-make db_test_data
+make db_drop
 make bundle
-section_end "init.cesium_web"
+section_end "init.survey_app"
 
 
 section "install.chromedriver"

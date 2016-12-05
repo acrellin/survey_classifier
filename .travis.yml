@@ -74,7 +74,6 @@ before_install:
   - export PATH=/usr/lib/ccache:${PATH}
   - which python; python --version
   - source .drone/travis_funcs.sh
-  - export FLASK_APP=cesium_app/flask_server.py
 
 install:
   - .drone/travis_install.sh
