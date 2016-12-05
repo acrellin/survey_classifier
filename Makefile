@@ -57,5 +57,3 @@ test: paths dependencies
 
 status:
 	PYTHONPATH='.' ./tools/supervisor_status.py
-
-
