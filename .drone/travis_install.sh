@@ -26,7 +26,7 @@ section_end "install.npm.requirements"
 
 section "init.survey_app"
 make paths
-make db_drop
+make db_init
 make bundle
 section_end "init.survey_app"
 
