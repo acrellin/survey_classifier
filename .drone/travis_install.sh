@@ -50,7 +50,7 @@ git clone https://github.com/cesium-ml/cesium_web.git
 cd cesium_web
 cp ../tools/survey_db_init.py ./
 make paths
-make dependencies
+pip install --retries 3 -r requirements.txt
 python survey_db_init.py
 make &
 cd ..
