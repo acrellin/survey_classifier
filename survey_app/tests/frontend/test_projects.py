@@ -61,6 +61,7 @@ def test_edit_project(driver):
             get_attribute("value") == "New Test Description"
 
         # Change name back for successful context manager cleanup
+        driver.refresh()
         proj_select.select_by_visible_text(test_proj_name)
         project_name = driver.find_element_by_css_selector('[name=projectName]')
         project_name.clear()
@@ -69,6 +70,7 @@ def test_edit_project(driver):
         driver.implicitly_wait(1)
         status_td = driver.find_element_by_xpath(
             "//div[contains(text(),'Successfully updated project')]")
+        time.sleep(1)
 
 
 def test_delete_project(driver):
