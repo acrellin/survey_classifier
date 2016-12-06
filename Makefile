@@ -20,6 +20,9 @@ db_drop:
 db_test_data:
 	PYTHONPATH=. python ./survey_app/models.py
 
+cesium_web_db_init:
+	./tools/init_cesium_web_db.sh
+
 $(bundle): webpack.config.js
 	$(webpack)
 
