@@ -2,8 +2,8 @@
 
 import zmq
 
-IN = 'ipc:///tmp/message_flow_in_survey'
-OUT = 'ipc:///tmp/message_flow_out_survey'
+IN = 'ipc:///tmp/survey_app_message_flow_in'
+OUT = 'ipc:///tmp/survey_app_message_flow_out'
 
 context = zmq.Context()
 

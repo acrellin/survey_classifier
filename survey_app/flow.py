@@ -6,7 +6,7 @@ class Flow(object):
     """Send messages through websocket to frontend
 
     """
-    def __init__(self, socket_path='ipc:///tmp/message_flow_in_survey'):
+    def __init__(self, socket_path='ipc:///tmp/survey_app_message_flow_in'):
         ctx = zmq.Context()
         pub = ctx.socket(zmq.PUB)
         pub.connect(socket_path)
