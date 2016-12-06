@@ -1,10 +1,10 @@
 const colorScheme = {
-  blue: '#048bbb',
-  lightGray: '#eee',
+  blue: '#1985A1',
+  lightGray: '#C5C3C6',
   gray: '#afb2b3',
-  darkGray: 'SlateGray',
-  darkBlue: '#11485b',
-  lightBlue: 'LightSkyBlue'
+  darkGray: '#46494C',
+  darkBlue: '#4C5C68',
+  lightBlue: '#DCDCDD'
 };
 
 export default colorScheme;
