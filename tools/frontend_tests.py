@@ -51,7 +51,7 @@ if __name__ == '__main__':
             sys.exit(-1)
 
         for timeout in range(10):
-            conn = http.HTTPConnection(cfg['server']['url'])
+            conn = http.HTTPConnection(cfg['server']['url'].replace('http://', ''))
             try:
                 conn.request('HEAD', '/')
                 status = conn.getresponse().status
