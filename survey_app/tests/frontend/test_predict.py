@@ -108,7 +108,7 @@ def _click_download(proj_name, driver):
     time.sleep(0.5)
 
 
-def test_download_prediction_csv_class(driver):
+def test_download_prediction_csv(driver):
     driver.get('/')
     with create_test_project(driver) as proj_name,\
          create_test_dataset(driver, proj_name) as ds_name:
@@ -129,5 +129,6 @@ def test_download_prediction_csv_class(driver):
             line2_els = text_lines[1].split(',')
             npt.assert_equal(line2_els[:3],
                              ['217801', 'ASAS', 'ASAS'])
+            assert all([el.replace('.', '').isdigit() for el in line2_els[3::2]])
         finally:
             os.remove('/tmp/survey_app_prediction_results.csv')
