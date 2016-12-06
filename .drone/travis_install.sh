@@ -41,16 +41,15 @@ section_end "install.chromedriver"
 
 
 section "download.data"
-git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data
+make download_data
 section_end "download data"
 
 
 section "install.cesium_web.and.requirements"
-git clone https://github.com/cesium-ml/cesium_web.git ../cesium_web
-pip install --retries 3 -r ../cesium_web/requirements.txt
+make install_cesium_web
 section_end "install.cesium_web.and.requirements"
 
 
 section "initialize.cesium_web.db"
-make cesium_web_db_init
+make cesium_web_init
 section_end "initialize.cesium_web.db"
