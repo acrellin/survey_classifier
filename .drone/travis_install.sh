@@ -40,11 +40,16 @@ chromium-browser --version
 section_end "install.chromedriver"
 
 
+section "download.data"
+make download_data
+section_end "download.data"
+
+
 section "install.cesium_web.and.requirements"
 make install_cesium_web
 section_end "install.cesium_web.and.requirements"
 
 
-section "download.data.and.initialize.cesium_web"
+section "initialize.cesium_web"
 make cesium_web_init
-section_end "download.data.and.initialize.cesium_web"
+section_end "initialize.cesium_web"
