@@ -45,6 +45,7 @@ cache:
     - $HOME/.ccache
     - $HOME/.local
     - node_modules
+    - survey_classifier_data
 addons:
   apt:
     packages:
