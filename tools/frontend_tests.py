@@ -34,6 +34,7 @@ def clear_db():
 if __name__ == '__main__':
     add_test_yaml()
     clear_db()
+    from survey_app.config import cfg
     web_client = subprocess.Popen(['make'], cwd=base_dir)
 
     print('[test_frontend] Waiting for supervisord to launch all server processes...')
@@ -50,7 +51,7 @@ if __name__ == '__main__':
             sys.exit(-1)
 
         for timeout in range(10):
-            conn = http.HTTPConnection("localhost", 5000)
+            conn = http.HTTPConnection(cfg['server']['url'])
             try:
                 conn.request('HEAD', '/')
                 status = conn.getresponse().status
@@ -60,7 +61,7 @@ if __name__ == '__main__':
                 pass
             time.sleep(1)
         else:
-            raise socket.error("Could not connect to localhost:5000.")
+            raise socket.error("Could not connect to {}.".format(cfg['server']['url']))
 
         if status != 200:
             print('[test_frontend] Server status is {} instead of 200'.format(
