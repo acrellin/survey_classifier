@@ -41,18 +41,16 @@ section_end "install.chromedriver"
 
 
 section "download.data"
-git clone https://github.com/acrellin/survey_classifier_data.git
+git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data
 section_end "download data"
 
 
-section "initialize.cesium_web"
-git clone https://github.com/cesium-ml/cesium_web.git
-cd cesium_web
-cp ../tools/survey_db_init.py ./
-make paths
-make db_init
-pip install --retries 3 -r requirements.txt
-python survey_db_init.py
-make debug &
-cd ..
-section_end "initialize.cesium_web"
+section "install.cesium_web.and.requirements"
+git clone https://github.com/cesium-ml/cesium_web.git ../cesium_web
+pip install --retries 3 -r ../cesium_web/requirements.txt
+section_end "install.cesium_web.and.requirements"
+
+
+section "initialize.cesium_web.db"
+make cesium_web_db_init
+section_end "initialize.cesium_web.db"

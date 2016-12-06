@@ -1,5 +1,5 @@
-'''To be run from top-level cesium_web directory, which is assumed to be in the
-top-level survey classifier directory and alongside survey_classifier_data.'''
+'''To be run from top-level cesium_web directory, which is assumed to alongside
+both survey_classifier_app and survey_classifier_data.'''
 
 from cesium_app import models as m
 from cesium_app.config import cfg
