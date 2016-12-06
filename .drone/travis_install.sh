@@ -53,6 +53,6 @@ make paths
 make db_init
 pip install --retries 3 -r requirements.txt
 python survey_db_init.py
-make &
+make debug &
 cd ..
 section_end "initialize.cesium_web"
