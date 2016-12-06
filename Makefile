@@ -27,7 +27,7 @@ install_cesium_web:
 	git clone https://github.com/cesium-ml/cesium_web.git ../cesium_web
 	pip install -r ../cesium_web/requirements.txt
 
-cesium_web_init:
+cesium_web_init: download_data
 	./tools/init_cesium_web_db.sh
 
 $(bundle): webpack.config.js
