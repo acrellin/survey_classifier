@@ -20,7 +20,14 @@ db_drop:
 db_test_data:
 	PYTHONPATH=. python ./survey_app/models.py
 
-cesium_web_db_init:
+download_data:
+	git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data
+
+install_cesium_web:
+	git clone https://github.com/cesium-ml/cesium_web.git ../cesium_web
+	pip install -r ../cesium_web/requirements.txt
+
+cesium_web_init:
 	./tools/init_cesium_web_db.sh
 
 $(bundle): webpack.config.js
