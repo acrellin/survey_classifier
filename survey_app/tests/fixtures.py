@@ -34,12 +34,9 @@ def create_test_project(driver):
         yield proj_name
     finally:
         driver.refresh()
-        try:
-            proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
-            proj_select.select_by_visible_text(proj_name)
-            driver.find_element_by_partial_link_text('Delete Project').click()
-        except:
-            pass
+        proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
+        proj_select.select_by_visible_text(proj_name)
+        driver.find_element_by_partial_link_text('Delete Project').click()
 
 
 @contextmanager

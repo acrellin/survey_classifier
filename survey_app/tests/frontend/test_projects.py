@@ -62,6 +62,7 @@ def test_edit_project(driver):
 
         # Change name back for successful context manager cleanup
         driver.refresh()
+        proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
         proj_select.select_by_visible_text(test_proj_name)
         project_name = driver.find_element_by_css_selector('[name=projectName]')
         project_name.clear()
