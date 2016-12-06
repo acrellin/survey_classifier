@@ -38,3 +38,20 @@ rm chromedriver_linux64.zip
 which chromium-browser
 chromium-browser --version
 section_end "install.chromedriver"
+
+
+section "download.data"
+git clone https://github.com/acrellin/survey_classifier_data.git
+section_end "download data"
+
+
+section "initialize.cesium_web"
+git clone https://github.com/cesium-ml/cesium_web.git
+cd cesium_web
+cp ../tools/survey_db_init.py ./
+make paths
+make dependencies
+python survey_db_init.py
+make &
+cd ..
+section_end "initialize.cesium_web"
