@@ -21,7 +21,7 @@ db_test_data:
 	PYTHONPATH=. python ./survey_app/models.py
 
 download_data:
-	git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data
+	git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data || echo 'Data has already been downloaded.'
 
 install_cesium_web:
 	git clone https://github.com/cesium-ml/cesium_web.git ../cesium_web
