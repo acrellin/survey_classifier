@@ -8,7 +8,7 @@ import Expand from './Expand';
 import Delete from './Delete';
 import * as Action from './actions';
 import { reformatDatetime } from './utils';
-import CesiumTooltip from './Tooltip';
+import Tooltip from './Tooltip';
 import FoldableRow from './FoldableRow';
 
 
@@ -64,11 +64,11 @@ let DatasetForm = (props) => {
         <SubmitButton label="Upload Dataset" disabled={submitting} />
       </Form>
 
-      <CesiumTooltip
+      <Tooltip
         id="headerfileTooltip"
         text={["filename,target", <br />, "ts1.dat,class_A", <br />, "..."]}
       />
-      <CesiumTooltip
+      <Tooltip
         id="tarfileTooltip"
         text={[
           "Each file in tarball should be formatted as follows",

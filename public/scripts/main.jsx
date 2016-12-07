@@ -15,7 +15,7 @@ import DatasetsTab from './Datasets';
 import PredictTab from './Predictions';
 import { Notifications } from './Notifications';
 import colorScheme from './colorscheme';
-import CesiumTooltip from './Tooltip';
+import Tooltip from './Tooltip';
 
 const Tab = ReactTabs.Tab;
 const Tabs = ReactTabs.Tabs;
@@ -283,22 +283,22 @@ class MainContent extends React.Component {
 
         </div>
 
-        <CesiumTooltip
+        <Tooltip
           id="projectTabTooltip"
           text="Manage your projects"
           place="bottom"
         />
-        <CesiumTooltip
+        <Tooltip
           id="datasetsTabTooltip"
           text="Upload your light curves"
           place="bottom"
         />
-        <CesiumTooltip
+        <Tooltip
           id="predictTabTooltip"
           text="Generate predictions for new data"
           place="bottom"
         />
-        <CesiumTooltip
+        <Tooltip
           id="statusTabTooltip"
           text="Application status"
           place="bottom"

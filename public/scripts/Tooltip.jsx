@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 
-const CesiumTooltip = props => (
+const Tooltip = props => (
   <ReactTooltip place={props.place} delayShow={props.delay} id={props.id}>
     <span>
       {props.text}
     </span>
   </ReactTooltip>
 );
-CesiumTooltip.propTypes = {
+Tooltip.propTypes = {
   id: React.PropTypes.string.isRequired,
   text: React.PropTypes.oneOfType([
     React.PropTypes.string,
@@ -17,8 +17,8 @@ CesiumTooltip.propTypes = {
   place: React.PropTypes.string,
   delay: React.PropTypes.number
 };
-CesiumTooltip.defaultProps = {
+Tooltip.defaultProps = {
   place: 'top',
   delay: 700
 };
-export default CesiumTooltip;
+export default Tooltip;
