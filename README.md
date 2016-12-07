@@ -1,6 +1,6 @@
 # Light Curve Survey Classification Web App
 
-[![Build Status](https://travis-ci.org/acrellin/survey_classifier_app.svg?branch=master)](https://travis-ci.org/acrellin/survey_classifier_app)
+[![Build Status](https://travis-ci.org/acrellin/survey_classifier.svg?branch=master)](https://travis-ci.org/acrellin/survey_classifier)
 
 ## About
 
