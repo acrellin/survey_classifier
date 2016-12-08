@@ -36,7 +36,7 @@ def test_add_new_dataset(driver):
         driver.implicitly_wait(1)
         status_td = driver.find_element_by_xpath(
             "//div[contains(text(),'Successfully uploaded new dataset')]")
-        assert test_dataset_name in driver.page_source
+        driver.implicitly_wait(1)
         driver.find_element_by_partial_link_text('Delete').click()
         time.sleep(0.1)
 
