@@ -96,7 +96,7 @@ PredictForm = reduxForm({
 }, mapStateToProps)(PredictForm);
 
 
-let PredictionsTable = props => (
+export let PredictionsTable = props => (
   <table className="table">
     <thead>
       <tr>
@@ -148,7 +148,7 @@ PredictionsTable.propTypes = {
 };
 
 
-const PredictionResults = (props) => {
+export const PredictionResults = (props) => {
   const modelType = props.prediction.model_type;
   const results = props.prediction.results;
 

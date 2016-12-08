@@ -27,7 +27,7 @@ DatasetsTab.propTypes = {
   selectedProject: React.PropTypes.object
 };
 
-let DatasetForm = (props) => {
+export let DatasetForm = (props) => {
   const { fields: { datasetName, headerFile, tarFile },
           error, handleSubmit, submitting } = props;
 
@@ -117,7 +117,7 @@ DatasetForm = reduxForm({
 }, dsMapStateToProps, dsMapDispatchToProps)(DatasetForm);
 
 
-let DatasetInfo = props => (
+export let DatasetInfo = props => (
   <table className="table">
     <thead>
       <tr>
