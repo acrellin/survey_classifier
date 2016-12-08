@@ -159,6 +159,19 @@ export function deleteProject(id) {
 }
 
 
+// Currently, used upon creation of a new project to switch to that project
+export function selectProject(id=null) {
+  return (dispatch) => {
+    dispatch(hideExpander('newProjectExpander'));
+
+    return dispatch({
+      type: SELECT_PROJECT,
+      payload: { id }
+    });
+  };
+}
+
+
 export function uploadDataset(form) {
   const formData = new FormData();
 
@@ -190,6 +203,7 @@ export function uploadDataset(form) {
   );
 }
 
+
 // Download datasets
 export function fetchDatasets() {
   return dispatch =>
@@ -206,52 +220,12 @@ export function fetchDatasets() {
     );
 }
 
-// Receive list of projects
+
+// Receive list of datasets
 function receiveDatasets(datasets) {
   return {
     type: RECEIVE_DATASETS,
     payload: datasets
-  };
-}
-
-
-
-export function hideExpander(id) {
-  return {
-    type: HIDE_EXPANDER,
-    payload: {
-      id
-    }
-  };
-}
-
-export function showExpander(id) {
-  return {
-    type: SHOW_EXPANDER,
-    payload: {
-      id
-    }
-  };
-}
-
-export function toggleExpander(id) {
-  return {
-    type: TOGGLE_EXPANDER,
-    payload: {
-      id
-    }
-  };
-}
-
-// Currently, used upon creation of a new project to switch to that project
-export function selectProject(id=null) {
-  return (dispatch) => {
-    dispatch(hideExpander('newProjectExpander'));
-
-    return dispatch({
-      type: SELECT_PROJECT,
-      payload: { id }
-    });
   };
 }
 
@@ -430,5 +404,35 @@ export function hydrate() {
           dispatch(spinLogo());
         });
       });
+  };
+}
+
+
+
+
+export function hideExpander(id) {
+  return {
+    type: HIDE_EXPANDER,
+    payload: {
+      id
+    }
+  };
+}
+
+export function showExpander(id) {
+  return {
+    type: SHOW_EXPANDER,
+    payload: {
+      id
+    }
+  };
+}
+
+export function toggleExpander(id) {
+  return {
+    type: TOGGLE_EXPANDER,
+    payload: {
+      id
+    }
   };
 }
