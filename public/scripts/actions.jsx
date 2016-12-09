@@ -16,6 +16,7 @@ export const HIDE_NEWPROJECT_FORM = 'survey_app/HIDE_NEWPROJECT_FORM';
 export const FETCH_DATASETS = 'survey_app/FETCH_DATASETS';
 export const RECEIVE_DATASETS = 'survey_app/RECEIVE_DATASETS';
 export const UPLOAD_DATASET = 'survey_app/UPLOAD_DATASET';
+export const UPLOAD_AND_PREDICT = 'survey_app/UPLOAD_AND_PREDICT';
 export const DELETE_DATASET = 'survey_app/DELETE_DATASET';
 
 export const FETCH_MODELS = 'survey_app/FETCH_MODELS';
@@ -330,6 +331,42 @@ export function doPrediction(form) {
         return json;
       })
     );
+}
+
+
+export function uploadAndPredict(form) {
+  const formData = new FormData();
+  for (const key in form) {
+    if (form[key] && objectType(form[key][0]) === 'File') {
+      formData.append(key, form[key][0]);
+    } else {
+      formData.append(key, form[key]);
+    }
+  }
+  return dispatch =>
+    promiseAction(
+      dispatch,
+      UPLOAD_DATASET,
+
+      fetch('/dataset', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then((json) => {
+          if (json.status == 'success') {
+            dispatch(showNotification('Successfully uploaded new dataset'));
+            dispatch(hideExpander('newDatasetExpander'));
+            dispatch(resetForm('newDataset'));
+          } else {
+            return Promise.reject({ _error: json.message });
+          }
+          return json;
+        })
+        .then((json) => {
+          const predFormData = { datasetID: json.data.id,
+                               modelID: 1 };
+          dispatch(doPrediction(predFormData));
+          return json;
+        })
+  );
 }
 
 
