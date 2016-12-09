@@ -110,6 +110,21 @@ const validate = Validate.createValidator({
   tarFile: [Validate.oneFile],
 });
 
+
+const uploadPredictMapDispatchToProps = (dispatch, ownProps) => (
+  {
+    onSubmit: form => (
+      dispatch(Action.uploadAndPredict(form))
+    )
+  }
+);
+
+export const UploadPredictDatasetForm = reduxForm({
+  form: 'newDataset',
+  fields: ['datasetName', 'headerFile', 'tarFile', 'projectID'],
+  validate
+}, dsMapStateToProps, uploadPredictMapDispatchToProps)(DatasetForm);
+
 DatasetForm = reduxForm({
   form: 'newDataset',
   fields: ['datasetName', 'headerFile', 'tarFile', 'projectID'],

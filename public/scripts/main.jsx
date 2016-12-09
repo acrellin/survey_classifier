@@ -16,6 +16,7 @@ import PredictTab from './Predictions';
 import { Notifications } from './Notifications';
 import colorScheme from './colorscheme';
 import Tooltip from './Tooltip';
+import UploadPredictTab from './UploadAndPredict';
 
 const Tab = ReactTabs.Tab;
 const Tabs = ReactTabs.Tabs;
@@ -255,6 +256,11 @@ class MainContent extends React.Component {
                 Predict
               </Tab>
               <Tab
+                style={style.disableable}
+              >
+                Upload Data and Predict
+              </Tab>
+              <Tab
                 data-tip
                 data-for="statusTabTooltip"
               >
@@ -273,6 +279,9 @@ class MainContent extends React.Component {
             </TabPanel>
             <TabPanel style={style.tabPanel}>
               <PredictTab selectedProject={this.props.selectedProject} />
+            </TabPanel>
+            <TabPanel style={style.tabPanel}>
+              <UploadPredictTab selectedProject={this.props.selectedProject} />
             </TabPanel>
             <TabPanel style={style.tabPanel}>
               <h3>System Status</h3>
