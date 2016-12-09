@@ -354,7 +354,7 @@ export function uploadAndPredict(form) {
           if (json.status == 'success') {
             dispatch(showNotification('Successfully uploaded new dataset'));
             dispatch(hideExpander('newDatasetExpander'));
-            dispatch(resetForm('newDataset'));
+            dispatch(resetForm('uploadPredict'));
           } else {
             return Promise.reject({ _error: json.message });
           }

@@ -120,7 +120,7 @@ const uploadPredictMapDispatchToProps = (dispatch, ownProps) => (
 );
 
 export const UploadPredictDatasetForm = reduxForm({
-  form: 'newDataset',
+  form: 'uploadPredict',
   fields: ['datasetName', 'headerFile', 'tarFile', 'projectID'],
   validate
 }, dsMapStateToProps, uploadPredictMapDispatchToProps)(DatasetForm);
