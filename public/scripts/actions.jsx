@@ -35,7 +35,7 @@ export const SHOW_EXPANDER = 'survey_app/SHOW_EXPANDER';
 
 export const SPIN_LOGO = 'survey_app/SPIN_LOGO';
 
-import { showNotification, reduceNotifications } from './Notifications';
+import { showNotification } from './Notifications';
 import promiseAction from './action_tools';
 import { objectType } from './utils';
 
@@ -403,9 +403,9 @@ export function fetchPredictions() {
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
-            return dispatch(receivePredictions(json.data));
+            dispatch(receivePredictions(json.data));
           } else {
-            return dispatch(showNotification(json.message));
+            dispatch(showNotification(json.message));
           }
         }
         ).catch(ex => console.log('fetchPredictions', ex))

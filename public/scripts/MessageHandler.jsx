@@ -12,14 +12,8 @@ class MessageHandler {
       case Action.FETCH_PROJECTS:
         this.dispatch(Action.fetchProjects());
         break;
-      case Action.FETCH_FEATURES:
-        this.dispatch(Action.fetchFeatures());
-        break;
       case Action.FETCH_DATASETS:
         this.dispatch(Action.fetchDatasets());
-        break;
-      case Action.FETCH_FEATURESETS:
-        this.dispatch(Action.fetchFeaturesets());
         break;
       case Action.FETCH_MODELS:
         this.dispatch(Action.fetchModels());
