@@ -12,7 +12,6 @@ import uuid
 import datetime
 import os
 import tempfile
-import time
 import requests
 import json
 
@@ -48,7 +47,7 @@ class PredictionHandler(BaseHandler):
                     prediction.save()
                     break
                 else:
-                    time.sleep(1)
+                    yield tornado.gen.sleep(1)
 
             self.action('survey_app/SHOW_NOTIFICATION',
                         payload={
@@ -93,6 +92,9 @@ class PredictionHandler(BaseHandler):
 
         prediction.task_id = str(uuid.uuid4())
         prediction.cesium_app_id = r['data']['id']
+        prediction.model_type = r['data']['model_type']
+        prediction.model_name = r['data']['model_name']
+        prediction.dataset_name = r['data']['dataset_name']
         prediction.save()
 
         loop = tornado.ioloop.IOLoop.current()

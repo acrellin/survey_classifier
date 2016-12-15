@@ -120,7 +120,8 @@ class Prediction(BaseModel):
 
     def display_info(self):
         info = self.__dict__()
-        info['results'] = json.loads(self.results.tobytes().decode())
+        info['results'] = (json.loads(self.results.tobytes().decode())
+                           if self.results else None)
         return info
 
 
