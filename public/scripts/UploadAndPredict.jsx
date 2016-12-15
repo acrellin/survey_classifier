@@ -19,9 +19,11 @@ import { DatasetInfo, DatasetTable, UploadPredictDatasetForm } from './Datasets'
 const UploadPredictTab = props => (
   <div className="uploadPredictTab">
 
-    <UploadPredictDatasetForm
-      selectedProject={props.selectedProject}
-    />
+    <Expand label="Upload Data & Predict" id="uploadPredictFormExpander">
+      <UploadPredictDatasetForm
+        selectedProject={props.selectedProject}
+      />
+    </Expand>
 
     <PredictionsTable selectedProject={props.selectedProject} />
 
