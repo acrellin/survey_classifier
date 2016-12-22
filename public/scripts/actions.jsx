@@ -307,7 +307,7 @@ function receiveModels(models) {
 }
 
 
-export function doPrediction(form) {
+export function doSurveyPrediction(form) {
   return dispatch =>
     promiseAction(
       dispatch,
@@ -363,7 +363,7 @@ export function uploadAndPredict(form) {
         .then((json) => {
           const predFormData = { datasetID: json.data.id,
                                modelID: 1 };
-          dispatch(doPrediction(predFormData));
+          dispatch(doSurveyPrediction(predFormData));
           return json;
         })
   );

@@ -256,7 +256,7 @@ let PredictTab = props => (
   <div>
     <Expand label="Predict Targets" id="predictFormExpander">
       <PredictForm
-        onSubmit={props.doPrediction}
+        onSubmit={props.doSurveyPrediction}
         selectedProject={props.selectedProject}
       />
     </Expand>
@@ -265,14 +265,14 @@ let PredictTab = props => (
   </div>
 );
 PredictTab.propTypes = {
-  doPrediction: PropTypes.func.isRequired,
+  doSurveyPrediction: PropTypes.func.isRequired,
   selectedProject: PropTypes.object
 };
 
 
 const mapDispatchToProps = dispatch => (
   {
-    doPrediction: form => dispatch(Action.doPrediction(form))
+    doSurveyPrediction: form => dispatch(Action.doSurveyPrediction(form))
   }
 );
 
