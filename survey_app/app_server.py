@@ -8,7 +8,8 @@ from .handlers import (
     ProjectHandler,
     DatasetHandler,
     ModelHandler,
-    PredictionHandler
+    SurveyPredictionHandler,
+    SciencePredictionHandler
     )
 
 
@@ -26,8 +27,10 @@ def make_app():
         (r'/project(/.*)?', ProjectHandler),
         (r'/dataset(/.*)?', DatasetHandler),
         (r'/models(/.*)?', ModelHandler),
-        (r'/predictions(/[0-9]+)?', PredictionHandler),
-        (r'/predictions/([0-9]+)/(download)', PredictionHandler),
+        (r'/survey_predictions(/[0-9]+)?', SurveyPredictionHandler),
+        (r'/survey_predictions/([0-9]+)/(download)', SurveyPredictionHandler),
+        (r'/science_predictions(/[0-9]+)?', SciencePredictionHandler),
+        (r'/science_predictions/([0-9]+)/(download)', SciencePredictionHandler),
         (r'/socket_auth_token', SocketAuthTokenHandler),
         (r'/(.*)', tornado.web.StaticFileHandler,
          {'path': 'public/', 'default_filename': 'index.html'})

@@ -313,7 +313,7 @@ export function doPrediction(form) {
       dispatch,
       DO_PREDICTION,
 
-      fetch('/predictions',
+      fetch('/survey_predictions',
             { method: 'POST',
              body: JSON.stringify(form),
              headers: new Headers({
@@ -376,7 +376,7 @@ export function deletePrediction(id) {
       dispatch,
       DELETE_PREDICTION,
 
-      fetch(`/predictions/${id}`, { method: 'DELETE' })
+      fetch(`/survey_predictions/${id}`, { method: 'DELETE' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -399,7 +399,7 @@ export function fetchPredictions() {
       dispatch,
       FETCH_PREDICTIONS,
 
-      fetch('/predictions')
+      fetch('/survey_predictions')
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {

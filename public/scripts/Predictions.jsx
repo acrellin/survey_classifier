@@ -243,7 +243,7 @@ const DeletePrediction = connect(null, dpMapDispatchToProps)(Delete);
 const DownloadPredCSV = (props) => (
   <a
     style={{ display: "inline-block" }}
-    href={`/predictions/${props.ID}/download`}
+    href={`/survey_predictions/${props.ID}/download`}
   >
     Download
   </a>
