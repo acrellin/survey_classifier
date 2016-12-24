@@ -21,6 +21,9 @@ class MessageHandler {
       case Action.FETCH_PREDICTIONS:
         this.dispatch(Action.fetchPredictions());
         break;
+      case Action.DO_SCIENCE_PREDICTIONS:
+        this.dispatch(Action.doSciencePredictions(message.payload));
+        break;
       case SHOW_NOTIFICATION:
         this.dispatch(showNotification(message.payload.note,
                                        message.payload.type));
