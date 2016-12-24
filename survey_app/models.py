@@ -105,12 +105,16 @@ class Prediction(BaseModel):
     model_id = pw.CharField(null=True)
     created = pw.DateTimeField(default=datetime.datetime.now)
     task_id = pw.CharField(null=True)
+    science_preds_task_id = pw.CharField(null=True)
+    cesium_app_sci_pred_ids = ArrayField(pw.IntegerField, null=True)
     cesium_app_id = pw.CharField(null=True)
     cesium_app_project_id = pw.CharField(null=True)
     finished = pw.DateTimeField(null=True)
+    science_preds_finished = pw.DateTimeField(null=True)
     model_type = pw.CharField(null=True)
     model_name = pw.CharField(null=True)
     results = pw.BlobField(null=True)
+    science_results = pw.BlobField(null=True)
     isProbabilistic = pw.BooleanField(null=True)
     file_path = pw.CharField(null=True)
     dataset_name = pw.CharField(null=True)
@@ -122,6 +126,8 @@ class Prediction(BaseModel):
         info = self.__dict__()
         info['results'] = (json.loads(self.results.tobytes().decode())
                            if self.results else None)
+        info['science_results'] = (json.loads(self.science_results.tobytes().decode())
+                                   if self.science_results else None)
         return info
 
 
