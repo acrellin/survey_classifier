@@ -23,19 +23,20 @@ def setup_survey_db():
     assert proj.id == 1
     print('\nAdded project:\n', proj)
 
-    # Add dataset
-    dataset_name = 'Survey Light Curve Data'
+    # Add datasets
+    for dataset_name, ts_data_dir in [
+            ['Survey Light Curve Data',
+             os.path.join( '..', 'survey_classifier_data/data/lightcurves')]]:
 
-    ts_paths = []
-    for src in glob.glob(os.path.join(
-            '..', 'survey_classifier_data/data/lightcurves/*.nc')):
-        ts_paths.append(shutil.copy(src, cfg['paths']['ts_data_folder']))
-    meta_features = list(cesium.time_series.from_netcdf(ts_paths[0])
-                         .meta_features.keys())
-    file_names = [os.path.basename(ts_path).split('.nc')[0] for ts_path in ts_paths]
-    dataset = m.Dataset.add(name=dataset_name, project=proj, file_names=file_names,
-                            file_uris=ts_paths, meta_features=meta_features)
-    print('\nAdded dataset:\n', dataset)
+        ts_paths = []
+        for src in glob.glob(os.path.join(ts_data_dir, '*.nc')):
+            ts_paths.append(shutil.copy(src, cfg['paths']['ts_data_folder']))
+        meta_features = list(cesium.time_series.from_netcdf(ts_paths[0])
+                             .meta_features.keys())
+        file_names = [os.path.basename(ts_path).split('.nc')[0] for ts_path in ts_paths]
+        dataset = m.Dataset.add(name=dataset_name, project=proj, file_names=file_names,
+                                file_uris=ts_paths, meta_features=meta_features)
+        print('\nAdded dataset:\n', dataset)
 
     # Add featureset
     fset_path = shutil.copy(
