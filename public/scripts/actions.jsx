@@ -26,7 +26,8 @@ export const DELETE_MODEL = 'survey_app/DELETE_MODEL';
 
 export const FETCH_PREDICTIONS = 'survey_app/FETCH_PREDICTIONS';
 export const RECEIVE_PREDICTIONS = 'survey_app/RECEIVE_PREDICTIONS';
-export const DO_PREDICTION = 'survey_app/DO_PREDICTION';
+export const DO_SURVEY_PREDICTION = 'survey_app/DO_SURVEY_PREDICTION';
+export const DO_SCIENCE_PREDICTIONS = 'survey_app/DO_SCIENCE_PREDICTIONS';
 export const DELETE_PREDICTION = 'survey_app/DELETE_PREDICTION';
 
 export const TOGGLE_EXPANDER = 'survey_app/TOGGLE_EXPANDER';
@@ -311,7 +312,7 @@ export function doSurveyPrediction(form) {
   return dispatch =>
     promiseAction(
       dispatch,
-      DO_PREDICTION,
+      DO_SURVEY_PREDICTION,
 
       fetch('/survey_predictions',
             { method: 'POST',
@@ -323,8 +324,33 @@ export function doSurveyPrediction(form) {
       ).then((json) => {
         if (json.status == 'success') {
           dispatch(resetForm('predict'));
-          dispatch(showNotification('Model predictions begun.'));
+          dispatch(showNotification('Survey classifier model predictions begun.'));
           dispatch(hideExpander('predictFormExpander'));
+        } else {
+          return Promise.reject({ _error: json.message });
+        }
+        return json;
+      })
+    );
+}
+
+
+export function doSciencePredictions(payload) {
+  return dispatch =>
+    promiseAction(
+      dispatch,
+      DO_SCIENCE_PREDICTIONS,
+
+      fetch('/science_predictions',
+            { method: 'POST',
+              body: JSON.stringify(payload),
+              headers: new Headers({
+                'Content-Type': 'application/json'
+              }) }
+      ).then(response => response.json()
+      ).then((json) => {
+        if (json.status == 'success') {
+          dispatch(showNotification('Science classifier model predictions begun.'));
         } else {
           return Promise.reject({ _error: json.message });
         }
@@ -361,9 +387,9 @@ export function uploadAndPredict(form) {
           return json;
         })
         .then((json) => {
-          const predFormData = { datasetID: json.data.id,
-                               modelID: 1 };
-          dispatch(doSurveyPrediction(predFormData));
+          const predSurveyFormData = { datasetID: json.data.id,
+                                       modelID: 1 };
+          dispatch(doSurveyPrediction(predSurveyFormData))
           return json;
         })
   );
