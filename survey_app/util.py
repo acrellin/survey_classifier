@@ -3,9 +3,11 @@
 import ast
 import hashlib
 import csv
+import requests
+from .config import cfg
 
 
-__all__ = ['robust_literal_eval', 'prediction_to_csv']
+__all__ = ['robust_literal_eval', 'prediction_to_csv', 'determine_model_ids']
 
 
 def robust_literal_eval(val):
@@ -88,3 +90,17 @@ def prediction_to_csv(pred, outpath=None):
         return outpath
     else:
         return all_rows
+
+
+def determine_model_ids(prediction_results):
+    model_name_to_id = {model['name']: model['id'] for model in
+                        requests.get('{}/models'.format(cfg['cesium_app']['url']))
+                        .json()['data'] if model['project'] ==
+                        cfg['cesium_app']['survey_classifier_project_id']}
+    print(model_name_to_id)
+    ts_name_model_ids = {}
+    for ts_name in prediction_results:
+        ts_name_model_ids[ts_name] = [
+            model_name_to_id[model_name] for model_name, prob in
+            prediction_results[ts_name]['prediction'].items() if prob >= 0.05]
+    return ts_name_model_ids
