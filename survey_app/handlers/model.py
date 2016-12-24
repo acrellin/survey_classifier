@@ -13,7 +13,7 @@ class ModelHandler(BaseHandler):
                 cfg['cesium_app']['url'], model_id)).json()['data']
         else:
             model_info = [model for model in requests.get('{}/models'.format(
-                cfg['cesium_app']['url'])).json()['data'] if model['id'] ==
+                cfg['cesium_app']['url'])).json()['data'] if model['project'] ==
                           cfg['cesium_app']['survey_classifier_project_id']]
 
         return self.success(model_info)
