@@ -65,6 +65,8 @@ class SurveyPredictionHandler(BaseHandler):
                             "type": "error"})
 
         self.action('survey_app/FETCH_PREDICTIONS')
+        self.action('survey_app/DO_SCIENCE_PREDICTIONS',
+                    payload={'prediction_id': prediction.id})
 
     @tornado.gen.coroutine
     def post(self):
@@ -152,32 +154,29 @@ class SciencePredictionHandler(BaseHandler):
         return d
 
     @tornado.gen.coroutine
-    def _await_prediction(self, prediction, cesium_app_prediction_id):
+    def _await_science_predictions(self, prediction):
         try:
             while True:
-                pred_info = requests.get('{}/predictions/{}'.format(
-                    cfg['cesium_app']['url'],
-                    cesium_app_prediction_id)).json()['data']
-                if pred_info['finished']:
-                    prediction.task_id = None
-                    prediction.finished = datetime.datetime.now()
-                    prediction.model_type = pred_info['model_type']
-                    prediction.model_name = pred_info['model_name']
-                    prediction.results = json.dumps(pred_info['results'])
-                    prediction.isProbabilistic = pred_info['isProbabilistic']
-                    prediction.file_path = pred_info['file']
-                    prediction.dataset_name = pred_info['dataset_name']
+                preds_info = [
+                    requests.get('{}/predictions/{}'.format(
+                        cfg['cesium_app']['url'],
+                        cesium_app_prediction_id)).json()['data']
+                    for cesium_app_prediction_id in
+                    prediction.cesium_app_sci_pred_ids]
+                if all([pred_info['finished'] for pred_info in preds_info]):
+                    print(preds_info)
+                    prediction.science_preds_task_id = None
+                    prediction.science_preds_finished = datetime.datetime.now()
+                    prediction.science_results = json.dumps(
+                        [pred_info['results'] for pred_info in preds_info])
+                    # Process raw results & compute weighted sci prediction results
                     prediction.save()
                     break
                 else:
                     yield tornado.gen.sleep(1)
 
             self.action('survey_app/SHOW_NOTIFICATION',
-                        payload={
-                            "note": "Prediction '{}/{}' completed.".format(
-                                pred_info['dataset_name'],
-                                pred_info['model_name'])
-                            })
+                        payload={"note": "Science prediction completed."})
 
         except Exception as e:
             prediction.delete_instance()
@@ -191,37 +190,39 @@ class SciencePredictionHandler(BaseHandler):
 
     @tornado.gen.coroutine
     def post(self):
+        username = self.get_username()
         data = self.get_json()
 
-        dataset_id = data['datasetID']
-        model_id = data['modelID']
+        prediction_id = data['prediction_id']
+        prediction = Prediction.get(Prediction.id == prediction_id)
+        dataset = prediction.dataset
+        dataset_id = dataset.id
+        cesium_dataset_id = dataset.cesium_app_id
 
-        username = self.get_username()
+        science_model_ids = util.determine_model_ids(
+            prediction.display_info()['results'])
 
-        dataset = Dataset.get(Dataset.id == dataset_id)
-        cesium_dataset_id = Dataset.get(Dataset.id == dataset_id).cesium_app_id
+        cesium_app_pred_ids = []
+        for model_id in set([mdl_id for mdl_ids in science_model_ids.values for
+                             mdl_id in mdl_ids]):
+            data = {'datasetID': cesium_dataset_id,
+                    'modelID': model_id,
+                    'ts_names': [ts_name for ts_name in science_model_ids
+                                 if model_id in science_model_ids[ts_name]]}
+            # POST prediction to cesium_web
+            r = requests.post('{}/predictions'.format(cfg['cesium_app']['url']),
+                              data=json.dumps(data)).json()
+            if r['status'] != 'success':
+                return self.error('An error occurred while processing the request'
+                                  'to cesium_web: {}'.format(r['message']))
+            cesium_app_pred_ids.append(r['data']['id'])
 
-        data = {'datasetID': cesium_dataset_id,
-                'modelID': model_id}
-        # POST prediction to cesium_web
-        r = requests.post('{}/predictions'.format(cfg['cesium_app']['url']),
-                          data=json.dumps(data)).json()
-        if r['status'] != 'success':
-            return self.error('An error occurred while processing the request'
-                              'to cesium_web: {}'.format(r['message']))
-
-        prediction = Prediction.create(dataset=dataset, project=dataset.project,
-                                       model_id=model_id)
-
-        prediction.task_id = str(uuid.uuid4())
-        prediction.cesium_app_id = r['data']['id']
-        prediction.model_type = r['data']['model_type']
-        prediction.model_name = r['data']['model_name']
-        prediction.dataset_name = r['data']['dataset_name']
+        prediction.science_preds_task_id = str(uuid.uuid4())
+        prediction.cesium_app_sci_pred_ids = cesium_app_pred_ids
         prediction.save()
 
         loop = tornado.ioloop.IOLoop.current()
-        loop.spawn_callback(self._await_prediction, prediction, r['data']['id'])
+        loop.spawn_callback(self._await_science_predictions, prediction)
 
         return self.success(prediction, 'survey_app/FETCH_PREDICTIONS')
 
