@@ -4,7 +4,7 @@ both survey_classifier and survey_classifier_data.'''
 from cesium_app import models as m
 from cesium_app.config import cfg
 from cesium.data_management import parse_and_store_ts_data
-from cesium.features import CADENCE_FEATS
+from cesium.features import CADENCE_FEATS, LOMB_SCARGLE_FEATS, GENERAL_FEATS
 import cesium
 
 import shutil
@@ -39,18 +39,20 @@ def setup_survey_db():
         print('\nAdded dataset:\n', dataset)
 
     # Add featureset
-    fset_path = shutil.copy(
-        '../survey_classifier_data/data/survey_lc_features.nc',
-        cfg['paths']['features_folder'])
-    fset = m.Featureset.create(name='Survey LC Cadence/Error Features',
-                               file=m.File.create(uri=fset_path),
-                               project=proj,
-                               features_list=CADENCE_FEATS,
-                               custom_features_script=None)
-    fset.task_id = None
-    fset.finished = datetime.datetime.now()
-    fset.save()
-    print('\nAdded featureset:\n', fset)
+    for fset_name, orig_fset_path, features_list in [
+            ['Survey LC Cadence/Error Features',
+             '../survey_classifier_data/data/survey_lc_features.nc',
+             CADENCE_FEATS]]:
+        fset_path = shutil.copy(orig_fset_path, cfg['paths']['features_folder'])
+        fset = m.Featureset.create(name=fset_name,
+                                   file=m.File.create(uri=fset_path),
+                                   project=proj,
+                                   features_list=features_list,
+                                   custom_features_script=None)
+        fset.task_id = None
+        fset.finished = datetime.datetime.now()
+        fset.save()
+        print('\nAdded featureset:\n', fset)
 
     # Add model
     model_path = shutil.copy(
