@@ -38,7 +38,8 @@ def setup_survey_db():
                                 file_uris=ts_paths, meta_features=meta_features)
         print('\nAdded dataset:\n', dataset)
 
-    # Add featureset
+    # Add featuresets
+    fset_dict = {}
     for fset_name, orig_fset_path, features_list in [
             ['Survey LC Cadence/Error Features',
              '../survey_classifier_data/data/survey_lc_features.nc',
@@ -52,20 +53,23 @@ def setup_survey_db():
         fset.task_id = None
         fset.finished = datetime.datetime.now()
         fset.save()
+        fset_dict[fset_name] = fset
         print('\nAdded featureset:\n', fset)
 
-    # Add model
-    model_path = shutil.copy(
-        '../survey_classifier_data/data/survey_classifier.pkl',
-        cfg['paths']['models_folder'])
-    model_file = m.File.create(uri=model_path)
-    model = m.Model.create(name='Survey LCs RFC', file=model_file,
-                           featureset=fset, project=proj,
-                           params={}, type='RandomForestClassifier')
-    model.task_id = None
-    model.finished = datetime.datetime.now()
-    model.save()
-    print('\nAdded model:\n', model)
+    # Add models
+    for model_name, orig_model_path, model_type, params, fset_name in [
+            ['Survey LCs RFC',
+             os.path.join('..', 'survey_classifier_data/data/survey_classifier.pkl'),
+             'RandomForestClassifier', {}, 'Survey LC Cadence/Error Features']]:
+        model_path = shutil.copy(orig_model_path, cfg['paths']['models_folder'])
+        model_file = m.File.create(uri=model_path)
+        model = m.Model.create(name=model_name, file=model_file,
+                               featureset=fset_dict[fset_name], project=proj,
+                               params=params, type=model_type)
+        model.task_id = None
+        model.finished = datetime.datetime.now()
+        model.save()
+        print('\nAdded model:\n', model)
 
 
 if __name__ == '__main__':
