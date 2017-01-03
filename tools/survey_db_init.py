@@ -26,7 +26,25 @@ def setup_survey_db():
     # Add datasets
     for dataset_name, ts_data_dir in [
             ['Survey Light Curve Data',
-             os.path.join( '..', 'survey_classifier_data/data/lightcurves')]]:
+             os.path.join( '..', 'survey_classifier_data/data/lightcurves')],
+            ['Noisified to CoRoT',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_CoRoT_lcs')],
+            ['Noisified to HATNet',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_HATNet_lcs')],
+            ['Noisified to Hipparcos',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_Hipparcos_lcs')],
+            ['Noisified to KELT',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_KELT_lcs')],
+            ['Noisified to Kepler',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_Kepler_lcs')],
+            ['Noisified to LINEAR',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_LINEAR_lcs')],
+            ['Noisified to OGLE-III',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_OGLE-III_lcs')],
+            ['Noisified to SuperWASP',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_SuperWASP_lcs')],
+            ['Noisified to TrES',
+             os.path.join( '..', 'survey_classifier_data/data/noisified_TrES_lcs')]]:
 
         ts_paths = []
         # As these are only ever accessed to determine meta features, only
