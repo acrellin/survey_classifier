@@ -108,7 +108,43 @@ def setup_survey_db():
     for model_name, orig_model_path, model_type, params, fset_name in [
             ['Survey LCs RFC',
              os.path.join('..', 'survey_classifier_data/data/survey_classifier.pkl'),
-             'RandomForestClassifier', {}, 'Survey LC Cadence/Error Features']]:
+             'RandomForestClassifier', {}, 'Survey LC Cadence/Error Features'],
+            ['CoRoT',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_CoRoT_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'CoRoT'],
+            ['HATNet',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_HATNet_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'HATNet'],
+            ['Hipparcos',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_Hipparcos_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'Hipparcos'],
+            ['KELT',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_KELT_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'KELT'],
+            ['Kepler',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_Kepler_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'Kepler'],
+            ['LINEAR',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_LINEAR_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'LINEAR'],
+            ['OGLE-III',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_OGLE-III_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'OGLE-III'],
+            ['SuperWASP',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_SuperWASP_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'SuperWASP'],
+            ['TrES',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_TrES_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'TrES']]:
         model_path = shutil.copy(orig_model_path, cfg['paths']['models_folder'])
         model_file = m.File.create(uri=model_path)
         model = m.Model.create(name=model_name, file=model_file,
