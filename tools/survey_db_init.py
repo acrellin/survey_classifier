@@ -29,7 +29,10 @@ def setup_survey_db():
              os.path.join( '..', 'survey_classifier_data/data/lightcurves')]]:
 
         ts_paths = []
-        for src in glob.glob(os.path.join(ts_data_dir, '*.nc')):
+        # As these are only ever accessed to determine meta features, only
+        # copy first ten (arbitrary) TS
+        for src in glob.glob(os.path.join(ts_data_dir, '*.nc'))[:10]:
+            # Add the path to the copied file in cesium data directory
             ts_paths.append(shutil.copy(src, cfg['paths']['ts_data_folder']))
         meta_features = list(cesium.time_series.from_netcdf(ts_paths[0])
                              .meta_features.keys())
