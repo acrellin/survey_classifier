@@ -27,6 +27,8 @@ def setup_survey_db():
     for dataset_name, ts_data_dir in [
             ['Survey Light Curve Data',
              os.path.join( '..', 'survey_classifier_data/data/lightcurves')],
+            ['ASAS',
+             os.path.join( '..', 'survey_classifier_data/data/ASAS_lcs')],
             ['Noisified to CoRoT',
              os.path.join( '..', 'survey_classifier_data/data/noisified_CoRoT_lcs')],
             ['Noisified to HATNet',
@@ -65,6 +67,9 @@ def setup_survey_db():
             ['Survey LC Cadence/Error Features',
              '../survey_classifier_data/data/survey_lc_features.nc',
              CADENCE_FEATS],
+            ['ASAS',
+             '../survey_classifier_data/data/ASAS_features.nc',
+             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['CoRoT',
              '../survey_classifier_data/data/noisified_CoRoT_features.nc',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
@@ -109,6 +114,10 @@ def setup_survey_db():
             ['Survey LCs RFC',
              os.path.join('..', 'survey_classifier_data/data/survey_classifier.pkl'),
              'RandomForestClassifier', {}, 'Survey LC Cadence/Error Features'],
+            ['ASAS',
+             os.path.join(
+                 '..', 'survey_classifier_data/data/ASAS_model_compressed.pkl'),
+             'RandomForestClassifier', {}, 'ASAS'],
             ['CoRoT',
              os.path.join(
                  '..', 'survey_classifier_data/data/noisified_CoRoT_model_compressed.pkl'),
