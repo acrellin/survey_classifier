@@ -324,7 +324,7 @@ export function doSurveyPrediction(form) {
       ).then((json) => {
         if (json.status == 'success') {
           dispatch(resetForm('predict'));
-          dispatch(showNotification('Survey classifier model predictions begun.'));
+          dispatch(showNotification('Survey classifier model predictions begun'));
           dispatch(hideExpander('predictFormExpander'));
         } else {
           return Promise.reject({ _error: json.message });
@@ -350,7 +350,7 @@ export function doSciencePredictions(payload) {
       ).then(response => response.json()
       ).then((json) => {
         if (json.status == 'success') {
-          dispatch(showNotification('Science classifier model predictions begun.'));
+          dispatch(showNotification('Science classifier model predictions begun'));
         } else {
           return Promise.reject({ _error: json.message });
         }
