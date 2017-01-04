@@ -13,6 +13,7 @@ import datetime
 import os
 import tempfile
 import requests
+import traceback
 import json
 
 
@@ -154,7 +155,7 @@ class SciencePredictionHandler(BaseHandler):
         return d
 
     @tornado.gen.coroutine
-    def _await_science_predictions(self, prediction):
+    def _await_science_predictions(self, prediction, science_model_ids_and_probs):
         try:
             while True:
                 preds_info = [
@@ -164,12 +165,13 @@ class SciencePredictionHandler(BaseHandler):
                     for cesium_app_prediction_id in
                     prediction.cesium_app_sci_pred_ids]
                 if all([pred_info['finished'] for pred_info in preds_info]):
-                    print(preds_info)
                     prediction.science_preds_task_id = None
                     prediction.science_preds_finished = datetime.datetime.now()
+                    sci_pred_results = {pred_info['model']: pred_info['results']
+                                        for pred_info in preds_info}
                     prediction.science_results = json.dumps(
-                        [pred_info['results'] for pred_info in preds_info])
-                    # Process raw results & compute weighted sci prediction results
+                        util.aggregate_pred_results_by_ts(
+                            sci_pred_results, science_model_ids_and_probs))
                     prediction.save()
                     break
                 else:
@@ -179,6 +181,7 @@ class SciencePredictionHandler(BaseHandler):
                         payload={"note": "Science prediction completed."})
 
         except Exception as e:
+            traceback.print_exc()
             prediction.delete_instance()
             self.action('survey_app/SHOW_NOTIFICATION',
                         payload={
@@ -199,16 +202,17 @@ class SciencePredictionHandler(BaseHandler):
         dataset_id = dataset.id
         cesium_dataset_id = dataset.cesium_app_id
 
-        science_model_ids = util.determine_model_ids(
+        science_model_ids_and_probs = util.determine_model_ids(
             prediction.display_info()['results'])
 
         cesium_app_pred_ids = []
-        for model_id in set([mdl_id for mdl_ids in science_model_ids.values for
-                             mdl_id in mdl_ids]):
+        for model_id in set([mdl_id for ts_name in science_model_ids_and_probs
+                             for mdl_id in
+                             science_model_ids_and_probs[ts_name]]):
             data = {'datasetID': cesium_dataset_id,
                     'modelID': model_id,
-                    'ts_names': [ts_name for ts_name in science_model_ids
-                                 if model_id in science_model_ids[ts_name]]}
+                    'ts_names': [ts_name for ts_name in science_model_ids_and_probs
+                                 if model_id in science_model_ids_and_probs[ts_name]]}
             # POST prediction to cesium_web
             r = requests.post('{}/predictions'.format(cfg['cesium_app']['url']),
                               data=json.dumps(data)).json()
@@ -222,9 +226,11 @@ class SciencePredictionHandler(BaseHandler):
         prediction.save()
 
         loop = tornado.ioloop.IOLoop.current()
-        loop.spawn_callback(self._await_science_predictions, prediction)
+        loop.spawn_callback(self._await_science_predictions, prediction,
+                            science_model_ids_and_probs)
 
-        return self.success(prediction, 'survey_app/FETCH_PREDICTIONS')
+        return self.success(prediction.display_info(),
+                            'survey_app/FETCH_PREDICTIONS')
 
     def get(self, prediction_id=None, action=None):
         if action == 'download':
