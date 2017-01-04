@@ -7,17 +7,26 @@ import os
 from os.path import join as pjoin
 import numpy as np
 import numpy.testing as npt
-from survey_app.tests.fixtures import create_test_project, create_test_dataset
+from survey_app.tests.fixtures import create_test_project
 
 
 def _add_prediction(proj_name, driver):
     driver.refresh()
-    time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_visible_text(proj_name)
+    driver.find_element_by_id('react-tabs-2').click()
+    driver.find_element_by_partial_link_text('Upload Data & Predict').click()
 
-    driver.find_element_by_id('react-tabs-4').click()
-    driver.find_element_by_partial_link_text('Predict Targets').click()
+    dataset_name = driver.find_element_by_css_selector('[name=datasetName]')
+    dataset_name.send_keys(test_dataset_name)
+
+    header_file = driver.find_element_by_css_selector('[name=headerFile]')
+    header_file.send_keys(pjoin(os.path.dirname(os.path.dirname(__file__)), 'data',
+                                'asas_training_subset_classes.dat'))
+
+    tar_file = driver.find_element_by_css_selector('[name=tarFile]')
+    tar_file.send_keys(pjoin(os.path.dirname(os.path.dirname(__file__)), 'data',
+                             'asas_training_subset.tar.gz'))
 
     driver.find_element_by_class_name('btn-primary').click()
 
@@ -38,7 +47,7 @@ def _click_prediction_row(proj_name, driver):
     time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_visible_text(proj_name)
-    driver.find_element_by_id('react-tabs-4').click()
+    driver.find_element_by_id('react-tabs-2').click()
     driver.find_element_by_xpath("//td[contains(text(),'Completed')]").click()
 
 
@@ -54,16 +63,14 @@ def _grab_pred_results_table_rows(driver, text_to_look_for):
 
 def test_add_prediction(driver):
     driver.get('/')
-    with create_test_project(driver) as proj_name,\
-         create_test_dataset(driver, proj_name) as ds_name:
+    with create_test_project(driver) as proj_name:
         _add_prediction(proj_name, driver)
         driver.find_element_by_partial_link_text('Delete').click()
 
 
 def test_pred_results_table(driver):
     driver.get('/')
-    with create_test_project(driver) as proj_name,\
-         create_test_dataset(driver, proj_name) as ds_name:
+    with create_test_project(driver) as proj_name:
         _add_prediction(proj_name, driver)
         _click_prediction_row(proj_name, driver)
         try:
@@ -81,13 +88,12 @@ def test_pred_results_table(driver):
 
 def test_delete_prediction(driver):
     driver.get('/')
-    with create_test_project(driver) as proj_name,\
-         create_test_dataset(driver, proj_name) as ds_name:
+    with create_test_project(driver) as proj_name:
         _add_prediction(proj_name, driver)
         driver.refresh()
         proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
         proj_select.select_by_visible_text(proj_name)
-        driver.find_element_by_id('react-tabs-4').click()
+        driver.find_element_by_id('react-tabs-2').click()
         driver.implicitly_wait(1)
         driver.find_element_by_xpath("//td[contains(text(),'Completed')]").click()
         time.sleep(0.2)
@@ -102,7 +108,7 @@ def _click_download(proj_name, driver):
     time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_visible_text(proj_name)
-    driver.find_element_by_id('react-tabs-4').click()
+    driver.find_element_by_id('react-tabs-2').click()
     driver.implicitly_wait(1)
     driver.find_element_by_partial_link_text('Download').click()
     time.sleep(0.5)
@@ -110,8 +116,7 @@ def _click_download(proj_name, driver):
 
 def test_download_prediction_csv(driver):
     driver.get('/')
-    with create_test_project(driver) as proj_name,\
-         create_test_dataset(driver, proj_name) as ds_name:
+    with create_test_project(driver) as proj_name:
         _add_prediction(proj_name, driver)
         _click_download(proj_name, driver)
         assert os.path.exists('/tmp/survey_app_prediction_results.csv')
