@@ -256,6 +256,8 @@ export const SciencePredictionResults = (props) => {
 
   const hasTrueTargetLabel = p => (p && p.target);
 
+  const nClassesToShow = 10;
+
   return (
     <table className="table">
       <thead>
@@ -269,7 +271,7 @@ export const SciencePredictionResults = (props) => {
           {hasTrueTargetLabel(firstResult) && <th>True Class/Target</th>}
 
           {modelHasProba &&
-           classes.map((classLabel, idx) => ([
+           classes.slice(0, nClassesToShow).map((classLabel, idx) => ([
              <th key="0">Predicted Class</th>,
              <th key="1">Probability</th>
            ]))
@@ -295,9 +297,9 @@ export const SciencePredictionResults = (props) => {
                   <td key="pt">{result.target}</td>,
 
                   modelHasProba &&
-                  classesSorted.map((classLabel, idx2) => ([
+                  classesSorted.slice(0, nClassesToShow).map((classLabel, idx2) => ([
                     <td key="cl0">{classLabel}</td>,
-                    <td key="cl1">{result[classLabel]}</td>
+                    <td key="cl1">{Math.round(result[classLabel] * 1000) / 1000}</td>
                   ]))
                  ]}
 
