@@ -115,14 +115,18 @@ export let PredictionsTable = props => (
         const status = done ? <td>Completed {reformatDatetime(prediction.finished)}</td> : <td>In progress</td>;
         const sciPredDone = prediction.science_preds_finished;
 
-        const foldedContent = done && (
-          <tr key={`pred${idx}`}>
+        const foldedContent = done && ([
+          <tr key={`surv_pred${idx}`}>
             <td colSpan={6}>
               <SurveyPredictionResults prediction={prediction} />
+            </td>
+          </tr>,
+          <tr key={`sci_pred${idx}`}>
+            <td colSpan={6}>
               { sciPredDone && <SciencePredictionResults prediction={prediction} /> }
             </td>
           </tr>
-        );
+        ]);
 
         return (
           <FoldableRow key={idx}>
