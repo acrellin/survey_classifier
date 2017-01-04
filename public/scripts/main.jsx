@@ -243,19 +243,7 @@ class MainContent extends React.Component {
               </Tab>
               <Tab
                 data-tip
-                data-for="datasetsTabTooltip"
-                style={style.disableable}
-              >
-                Data
-              </Tab>
-              <Tab
-                data-tip
-                data-for="predictTabTooltip"
-                style={style.disableable}
-              >
-                Predict
-              </Tab>
-              <Tab
+                data-for="uploadPredictTabTooltip"
                 style={style.disableable}
               >
                 Upload Data and Predict
@@ -275,12 +263,6 @@ class MainContent extends React.Component {
               <ProjectTab selectedProject={this.props.selectedProject} />
             </TabPanel>
             <TabPanel style={style.tabPanel}>
-              <DatasetsTab selectedProject={this.props.selectedProject} />
-            </TabPanel>
-            <TabPanel style={style.tabPanel}>
-              <PredictTab selectedProject={this.props.selectedProject} />
-            </TabPanel>
-            <TabPanel style={style.tabPanel}>
               <UploadPredictTab selectedProject={this.props.selectedProject} />
             </TabPanel>
             <TabPanel style={style.tabPanel}>
@@ -298,13 +280,8 @@ class MainContent extends React.Component {
           place="bottom"
         />
         <Tooltip
-          id="datasetsTabTooltip"
-          text="Upload your light curves"
-          place="bottom"
-        />
-        <Tooltip
-          id="predictTabTooltip"
-          text="Generate predictions for new data"
+          id="uploadPredictTabTooltip"
+          text="Upload your light curves and generate predictions"
           place="bottom"
         />
         <Tooltip
