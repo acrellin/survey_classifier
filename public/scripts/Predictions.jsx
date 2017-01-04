@@ -180,7 +180,7 @@ export const SurveyPredictionResults = (props) => {
       <thead>
         <tr>
           <td colSpan={6}>
-            <b>Survey Classifier Prediction Results</b>
+            <h5><b>Survey Classifier Prediction Results</b></h5>
           </td>
         </tr>
         <tr>
@@ -263,7 +263,7 @@ export const SciencePredictionResults = (props) => {
       <thead>
         <tr>
           <td colSpan={6}>
-            <b>Science Classifier Prediction Results</b>
+            <h5><b>Science Classifier Prediction Results</b></h5>
           </td>
         </tr>
         <tr>
