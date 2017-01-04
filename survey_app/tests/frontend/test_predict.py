@@ -17,6 +17,7 @@ def _add_prediction(proj_name, driver):
     driver.find_element_by_id('react-tabs-2').click()
     driver.find_element_by_partial_link_text('Upload Data & Predict').click()
 
+    test_dataset_name =  str(uuid.uuid4())
     dataset_name = driver.find_element_by_css_selector('[name=datasetName]')
     dataset_name.send_keys(test_dataset_name)
 
