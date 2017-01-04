@@ -52,7 +52,7 @@ class SurveyPredictionHandler(BaseHandler):
 
             self.action('survey_app/SHOW_NOTIFICATION',
                         payload={
-                            "note": "Prediction '{}/{}' completed.".format(
+                            "note": "Prediction '{}/{}' completed".format(
                                 pred_info['dataset_name'],
                                 pred_info['model_name'])
                             })
