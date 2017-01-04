@@ -32,8 +32,16 @@ def _add_prediction(proj_name, driver):
     driver.find_element_by_class_name('btn-primary').click()
 
     driver.implicitly_wait(1)
-    status_td = driver.find_element_by_xpath(
-        "//div[contains(text(),'Model predictions begun')]")
+    driver.find_element_by_xpath(
+        "//div[contains(text(),'Successfully uploaded new dataset')]")
+    driver.find_element_by_xpath(
+        "//div[contains(text(),'Survey classifier model predictions begun')]")
+    driver.implicitly_wait(10)
+    driver.find_element_by_xpath(
+        "//div[contains(text(),'Science classifier model predictions begun')]")
+    driver.implicitly_wait(30)
+    driver.find_element_by_xpath(
+        "//div[contains(text(),'Science prediction completed')]")
 
     try:
         driver.implicitly_wait(30)
