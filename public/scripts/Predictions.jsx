@@ -113,11 +113,13 @@ export let PredictionsTable = props => (
       props.predictions.map((prediction, idx) => {
         const done = prediction.finished;
         const status = done ? <td>Completed {reformatDatetime(prediction.finished)}</td> : <td>In progress</td>;
+        const sciPredDone = prediction.science_preds_finished;
 
         const foldedContent = done && (
           <tr key={`pred${idx}`}>
             <td colSpan={6}>
-              <PredictionResults prediction={prediction} />
+              <SurveyPredictionResults prediction={prediction} />
+              { sciPredDone && <SciencePredictionResults prediction={prediction} /> }
             </td>
           </tr>
         );
@@ -148,7 +150,7 @@ PredictionsTable.propTypes = {
 };
 
 
-export const PredictionResults = (props) => {
+export const SurveyPredictionResults = (props) => {
   const modelType = props.prediction.model_type;
   const results = props.prediction.results;
 
@@ -172,6 +174,11 @@ export const PredictionResults = (props) => {
   return (
     <table className="table">
       <thead>
+        <tr>
+          <td colSpan={6}>
+            <b>Survey Classifier Prediction Results</b>
+          </td>
+        </tr>
         <tr>
           <th>Time Series</th>
           {hasTrueTargetLabel(firstResult) && <th>True Class/Target</th>}
@@ -219,7 +226,84 @@ export const PredictionResults = (props) => {
     </table>
   );
 };
-PredictionResults.propTypes = {
+SurveyPredictionResults.propTypes = {
+  prediction: PropTypes.object.isRequired
+};
+
+
+export const SciencePredictionResults = (props) => {
+  const modelType = props.prediction.model_type;
+  const results = props.prediction.science_results;
+
+  const firstResult = results ? results[Object.keys(results)[0]] : null;
+  const classes = (firstResult && firstResult.combined) ?
+                  Object.keys(firstResult.combined) : null;
+
+  let modelHasClass = contains(['RidgeClassifierCV'], modelType);
+  const modelHasProba = props.prediction.isProbabilistic;
+  const modelHasTarget = contains(['RandomForestRegressor',
+                                   'LinearRegressor',
+                                   'BayesianARDRegressor',
+                                   'BayesianRidgeRegressor'],
+                                  modelType);
+  if (modelType === 'LinearSGDClassifier') {
+    modelHasClass = !modelHasProba;
+  }
+
+  const hasTrueTargetLabel = p => (p && p.target);
+
+  return (
+    <table className="table">
+      <thead>
+        <tr>
+          <td colSpan={6}>
+            <b>Science Classifier Prediction Results</b>
+          </td>
+        </tr>
+        <tr>
+          <th>Time Series</th>
+          {hasTrueTargetLabel(firstResult) && <th>True Class/Target</th>}
+
+          {modelHasProba &&
+           classes.map((classLabel, idx) => ([
+             <th key="0">Predicted Class</th>,
+             <th key="1">Probability</th>
+           ]))
+          }
+
+          {modelHasClass && <th>Predicted Class</th>}
+          {modelHasTarget && <th>Predicted Target</th>}
+        </tr>
+      </thead>
+
+      <tbody>
+        {results && Object.keys(results).map((fname, idx) => {
+           const result = results[fname].combined;
+           const classesSorted = classes.sort((a, b) => (result[b] - result[a]));
+
+           return (
+             <tr key={idx}>
+
+               <td>{fname}</td>
+
+               {
+                 [hasTrueTargetLabel(result) &&
+                  <td key="pt">{result.target}</td>,
+
+                  modelHasProba &&
+                  classesSorted.map((classLabel, idx2) => ([
+                    <td key="cl0">{classLabel}</td>,
+                    <td key="cl1">{result[classLabel]}</td>
+                  ]))
+                 ]}
+
+             </tr>
+           ); })}
+      </tbody>
+    </table>
+  );
+};
+SciencePredictionResults.propTypes = {
   prediction: PropTypes.object.isRequired
 };
 
