@@ -22,16 +22,8 @@ def test_tab_tooltips(driver):
         hover.perform()
         time.sleep(1)
         assert driver.find_element_by_xpath(
-            "//span[contains(text(),'Upload your light curves')]"
+            "//span[contains(text(),'Upload your light curves and generate predictions')]"
             ).is_displayed()
-
-        hover = ActionChains(driver).move_to_element(
-            driver.find_element_by_id('react-tabs-4'))
-        hover.perform()
-        time.sleep(1)
-        assert driver.find_element_by_xpath(
-            "//span[contains(text(),'Generate predictions for new data')]"
-        ).is_displayed()
 
 
 def test_file_upload_tooltips(driver):
@@ -39,7 +31,7 @@ def test_file_upload_tooltips(driver):
     with create_test_project(driver) as proj_name:
         driver.refresh()
         driver.find_element_by_id('react-tabs-2').click()
-        driver.find_element_by_partial_link_text('Upload new dataset').click()
+        driver.find_element_by_partial_link_text('Upload Data & Predict').click()
 
         header_file = driver.find_element_by_css_selector('[name=headerFile]')
         hover = ActionChains(driver).move_to_element(header_file)
