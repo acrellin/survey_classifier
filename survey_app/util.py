@@ -106,7 +106,8 @@ def determine_model_ids(prediction_results):
     -------
     ts_name_model_ids_and_probs : dict
         Dictionary whose keys are TS names and values are dictionaries of
-        model IDs and their associated probabilities, respectively.
+        model IDs and their associated probabilities, respectively,
+        e.g. {'ts_1': {mdl_id_1: mdl_id_1_prob, ...}, ...}.
     """
     model_name_to_id = {model['name']: model['id'] for model in
                         requests.get('{}/models'.format(cfg['cesium_app']['url']))
