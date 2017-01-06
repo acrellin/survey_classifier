@@ -106,7 +106,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
                                   'same machine to download prediction results.')
             with tempfile.NamedTemporaryFile() as tf:
                 # TODO: Make a science pred-specific utility ftn or flag in below ftn
-                util.prediction_to_csv(prediction, tf.name)
+                util.prediction_results_to_csv(prediction, tf.name)
                 with open(tf.name) as f:
                     self.set_header("Content-Type", 'text/csv; charset="utf-8"')
                     self.set_header("Content-Disposition",

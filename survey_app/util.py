@@ -8,7 +8,8 @@ from collections import defaultdict
 from .config import cfg
 
 
-__all__ = ['robust_literal_eval', 'prediction_to_csv', 'determine_model_ids']
+__all__ = ['robust_literal_eval', 'prediction_results_to_csv',
+           'determine_model_ids', 'aggregate_pred_results_by_ts']
 
 
 def robust_literal_eval(val):
@@ -30,7 +31,7 @@ def robust_literal_eval(val):
         return val
 
 
-def prediction_to_csv(pred, outpath=None):
+def prediction_results_to_csv(pred, outpath=None):
     """Convert an `xarray.Dataset` prediction object's results to CSV.
 
     Parameters
