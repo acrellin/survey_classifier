@@ -402,7 +402,7 @@ export function deletePrediction(id) {
       dispatch,
       DELETE_PREDICTION,
 
-      fetch(`/survey_predictions/${id}`, { method: 'DELETE' })
+      fetch(`/predictions/${id}`, { method: 'DELETE' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -425,7 +425,7 @@ export function fetchPredictions() {
       dispatch,
       FETCH_PREDICTIONS,
 
-      fetch('/survey_predictions')
+      fetch('/predictions')
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
