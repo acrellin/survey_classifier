@@ -1,16 +1,13 @@
 from .base import BaseHandler, AccessError
-from ..models import Prediction, Dataset, Project
+from ..models import Prediction, Project
 from ..config import cfg
 from .. import util
 
 import tornado.gen
-from tornado.escape import json_decode
 
 import cesium
-from os.path import join as pjoin
 import uuid
 import datetime
-import os
 import tempfile
 import requests
 import traceback
