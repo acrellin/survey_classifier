@@ -94,6 +94,20 @@ def prediction_to_csv(pred, outpath=None):
 
 
 def determine_model_ids(prediction_results):
+    """Parse results and group model IDs and probabilities by time series name.
+
+    Parameters
+    ----------
+    prediction_results : dict
+        Dictionary whose keys are time series names, and values are dictionaries
+        containing the results as returned by `cesium_web`.
+
+    Returns
+    -------
+    ts_name_model_ids_and_probs : dict
+        Dictionary whose keys are TS names and values are dictionaries of
+        model IDs and their associated probabilities, respectively.
+    """
     model_name_to_id = {model['name']: model['id'] for model in
                         requests.get('{}/models'.format(cfg['cesium_app']['url']))
                         .json()['data'] if model['project'] ==
@@ -121,13 +135,22 @@ def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs):
         Dictionary whose keys are cesium_web model IDs, and values are
         dictionaries containing prediction results for that model.
     science_model_ids_and_probs : dict
-        BLAH
+        Dictionary whose primary keys are TS names, and values are dicts with
+        associated model IDs and probabilities as keys and values, respectively,
+        e.g. {'ts_1': {mdl_id_1: mdl_id_1_prob, mdl_id_2: mdl_id_2_prob}, ...}
 
     Returns
     -------
     pred_results_by_ts : dict
-        Dictionary whose keys are TS names and values are weighted prediction
-        results
+        Dictionary whose keys are TS names and values are dictionaries
+        containing both weighted prediction results dicts (class names as keys,
+        combined probabilities as values) accessed by the 'combined' key, and
+        model-wise results ('by_model'). See below for example structure.
+        E.g. {'ts_1': {'by_model': {0: {'class_1': 0.6, 'class_2': 0.1, ...},
+                                    1: {'class_1': 0.3, 'class_2': 0.4, ...},
+                                    ...},
+                       'combined': {'class_1': 0.5, 'class_2': 0.2, ...}},
+              ...}
     """
     ts_names = set([ts_name for model_id in sci_pred_results
                     for ts_name in sci_pred_results[model_id]])
