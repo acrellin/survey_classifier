@@ -15,17 +15,6 @@ import json
 
 
 class SciencePredictionHandler(BaseHandler):
-    def _get_prediction(self, prediction_id):
-        try:
-            d = Prediction.get(Prediction.id == prediction_id)
-        except Prediction.DoesNotExist:
-            raise AccessError('No such dataset')
-
-        if not d.is_owned_by(self.get_username()):
-            raise AccessError('No such dataset')
-
-        return d
-
     @tornado.gen.coroutine
     def _await_science_predictions(self, prediction, science_model_ids_and_probs):
         try:
@@ -103,39 +92,3 @@ class SciencePredictionHandler(BaseHandler):
 
         return self.success(prediction.display_info(),
                             'survey_app/FETCH_PREDICTIONS')
-
-    def get(self, prediction_id=None, action=None):
-        if action == 'download':
-            try:
-                prediction = cesium.featureset.from_netcdf(
-                    self._get_prediction(prediction_id).file_path)
-            except OSError:
-                return self.error('The requested file could not be found. '
-                                  'The cesium_web app must be running on the '
-                                  'same machine to download prediction results.')
-            with tempfile.NamedTemporaryFile() as tf:
-                util.prediction_to_csv(prediction, tf.name)
-                with open(tf.name) as f:
-                    self.set_header("Content-Type", 'text/csv; charset="utf-8"')
-                    self.set_header("Content-Disposition",
-                                    "attachment; filename=survey_app_prediction_results.csv")
-                    self.write(f.read())
-        else:
-            if prediction_id is None:
-                predictions = [prediction
-                               for project in Project.all(self.get_username())
-                               for prediction in project.predictions]
-                prediction_info = [p.display_info() for p in predictions]
-            else:
-                prediction = self._get_prediction(prediction_id)
-                prediction_info = prediction.display_info()
-
-            return self.success(prediction_info)
-
-    def delete(self, prediction_id):
-        prediction = self._get_prediction(prediction_id)
-        # Make request to delete prediction in cesium_web
-        r = requests.delete('{}/predictions/{}'.format(
-            cfg['cesium_app']['url'], prediction.cesium_app_id)).json()
-        prediction.delete_instance()
-        return self.success(action='survey_app/FETCH_PREDICTIONS')
