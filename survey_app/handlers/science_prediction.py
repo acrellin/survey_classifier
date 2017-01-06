@@ -1,4 +1,4 @@
-from .base import BaseHandler, AccessError
+from .base import AccessError
 from .general_prediction import GeneralPredictionHandler
 from ..models import Prediction, Project
 from ..config import cfg
