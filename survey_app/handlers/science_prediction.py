@@ -15,6 +15,7 @@ import json
 
 
 class SciencePredictionHandler(BaseHandler):
+    """Handler for performing science predictions."""
     @tornado.gen.coroutine
     def _await_science_predictions(self, prediction, science_model_ids_and_probs):
         try:
@@ -92,3 +93,21 @@ class SciencePredictionHandler(BaseHandler):
 
         return self.success(prediction.display_info(),
                             'survey_app/FETCH_PREDICTIONS')
+
+    def get(self, prediction_id=None, action=None):
+        if action == 'download':
+            try:
+                prediction = cesium.featureset.from_netcdf(
+                    self._get_prediction(prediction_id).file_path)
+            except OSError:
+                return self.error('The requested file could not be found. '
+                                  'The cesium_web app must be running on the '
+                                  'same machine to download prediction results.')
+            with tempfile.NamedTemporaryFile() as tf:
+                # TODO: Make a science pred-specific utility ftn or flag in below ftn
+                util.prediction_to_csv(prediction, tf.name)
+                with open(tf.name) as f:
+                    self.set_header("Content-Type", 'text/csv; charset="utf-8"')
+                    self.set_header("Content-Disposition",
+                                    "attachment; filename=survey_app_prediction_results.csv")
+                    self.write(f.read())

@@ -8,6 +8,7 @@ from .handlers import (
     ProjectHandler,
     DatasetHandler,
     ModelHandler,
+    GeneralPredictionHandler,
     SurveyPredictionHandler,
     SciencePredictionHandler
     )
@@ -27,7 +28,7 @@ def make_app():
         (r'/project(/.*)?', ProjectHandler),
         (r'/dataset(/.*)?', DatasetHandler),
         (r'/models(/.*)?', ModelHandler),
-        (r'/predictions(/[0-9]+)?', SurveyPredictionHandler),
+        (r'/predictions(/[0-9]+)?', GeneralPredictionHandler),
         (r'/survey_predictions(/[0-9]+)?', SurveyPredictionHandler),
         (r'/survey_predictions/([0-9]+)/(download)', SurveyPredictionHandler),
         (r'/science_predictions(/[0-9]+)?', SciencePredictionHandler),
