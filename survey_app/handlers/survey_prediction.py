@@ -1,4 +1,5 @@
 from .base import BaseHandler, AccessError
+from .general_prediction import GeneralPredictionHandler
 from ..models import Prediction, Dataset, Project
 from ..config import cfg
 from .. import util
@@ -13,7 +14,7 @@ import requests
 import json
 
 
-class SurveyPredictionHandler(BaseHandler):
+class SurveyPredictionHandler(GeneralPredictionHandler):
     """Handler for performing survey predictions."""
     @tornado.gen.coroutine
     def _await_prediction(self, prediction, cesium_app_prediction_id):

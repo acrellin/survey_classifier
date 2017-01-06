@@ -1,4 +1,5 @@
 from .base import BaseHandler, AccessError
+from .general_prediction import GeneralPredictionHandler
 from ..models import Prediction, Project
 from ..config import cfg
 from .. import util
@@ -14,7 +15,7 @@ import traceback
 import json
 
 
-class SciencePredictionHandler(BaseHandler):
+class SciencePredictionHandler(GeneralPredictionHandler):
     """Handler for performing science predictions."""
     @tornado.gen.coroutine
     def _await_science_predictions(self, prediction, science_model_ids_and_probs):
