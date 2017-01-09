@@ -33,12 +33,12 @@ def robust_literal_eval(val):
 
 
 def prediction_results_to_csv(pred, outpath=None):
-    """Convert an `xarray.Dataset` prediction object's results to CSV.
+    """Convert an `xarray.Dataset` or dictionary of prediction results to CSV.
 
     Parameters
     ----------
-    pred : `xarray.Dataset`
-        The `xarray.Dataset` object containing prediction data.
+    pred : `xarray.Dataset` or dict
+        The `xarray.Dataset` object or dictionary containing prediction data.
     outpath : str, optional
         Path to save CSV, if desired. Defaults to None.
 
@@ -47,8 +47,8 @@ def prediction_results_to_csv(pred, outpath=None):
     list of lists of str (if `outpath` is None) or str
         If `outpath` is not None, returns a list of lists representing the
         tabular form of the prediction results, e.g.
-        [['ts_name', 'target', 'prediction'],
-         ['ts_1', 'Class_A', 'Class_A']]
+        [['ts_name', 'target', 'prediction', 'probability'],
+         ['ts_1', 'Class_A', 'Class_A', '1.0']]
         If `outpath` is specified, the data is saved in CSV format to the
         path specified, which is then returned.
 
