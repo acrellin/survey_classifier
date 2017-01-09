@@ -5,6 +5,7 @@ import hashlib
 import csv
 import requests
 from collections import defaultdict
+import xarray as xr
 from .config import cfg
 
 
@@ -57,31 +58,45 @@ def prediction_results_to_csv(pred, outpath=None):
 
     first_iter = True
 
-    for tsname in pred.name.values:
-        entry = pred.sel(name=tsname)
-        row = [tsname]
+    if isinstance(pred, xr.Dataset):
+        for ts_name in pred.name.values:
+            entry = pred.sel(name=ts_name)
+            row = [ts_name]
 
-        if 'target' in entry:
-            row.append(entry.target.values.item())
+            if 'target' in entry:
+                row.append(entry.target.values.item())
 
-            if first_iter:
-                head.append('true_target')
+                if first_iter:
+                    head.append('true_target')
 
-        if 'class_label' in entry:
             for label, val in zip(entry.class_label.values,
                                   entry.prediction.values):
                 row.extend([str(label), str(val)])
 
                 if first_iter:
                     head.extend(['predicted_class', 'probability'])
-        else:
-            row.append(str(entry.prediction.values.item()))
 
-            if first_iter:
-                head.extend(['prediction'])
+            rows.append(row)
+            first_iter = False
 
-        rows.append(row)
-        first_iter = False
+    elif isinstance(pred, dict):
+        for ts_name, results in results_dict.items():
+            combined = results['combined']
+            row = [ts_name]
+            if 'target' in results:
+                row.append(results['target'])
+
+                if first_iter:
+                    head.append('true_target')
+
+            for class_name, prob in combined.items():
+                row.extend([str(class_name), str(prob)])
+
+                if first_iter:
+                    head.extend(['predicted_class', 'probabililty'])
+
+            rows.append(row)
+            first_iter = False
 
     all_rows = [head]
     all_rows.extend(rows)
