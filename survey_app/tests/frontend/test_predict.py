@@ -141,7 +141,6 @@ def test_download_prediction_csv(driver):
                 'probability')
 
             line2_els = text_lines[1].split(',')
-            npt.assert_equal(line2_els[1:3], ['ASAS', 'ASAS'])
             assert all([el.replace('.', '').isdigit() for el in line2_els[3::2]])
         finally:
             os.remove('/tmp/survey_app_prediction_results.csv')
