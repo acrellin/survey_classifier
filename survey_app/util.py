@@ -5,6 +5,7 @@ import hashlib
 import csv
 import requests
 from collections import defaultdict
+from operator import itemgetter
 import xarray as xr
 from .config import cfg
 
@@ -69,8 +70,9 @@ def prediction_results_to_csv(pred, outpath=None):
                 if first_iter:
                     head.append('true_class')
 
-            for label, val in zip(entry.class_label.values,
-                                  entry.prediction.values):
+            for label, val in sorted(zip(entry.class_label.values,
+                                         entry.prediction.values),
+                                     key=itemgetter(1), reverse=True):
                 row.extend([str(label), str(val)])
 
                 if first_iter:
@@ -89,7 +91,8 @@ def prediction_results_to_csv(pred, outpath=None):
                 if first_iter:
                     head.append('true_class')
 
-            for class_name, prob in combined.items():
+            for class_name, prob in sorted(combined.items(), key=itemgetter(1),
+                                           reverse=True):
                 row.extend([str(class_name), str(prob)])
 
                 if first_iter:
