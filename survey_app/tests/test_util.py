@@ -2,6 +2,8 @@ from survey_app import util
 import numpy.testing as npt
 import pytest
 import xarray as xr
+from operator import itemgetter
+from collections import OrderedDict
 
 
 def test_robust_literal_eval():
@@ -40,8 +42,9 @@ def TODO_test_prediction_to_csv_xr_dataset():
 
 def test_prediction_to_csv_dict_no_class():
     """Test util.prediction_to_csv with dict input - no true class"""
-    pred = {'0': {'combined': {'Mira': 0.9, 'Classical_Cepheid': 0.1}},
-            '1': {'combined': {'Classical_Cepheid': 0.8, 'Mira': 0.2}}}
+    pred = OrderedDict(
+        [['0', {'combined': {'Mira': 0.9, 'Classical_Cepheid': 0.1}}],
+         ['1', {'combined': {'Classical_Cepheid': 0.8, 'Mira': 0.2}}]])
     assert util.prediction_results_to_csv(pred) ==\
         [['ts_name', 'predicted_class', 'probability', 'predicted_class',
           'probability'],
@@ -51,10 +54,11 @@ def test_prediction_to_csv_dict_no_class():
 
 def test_prediction_to_csv_dict_with_class():
     """Test util.prediction_to_csv with dict input - with true class"""
-    pred = {'0': {'target': 'Mira',
-                  'combined': {'Mira': 0.9, 'Classical_Cepheid': 0.1}},
-            '1': {'target': 'Classical_Cepheid',
-                  'combined': {'Classical_Cepheid': 0.8, 'Mira': 0.2}}}
+    pred = OrderedDict(
+        [['0', {'target': 'Mira',
+                'combined': {'Mira': 0.9, 'Classical_Cepheid': 0.1}}],
+         ['1', {'target': 'Classical_Cepheid',
+                'combined': {'Classical_Cepheid': 0.8, 'Mira': 0.2}}]])
     assert util.prediction_results_to_csv(pred) ==\
         [['ts_name', 'true_class', 'predicted_class', 'probability', 'predicted_class',
           'probability'],
