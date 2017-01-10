@@ -67,7 +67,7 @@ def prediction_results_to_csv(pred, outpath=None):
                 row.append(entry.target.values.item())
 
                 if first_iter:
-                    head.append('true_target')
+                    head.append('true_class')
 
             for label, val in zip(entry.class_label.values,
                                   entry.prediction.values):
@@ -87,7 +87,7 @@ def prediction_results_to_csv(pred, outpath=None):
                 row.append(results['target'])
 
                 if first_iter:
-                    head.append('true_target')
+                    head.append('true_class')
 
             for class_name, prob in combined.items():
                 row.extend([str(class_name), str(prob)])
