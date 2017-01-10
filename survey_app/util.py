@@ -96,7 +96,7 @@ def prediction_results_to_csv(pred, outpath=None):
                 row.extend([str(class_name), str(prob)])
 
                 if first_iter:
-                    head.extend(['predicted_class', 'probabililty'])
+                    head.extend(['predicted_class', 'probability'])
 
             rows.append(row)
             first_iter = False
