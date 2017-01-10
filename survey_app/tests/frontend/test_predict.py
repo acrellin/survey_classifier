@@ -61,7 +61,7 @@ def _click_prediction_row(proj_name, driver):
 
 
 def _grab_pred_results_table_rows(driver, text_to_look_for):
-    driver.implicitly_wait(1)
+    driver.implicitly_wait(30)
     td = driver.find_element_by_xpath("//td[contains(text(),'{}')]".format(
         text_to_look_for))
     tr = td.find_element_by_xpath('..')
@@ -77,18 +77,39 @@ def test_add_prediction(driver):
         driver.find_element_by_partial_link_text('Delete').click()
 
 
-def test_pred_results_table(driver):
+def test_survey_pred_results_table(driver):
     driver.get('/')
     with create_test_project(driver) as proj_name:
         _add_prediction(proj_name, driver)
         _click_prediction_row(proj_name, driver)
         try:
-            rows = _grab_pred_results_table_rows(driver, 'ASAS')
+            rows = _grab_pred_results_table_rows(
+                driver, 'ASAS')
             for row in rows:
                 probs = [float(v.text)
                          for v in row.find_elements_by_tag_name('td')[3::2]]
                 assert sorted(probs, reverse=True) == probs
             driver.find_element_by_xpath("//th[contains(text(),'Time Series')]")
+        except:
+            driver.save_screenshot("/tmp/pred_click_tr_fail.png")
+            raise
+        driver.find_element_by_partial_link_text('Delete').click()
+
+
+def test_science_pred_results_table(driver):
+    driver.get('/')
+    with create_test_project(driver) as proj_name:
+        _add_prediction(proj_name, driver)
+        _click_prediction_row(proj_name, driver)
+        try:
+            rows = _grab_pred_results_table_rows(
+                driver, 'Mira')
+            for row in rows:
+                probs = [float(v.text)
+                         for v in row.find_elements_by_tag_name('td')[2::2]]
+                assert sorted(probs, reverse=True) == probs
+            driver.find_element_by_xpath("//th[contains(text(),'Time Series')]")
+            driver.find_element_by_xpath("//td[contains(text(),'Mira')]")
         except:
             driver.save_screenshot("/tmp/pred_click_tr_fail.png")
             raise
