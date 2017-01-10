@@ -80,7 +80,7 @@ def prediction_results_to_csv(pred, outpath=None):
             first_iter = False
 
     elif isinstance(pred, dict):
-        for ts_name, results in results_dict.items():
+        for ts_name, results in pred.items():
             combined = results['combined']
             row = [ts_name]
             if 'target' in results:
