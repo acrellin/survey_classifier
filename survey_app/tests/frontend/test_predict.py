@@ -133,7 +133,7 @@ def test_download_prediction_csv(driver):
             text_lines = np.genfromtxt('/tmp/survey_app_prediction_results.csv',
                                        dtype='str')
             assert text_lines[0] == (
-                'ts_name,true_target,predicted_class,probability,predicted_class,'
+                'ts_name,true_class,predicted_class,probability,predicted_class,'
                 'probability,predicted_class,probability,predicted_class,'
                 'probability,predicted_class,probability,predicted_class,'
                 'probability,predicted_class,probability,predicted_class,'

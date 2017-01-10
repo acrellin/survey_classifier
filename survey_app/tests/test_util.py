@@ -30,7 +30,7 @@ def TODO_test_prediction_to_csv_xr_dataset():
          create_test_prediction(ds, m) as pred:
         pred = featureset.from_netcdf(pred.file.uri)
         assert util.prediction_to_csv(pred) ==\
-            [['ts_name', 'true_target', 'prediction'],
+            [['ts_name', 'true_class', 'prediction'],
              ['0', 'Mira', 'Mira'],
              ['1', 'Classical_Cepheid', 'Classical_Cepheid'],
              ['2', 'Mira', 'Mira'],
@@ -42,7 +42,7 @@ def test_prediction_to_csv_dict_no_class():
     """Test util.prediction_to_csv with dict input - no true class"""
     pred = {'0': {'combined': {'Mira': 0.9, 'Classical_Cepheid': 0.1}},
             '1': {'combined': {'Classical_Cepheid': 0.8, 'Mira': 0.2}}}
-    assert util.prediction_to_csv(pred) ==\
+    assert util.prediction_results_to_csv(pred) ==\
         [['ts_name', 'predicted_class', 'probability', 'predicted_class',
           'probability'],
          ['0', 'Mira', '0.9', 'Classical_Cepheid', '0.1'],
@@ -55,7 +55,7 @@ def test_prediction_to_csv_dict_with_class():
                   'combined': {'Mira': 0.9, 'Classical_Cepheid': 0.1}},
             '1': {'target': 'Classical_Cepheid',
                   'combined': {'Classical_Cepheid': 0.8, 'Mira': 0.2}}}
-    assert util.prediction_to_csv(pred) ==\
+    assert util.prediction_results_to_csv(pred) ==\
         [['ts_name', 'true_class', 'predicted_class', 'probability', 'predicted_class',
           'probability'],
          ['0', 'Mira', 'Mira', '0.9', 'Classical_Cepheid', '0.1'],
