@@ -136,8 +136,6 @@ export let PredictionsTable = props => (
               <td>{reformatDatetime(prediction.created)}</td>
               {status}
               <td>
-                <DownloadPredCSV ID={prediction.id} />
-                &nbsp;&nbsp;
                 <DeletePrediction ID={prediction.id} />
               </td>
               <td />
@@ -181,6 +179,10 @@ export const SurveyPredictionResults = (props) => {
         <tr>
           <td colSpan={6}>
             <h5><b>Survey Classifier Prediction Results</b></h5>
+          </td>
+          <td style={{ width: "100px" }}>
+            <br />
+            <DownloadSurveyPredCSV ID={props.prediction.id} />
           </td>
         </tr>
         <tr>
@@ -265,6 +267,10 @@ export const SciencePredictionResults = (props) => {
           <td colSpan={6}>
             <h5><b>Science Classifier Prediction Results</b></h5>
           </td>
+          <td>
+            <br />
+            <DownloadSciencePredCSV ID={props.prediction.id} />
+          </td>
         </tr>
         <tr>
           <th>Time Series</th>
@@ -330,7 +336,7 @@ const dpMapDispatchToProps = dispatch => (
 
 const DeletePrediction = connect(null, dpMapDispatchToProps)(Delete);
 
-const DownloadPredCSV = (props) => (
+const DownloadSurveyPredCSV = (props) => (
   <a
     style={{ display: "inline-block" }}
     href={`/survey_predictions/${props.ID}/download`}
@@ -338,7 +344,19 @@ const DownloadPredCSV = (props) => (
     Download
   </a>
 );
-DownloadPredCSV.propTypes = {
+DownloadSurveyPredCSV.propTypes = {
+  ID: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};
+
+const DownloadSciencePredCSV = (props) => (
+  <a
+    style={{ display: "inline-block" }}
+    href={`/science_predictions/${props.ID}/download`}
+  >
+    Download
+  </a>
+);
+DownloadSciencePredCSV.propTypes = {
   ID: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
 };
 

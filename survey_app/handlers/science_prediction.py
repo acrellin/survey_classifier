@@ -98,15 +98,15 @@ class SciencePredictionHandler(GeneralPredictionHandler):
     def get(self, prediction_id=None, action=None):
         if action == 'download':
             try:
-                prediction = cesium.featureset.from_netcdf(
-                    self._get_prediction(prediction_id).file_path)
+                pred = (self._get_prediction(prediction_id)
+                        .display_info()['science_results'])
             except OSError:
                 return self.error('The requested file could not be found. '
                                   'The cesium_web app must be running on the '
                                   'same machine to download prediction results.')
             with tempfile.NamedTemporaryFile() as tf:
                 # TODO: Make a science pred-specific utility ftn or flag in below ftn
-                util.prediction_results_to_csv(prediction, tf.name)
+                util.prediction_results_to_csv(pred, tf.name)
                 with open(tf.name) as f:
                     self.set_header("Content-Type", 'text/csv; charset="utf-8"')
                     self.set_header("Content-Disposition",
