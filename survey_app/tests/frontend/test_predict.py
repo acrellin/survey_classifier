@@ -133,22 +133,25 @@ def test_delete_prediction(driver):
             "//div[contains(text(),'Prediction deleted')]")
 
 
-def _click_download(proj_name, driver):
+def _click_download(proj_name, driver, idx):
     driver.refresh()
     time.sleep(0.5)
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_visible_text(proj_name)
     driver.find_element_by_id('react-tabs-2').click()
     driver.implicitly_wait(1)
-    driver.find_element_by_partial_link_text('Download').click()
+    driver.find_element_by_xpath("//td[contains(text(),'Completed')]").click()
+    driver.implicitly_wait(1)
+    dl_links = driver.find_elements_by_xpath("//a[contains(text(),'Download')]")
+    dl_links[idx].click()
     time.sleep(0.5)
 
 
-def test_download_prediction_csv(driver):
+def test_download_survey_prediction_csv(driver):
     driver.get('/')
     with create_test_project(driver) as proj_name:
         _add_prediction(proj_name, driver)
-        _click_download(proj_name, driver)
+        _click_download(proj_name, driver, 0)
         assert os.path.exists('/tmp/survey_app_prediction_results.csv')
         try:
             text_lines = np.genfromtxt('/tmp/survey_app_prediction_results.csv',
@@ -163,5 +166,22 @@ def test_download_prediction_csv(driver):
 
             line2_els = text_lines[1].split(',')
             assert all([el.replace('.', '').isdigit() for el in line2_els[3::2]])
+        finally:
+            os.remove('/tmp/survey_app_prediction_results.csv')
+
+
+def test_download_science_prediction_csv(driver):
+    driver.get('/')
+    with create_test_project(driver) as proj_name:
+        _add_prediction(proj_name, driver)
+        _click_download(proj_name, driver, 1)
+        assert os.path.exists('/tmp/survey_app_prediction_results.csv')
+        try:
+            text_lines = np.genfromtxt('/tmp/survey_app_prediction_results.csv',
+                                       dtype='str')
+            assert len(text_lines[0].split(',')) == 57
+
+            line2_els = text_lines[1].split(',')
+            assert all([el.replace('.', '').isdigit() for el in line2_els[2::2]])
         finally:
             os.remove('/tmp/survey_app_prediction_results.csv')
