@@ -166,18 +166,23 @@ def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs):
         containing both weighted prediction results dicts (class names as keys,
         combined probabilities as values) accessed by the 'combined' key, and
         model-wise results ('by_model'). See below for example structure.
-        E.g. {'ts_1': {'by_model': {0: {'class_1': 0.6, 'class_2': 0.1, ...},
-                                    1: {'class_1': 0.3, 'class_2': 0.4, ...},
+        E.g. {'ts_1': {'by_model': {'model_1': {'class_1': 0.6, 'class_2': 0.1, ...},
+                                    'model_2': {'class_1': 0.3, 'class_2': 0.4, ...},
                                     ...},
                        'combined': {'class_1': 0.5, 'class_2': 0.2, ...}},
               ...}
     """
+    model_id_to_name = {model['id']: model['name'] for model in
+                        requests.get('{}/models'.format(cfg['cesium_app']['url']))
+                        .json()['data'] if model['project'] ==
+                        cfg['cesium_app']['survey_classifier_project_id']}
     ts_names = set([ts_name for model_id in sci_pred_results
                     for ts_name in sci_pred_results[model_id]])
     pred_results_by_ts = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
     for model_id, results_dict in sci_pred_results.items():
         for ts_name, ts_results in results_dict.items():
-            pred_results_by_ts[ts_name]['by_model'][model_id] = ts_results['prediction']
+            pred_results_by_ts[ts_name]['by_model'][
+                model_id_to_name[model_id]] = ts_results['prediction']
             for sci_class, prob in ts_results['prediction'].items():
                 pred_results_by_ts[ts_name]['combined'][sci_class] += (
                     science_model_ids_and_probs[ts_name][model_id] * prob)
