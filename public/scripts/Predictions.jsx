@@ -292,24 +292,47 @@ export const SciencePredictionResults = (props) => {
         {results && Object.keys(results).map((fname, idx) => {
            const result = results[fname].combined;
            const classesSorted = classes.sort((a, b) => (result[b] - result[a]));
+           const results_by_model = results[fname].by_model;
 
-           return (
-             <tr key={idx}>
-
-               <td>{fname}</td>
-
+           const foldedContent = (
+             Object.keys(results_by_model).map((surv_name, idx2) => ([
+             <tr>
+               <td colSpan={6}>
+                 {surv_name} ({props.prediction.results[fname].prediction[surv_name]} prob) model prediction results
+               </td>
+             </tr>,
+             <tr>
                {
-                 [hasTrueTargetLabel(result) &&
-                  <td key="pt">{result.target}</td>,
-
-                  modelHasProba &&
-                  classesSorted.slice(0, nClassesToShow).map((classLabel, idx2) => ([
-                    <td key="cl0">{classLabel}</td>,
-                    <td key="cl1">{Math.round(result[classLabel] * 1000) / 1000}</td>
-                  ]))
-                 ]}
-
+               Object.keys(results_by_model[surv_name]).map((sci_class, idx3) => ([
+               <td>{sci_class}</td>,
+               <td>
+                 {results_by_model[surv_name][sci_class]}
+               </td>
+               ]))
+               }
              </tr>
+             ]))
+           );
+           return (
+             <FoldableRow key={idx}>
+               <tr key={idx}>
+
+                 <td>{fname}</td>
+
+                 {
+                   [hasTrueTargetLabel(result) &&
+                    <td key="pt">{result.target}</td>,
+
+                    modelHasProba &&
+                    classesSorted.slice(0, nClassesToShow).map((classLabel, idx2) => ([
+                      <td key="cl0">{classLabel}</td>,
+                      <td key="cl1">{Math.round(result[classLabel] * 1000) / 1000}</td>
+                    ]))
+                   ]}
+
+               </tr>
+               {foldedContent}
+             </FoldableRow>
            ); })}
       </tbody>
     </table>
