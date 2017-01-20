@@ -117,12 +117,12 @@ export let PredictionsTable = props => (
 
         const foldedContent = done && ([
           <tr key={`surv_pred${idx}`}>
-            <td colSpan={6}>
+            <td colSpan={21}>
               <SurveyPredictionResults prediction={prediction} />
             </td>
           </tr>,
           <tr key={`sci_pred${idx}`}>
-            <td colSpan={6}>
+            <td colSpan={21}>
               { sciPredDone && <SciencePredictionResults prediction={prediction} /> }
             </td>
           </tr>
@@ -177,10 +177,10 @@ export const SurveyPredictionResults = (props) => {
     <table className="table">
       <thead>
         <tr>
-          <td colSpan={6}>
+          <td>
             <h5><b>Survey Classifier Prediction Results</b></h5>
           </td>
-          <td style={{ width: "100px" }}>
+          <td colSpan={26} style={{ width: "100px" }}>
             <br />
             <DownloadSurveyPredCSV ID={props.prediction.id} />
           </td>
@@ -264,10 +264,10 @@ export const SciencePredictionResults = (props) => {
     <table className="table">
       <thead>
         <tr>
-          <td colSpan={6}>
+          <td>
             <h5><b>Science Classifier Prediction Results</b></h5>
           </td>
-          <td>
+          <td colSpan={26}>
             <br />
             <DownloadSciencePredCSV ID={props.prediction.id} />
           </td>
@@ -295,23 +295,26 @@ export const SciencePredictionResults = (props) => {
            const results_by_model = results[fname].by_model;
 
            const foldedContent = (
-             Object.keys(results_by_model).map((surv_name, idx2) => ([
-             <tr>
-               <td colSpan={6}>
-                 {surv_name} ({props.prediction.results[fname].prediction[surv_name]} prob) model prediction results
-               </td>
-             </tr>,
-             <tr>
-               {
-               Object.keys(results_by_model[surv_name]).map((sci_class, idx3) => ([
-               <td>{sci_class}</td>,
-               <td>
-                 {results_by_model[surv_name][sci_class]}
-               </td>
-               ]))
-               }
-             </tr>
-             ]))
+             Object.keys(results_by_model).map((surv_name, idx2) => {
+               const classesSorted = classes.sort((a, b) => (result[b] - result[a]));
+               return ([
+                 <tr>
+                   <td colSpan={26}>
+                     {surv_name} ({props.prediction.results[fname].prediction[surv_name]} prob) model prediction results
+                   </td>
+                 </tr>,
+                 <tr>
+                   {
+                     Object.keys(results_by_model[surv_name]).slice(0, nClassesToShow).map((sci_class, idx3) => ([
+                       <td>{sci_class}</td>,
+                       <td>
+                         {results_by_model[surv_name][sci_class]}
+                       </td>
+                     ]))
+                   }
+                 </tr>
+               ]);
+             })
            );
            return (
              <FoldableRow key={idx}>
