@@ -5,6 +5,7 @@ from cesium_app import models as m
 from cesium_app.config import cfg
 from cesium.data_management import parse_and_store_ts_data
 from cesium.features import CADENCE_FEATS, LOMB_SCARGLE_FEATS, GENERAL_FEATS
+from cesium.time_series import load as load_ts
 import cesium
 
 import shutil
@@ -51,12 +52,12 @@ def setup_survey_db():
         ts_paths = []
         # As these are only ever accessed to determine meta features, only
         # copy first ten (arbitrary) TS
-        for src in glob.glob(os.path.join(ts_data_dir, '*.nc'))[:10]:
+        for src in glob.glob(os.path.join(ts_data_dir, '*.npz'))[:10]:
             # Add the path to the copied file in cesium data directory
             ts_paths.append(shutil.copy(src, cfg['paths']['ts_data_folder']))
-        meta_features = list(cesium.time_series.from_netcdf(ts_paths[0])
+        meta_features = list(load_ts(ts_paths[0])
                              .meta_features.keys())
-        file_names = [os.path.basename(ts_path).split('.nc')[0] for ts_path in ts_paths]
+        file_names = [os.path.basename(ts_path).split('.npz')[0] for ts_path in ts_paths]
         dataset = m.Dataset.add(name=dataset_name, project=proj, file_names=file_names,
                                 file_uris=ts_paths, meta_features=meta_features)
         print('\nAdded dataset:\n', dataset)
