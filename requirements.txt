@@ -3,9 +3,9 @@ pyyaml
 tornado
 pyzmq
 pyjwt
-requests
+requests>=2.6.0
 simplejson
-peewee
+peewee>=2.8.3
 cesium
 joblib
-psycopg2
+psycopg2==2.6.2
