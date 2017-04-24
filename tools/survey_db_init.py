@@ -1,5 +1,5 @@
-'''To be run from top-level cesium_web directory, which is assumed to alongside
-both survey_classifier and survey_classifier_data.'''
+'''To be run from top-level cesium_web directory, which is assumed to be
+alongside both survey_classifier and survey_classifier_data.'''
 
 from cesium_app import models as m
 from cesium_app.config import cfg
@@ -66,37 +66,37 @@ def setup_survey_db():
     fset_dict = {}
     for fset_name, orig_fset_path, features_list in [
             ['Survey LC Cadence/Error Features',
-             '../survey_classifier_data/data/survey_lc_features.nc',
+             '../survey_classifier_data/data/survey_lc_features.npz',
              CADENCE_FEATS],
             ['ASAS',
-             '../survey_classifier_data/data/ASAS_features.nc',
+             '../survey_classifier_data/data/ASAS_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['CoRoT',
-             '../survey_classifier_data/data/noisified_CoRoT_features.nc',
+             '../survey_classifier_data/data/noisified_CoRoT_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['HATNet',
-             '../survey_classifier_data/data/noisified_HATNet_features.nc',
+             '../survey_classifier_data/data/noisified_HATNet_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['Hipparcos',
-             '../survey_classifier_data/data/noisified_Hipparcos_features.nc',
+             '../survey_classifier_data/data/noisified_Hipparcos_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['KELT',
-             '../survey_classifier_data/data/noisified_KELT_features.nc',
+             '../survey_classifier_data/data/noisified_KELT_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['Kepler',
-             '../survey_classifier_data/data/noisified_Kepler_features.nc',
+             '../survey_classifier_data/data/noisified_Kepler_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['LINEAR',
-             '../survey_classifier_data/data/noisified_LINEAR_features.nc',
+             '../survey_classifier_data/data/noisified_LINEAR_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['OGLE-III',
-             '../survey_classifier_data/data/noisified_OGLE-III_features.nc',
+             '../survey_classifier_data/data/noisified_OGLE-III_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['SuperWASP',
-             '../survey_classifier_data/data/noisified_SuperWASP_features.nc',
+             '../survey_classifier_data/data/noisified_SuperWASP_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS],
             ['TrES',
-             '../survey_classifier_data/data/noisified_TrES_features.nc',
+             '../survey_classifier_data/data/noisified_TrES_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS]]:
         fset_path = shutil.copy(orig_fset_path, cfg['paths']['features_folder'])
         fset = m.Featureset.create(name=fset_name,
