@@ -6,7 +6,7 @@ import csv
 import requests
 from collections import defaultdict
 from operator import itemgetter
-import xarray as xr
+import pandas as pd
 from .config import cfg
 
 
@@ -31,85 +31,6 @@ def robust_literal_eval(val):
         return ast.literal_eval(val)
     except ValueError:
         return val
-
-
-def prediction_results_to_csv(pred, outpath=None):
-    """Convert an `xarray.Dataset` or dictionary of prediction results to CSV.
-
-    Parameters
-    ----------
-    pred : `xarray.Dataset` or dict
-        The `xarray.Dataset` object or dictionary containing prediction data.
-    outpath : str, optional
-        Path to save CSV, if desired. Defaults to None.
-
-    Returns
-    -------
-    list of lists of str (if `outpath` is None) or str
-        If `outpath` is not None, returns a list of lists representing the
-        tabular form of the prediction results, e.g.
-        [['ts_name', 'target', 'prediction', 'probability'],
-         ['ts_1', 'Class_A', 'Class_A', '1.0']]
-        If `outpath` is specified, the data is saved in CSV format to the
-        path specified, which is then returned.
-
-    """
-    head = ['ts_name']
-    rows = []
-
-    first_iter = True
-
-    if isinstance(pred, xr.Dataset):
-        for ts_name in pred.name.values:
-            entry = pred.sel(name=ts_name)
-            row = [ts_name]
-
-            if 'target' in entry:
-                row.append(entry.target.values.item())
-
-                if first_iter:
-                    head.append('true_class')
-
-            for label, val in sorted(zip(entry.class_label.values,
-                                         entry.prediction.values),
-                                     key=itemgetter(1), reverse=True):
-                row.extend([str(label), str(val)])
-
-                if first_iter:
-                    head.extend(['predicted_class', 'probability'])
-
-            rows.append(row)
-            first_iter = False
-
-    elif isinstance(pred, dict):
-        for ts_name, results in pred.items():
-            combined = results['combined']
-            row = [ts_name]
-            if 'target' in results:
-                row.append(results['target'])
-
-                if first_iter:
-                    head.append('true_class')
-
-            for class_name, prob in sorted(combined.items(), key=itemgetter(1),
-                                           reverse=True):
-                row.extend([str(class_name), str(prob)])
-
-                if first_iter:
-                    head.extend(['predicted_class', 'probability'])
-
-            rows.append(row)
-            first_iter = False
-
-    all_rows = [head]
-    all_rows.extend(rows)
-
-    if outpath:
-        with open(outpath, 'w') as f:
-            csv.writer(f).writerows(all_rows)
-        return outpath
-    else:
-        return all_rows
 
 
 def determine_model_ids(prediction_results):
