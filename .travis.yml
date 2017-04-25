@@ -51,7 +51,6 @@ addons:
     - ccache
     - wget
     - nodejs
-    - npm
     - supervisor
     - nginx
     - xvfb
