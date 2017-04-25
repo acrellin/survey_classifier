@@ -17,7 +17,6 @@ section_end "install.python.requirements"
 
 
 section "install.npm.requirements"
-sudo ln -s /usr/bin/nodejs /usr/bin/node
 npm --version
 node --version
 make dependencies
