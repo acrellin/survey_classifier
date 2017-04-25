@@ -9,4 +9,3 @@ make log &
 make ${TEST_TARGET}
 
 section_end "Tests"
-
