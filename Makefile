@@ -5,7 +5,7 @@ SUPERVISORD=supervisord
 .DEFAULT_GOAL := run
 
 bundle = ./public/build/bundle.js
-webpack = ./node_modules/.bin/webpack
+webpack = ./node_modules/.bin/webpack --display-error-details
 
 dependencies:
 	@./tools/silent_monitor.py pip install -r requirements.txt

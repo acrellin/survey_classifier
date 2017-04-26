@@ -7,6 +7,6 @@ make paths
 make db_init
 python survey_db_init.py
 rm survey_db_init.py
-make debug &
 make log &
+make debug &
 cd $APP_REPO_DIR
