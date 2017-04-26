@@ -37,8 +37,11 @@ section "install.cesium_web.requirements"
 npm -g install npm@latest
 npm --version
 node --version
+pip install -r requirements.txt
 make dependencies
 make check-js-updates
+pip list --format=columns
+pwd
 section_end "install.cesium_web.requirements"
 
 
@@ -51,7 +54,7 @@ section_end "init.cesium_web"
 
 
 section "install.chromedriver"
-wget http://chromedriver.storage.googleapis.com/2.23/chromedriver_linux64.zip
+wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
 sudo unzip chromedriver_linux64.zip chromedriver -d /usr/local/bin
 rm chromedriver_linux64.zip
 which chromium-browser
