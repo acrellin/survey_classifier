@@ -12,7 +12,6 @@ section_end "install.base.requirements"
 
 section "install.python.requirements"
 pip install --retries 3 -r requirements.txt
-pip list
 section_end "install.python.requirements"
 
 
@@ -52,3 +51,8 @@ section_end "install.cesium_web.and.requirements"
 section "initialize.cesium_web"
 make cesium_web_init
 section_end "initialize.cesium_web"
+
+
+section "list.packages"
+pip list --format=columns
+section_end "list.packages"
