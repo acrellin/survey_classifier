@@ -10,47 +10,24 @@ pip install --retries 3 -q requests
 section_end "install.base.requirements"
 
 
-section "install.cesium.requirements"
-
-if [[ -n ${TRIGGERED_FROM_REPO} ]]; then
-    mkdir cesium-clone
-    cd cesium-clone
-    git init
-    git remote add origin git://github.com/${TRIGGERED_FROM_REPO}
-    git fetch --depth=1 origin ${TRIGGERED_FROM_BRANCH}
-    git checkout -b ${TRIGGERED_FROM_BRANCH} ${TRIGGERED_FROM_SHA}
-    pip install .
-    cd ..
-else
-    pip install -e git://github.com/cesium-ml/cesium.git#egg=cesium
-fi
-
-# Remove Cesium from requirements, already installed
-cat requirements.txt | grep -v cesium > _ && mv _ requirements.txt
-
+section "install.python.requirements"
 pip install --retries 3 -r requirements.txt
-pip list --format=columns
-section_end "install.cesium.requirements"
+pip list
+section_end "install.python.requirements"
 
 
-section "install.cesium_web.requirements"
-npm -g install npm@latest
+section "install.npm.requirements"
 npm --version
 node --version
-pip install -r requirements.txt
 make dependencies
-make check-js-updates
-pip list --format=columns
-pwd
-section_end "install.cesium_web.requirements"
+section_end "install.npm.requirements"
 
 
-section "init.cesium_web"
+section "init.survey_app"
 make paths
 make db_init
-make db_test_data
 make bundle
-section_end "init.cesium_web"
+section_end "init.survey_app"
 
 
 section "install.chromedriver"
@@ -60,3 +37,18 @@ rm chromedriver_linux64.zip
 which chromium-browser
 chromium-browser --version
 section_end "install.chromedriver"
+
+
+section "download.data"
+make download_data
+section_end "download.data"
+
+
+section "install.cesium_web.and.requirements"
+make install_cesium_web
+section_end "install.cesium_web.and.requirements"
+
+
+section "initialize.cesium_web"
+make cesium_web_init
+section_end "initialize.cesium_web"
