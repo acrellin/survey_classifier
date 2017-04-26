@@ -8,4 +8,5 @@ make db_init
 python survey_db_init.py
 rm survey_db_init.py
 make debug &
+make log &
 cd $APP_REPO_DIR
