@@ -1,7 +1,6 @@
 from survey_app import util
 import numpy.testing as npt
 import pytest
-import xarray as xr
 import os
 from operator import itemgetter
 from collections import OrderedDict
