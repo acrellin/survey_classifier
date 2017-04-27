@@ -1,8 +1,9 @@
 '''To be run from top-level cesium_web directory, which is assumed to be
 alongside both survey_classifier and survey_classifier_data.'''
 
-from cesium_app import models as m
-from cesium_app.config import cfg
+from cesium_app import model_util
+from cesium_app import models
+from cesium_app.app_server import load_config
 from cesium.data_management import parse_and_store_ts_data
 from cesium.features import CADENCE_FEATS, LOMB_SCARGLE_FEATS, GENERAL_FEATS
 from cesium.time_series import load as load_ts
@@ -15,12 +16,18 @@ import os
 
 
 def setup_survey_db():
+    cfg = load_config()
+
     # Drop & create tables
-    m.drop_tables()
-    m.create_tables()
+    models.db.init('cesium', user='cesium')
+    model_util.drop_tables()
+    model_util.create_tables()
+
+    # Add testuser
+    models.User.create(username='testuser@gmail.com', email='testuser@gmail.com')
 
     # Add project
-    proj = m.Project.add_by('Survey Classifier', '', 'testuser@gmail.com')
+    proj = models.Project.add_by('Survey Classifier', '', 'testuser@gmail.com')
     assert proj.id == 1
     print('\nAdded project:\n', proj)
 
@@ -58,7 +65,7 @@ def setup_survey_db():
         meta_features = list(load_ts(ts_paths[0])
                              .meta_features.keys())
         file_names = [os.path.basename(ts_path).split('.npz')[0] for ts_path in ts_paths]
-        dataset = m.Dataset.add(name=dataset_name, project=proj, file_names=file_names,
+        dataset = models.Dataset.add(name=dataset_name, project=proj, file_names=file_names,
                                 file_uris=ts_paths, meta_features=meta_features)
         print('\nAdded dataset:\n', dataset)
 
@@ -99,8 +106,8 @@ def setup_survey_db():
              '../survey_classifier_data/data/noisified_TrES_features.npz',
              LOMB_SCARGLE_FEATS + GENERAL_FEATS]]:
         fset_path = shutil.copy(orig_fset_path, cfg['paths']['features_folder'])
-        fset = m.Featureset.create(name=fset_name,
-                                   file=m.File.create(uri=fset_path),
+        fset = models.Featureset.create(name=fset_name,
+                                   file=models.File.create(uri=fset_path),
                                    project=proj,
                                    features_list=features_list,
                                    custom_features_script=None)
@@ -156,8 +163,8 @@ def setup_survey_db():
                  '..', 'survey_classifier_data/data/noisified_TrES_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'TrES']]:
         model_path = shutil.copy(orig_model_path, cfg['paths']['models_folder'])
-        model_file = m.File.create(uri=model_path)
-        model = m.Model.create(name=model_name, file=model_file,
+        model_file = models.File.create(uri=model_path)
+        model = models.Model.create(name=model_name, file=model_file,
                                featureset=fset_dict[fset_name], project=proj,
                                params=params, type=model_type)
         model.task_id = None
