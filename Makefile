@@ -8,8 +8,8 @@ bundle = ./public/build/bundle.js
 webpack = ./node_modules/.bin/webpack --display-error-details
 
 dependencies:
-	@./tools/silent_monitor.py pip install -r requirements.txt
-	@./tools/silent_monitor.py ./tools/check_js_deps.sh
+	pip install -r requirements.txt
+	./tools/check_js_deps.sh
 
 db_init:
 	@./tools/silent_monitor.py ./tools/db_create.sh
