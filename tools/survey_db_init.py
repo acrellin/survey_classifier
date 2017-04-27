@@ -17,6 +17,9 @@ import os
 
 def setup_survey_db():
     cfg = load_config()
+    for data_dir in cfg['paths'].values():
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
 
     # Drop & create tables
     models.db.init('cesium', user='cesium')
