@@ -15,11 +15,16 @@ pip install --retries 3 -r requirements.txt
 section_end "install.python.requirements"
 
 
-section "install.npm.requirements"
-npm --version
-node --version
-make dependencies
-section_end "install.npm.requirements"
+section "install.yarn"
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update && sudo apt-get install -y yarn
+section_end "install.yarn"
+
+section "install.npm.requirements.with.yarn"
+yarn --version
+yarn
+section_end "install.npm.requirements.with.yarn"
 
 
 section "init.survey_app"
