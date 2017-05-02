@@ -23,7 +23,7 @@ section_end "install.yarn"
 
 section "install.npm.requirements.with.yarn"
 yarn --version
-yarn
+yarn --ignore-engines
 section_end "install.npm.requirements.with.yarn"
 
 
