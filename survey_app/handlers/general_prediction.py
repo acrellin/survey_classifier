@@ -1,10 +1,7 @@
 from .base import BaseHandler, AccessError
 from ..models import Prediction, Project
 from ..config import cfg
-from .. import util
 
-import cesium
-import tempfile
 import requests
 
 

@@ -5,20 +5,20 @@ SUPERVISORD=supervisord
 .DEFAULT_GOAL := run
 
 bundle = ./public/build/bundle.js
-webpack = ./node_modules/.bin/webpack
+webpack = ./node_modules/.bin/webpack --display-error-details
 
 dependencies:
-	@./tools/install_deps.py requirements.txt
-	@./tools/install_npm_deps.py package.json
+	pip install -r requirements.txt
+	./tools/check_js_deps.sh
 
 db_init:
-	./tools/db_create.sh
+	@./tools/silent_monitor.py ./tools/db_create.sh
 
 db_drop:
-	PYTHONPATH=. ./tools/db_drop.py
+	@PYTHONPATH=. ./tools/silent_monitor.py ./tools/db_drop.py
 
 db_test_data:
-	PYTHONPATH=. python ./survey_app/models.py
+	@PYTHONPATH=. python ./survey_app/models.py
 
 download_data:
 	git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data || echo 'Data has already been downloaded.'
@@ -30,7 +30,7 @@ install_cesium_web:
 cesium_web_init: download_data
 	./tools/init_cesium_web_db.sh
 
-$(bundle): webpack.config.js
+$(bundle): webpack.config.js package.json
 	$(webpack)
 
 bundle: $(bundle)
@@ -67,3 +67,7 @@ test: paths dependencies
 
 status:
 	PYTHONPATH='.' ./tools/supervisor_status.py
+
+# Call this target to see which Javascript dependencies are not up to date
+check-js-updates:
+	./tools/check_js_updates.sh

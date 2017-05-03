@@ -8,6 +8,7 @@ import uuid
 import tempfile
 import requests
 import cesium
+from cesium.data_management import parse_and_store_ts_data
 
 
 class DatasetHandler(BaseHandler):
@@ -59,10 +60,9 @@ class DatasetHandler(BaseHandler):
             if r['status'] != 'success':
                 return self.error(r['message'])
 
-            with cesium.util.extract_time_series(
-                    tarfile_path, cleanup_archive=False, cleanup_files=True,
-                    extract_dir=temp_dir) as ts_paths:
-                file_names = [os.path.basename(ts_path) for ts_path in ts_paths]
+            ts_paths = parse_and_store_ts_data(tarfile_path, temp_dir,
+                                               cleanup_archive=False)
+            file_names = [os.path.basename(ts_path) for ts_path in ts_paths]
 
         p = Project.get(Project.id == project_id)
         d = Dataset.add(name=dataset_name, project=p, file_names=file_names,

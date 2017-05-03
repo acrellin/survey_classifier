@@ -12,16 +12,19 @@ section_end "install.base.requirements"
 
 section "install.python.requirements"
 pip install --retries 3 -r requirements.txt
-pip list
 section_end "install.python.requirements"
 
 
-section "install.npm.requirements"
-sudo ln -s /usr/bin/nodejs /usr/bin/node
-npm --version
-node --version
-make dependencies
-section_end "install.npm.requirements"
+section "install.yarn"
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update && sudo apt-get install -y yarn
+section_end "install.yarn"
+
+section "install.npm.requirements.with.yarn"
+yarn --version
+yarn --ignore-engines
+section_end "install.npm.requirements.with.yarn"
 
 
 section "init.survey_app"
@@ -32,7 +35,7 @@ section_end "init.survey_app"
 
 
 section "install.chromedriver"
-wget http://chromedriver.storage.googleapis.com/2.23/chromedriver_linux64.zip
+wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
 sudo unzip chromedriver_linux64.zip chromedriver -d /usr/local/bin
 rm chromedriver_linux64.zip
 which chromium-browser
@@ -53,3 +56,8 @@ section_end "install.cesium_web.and.requirements"
 section "initialize.cesium_web"
 make cesium_web_init
 section_end "initialize.cesium_web"
+
+
+section "list.packages"
+pip list --format=columns
+section_end "list.packages"

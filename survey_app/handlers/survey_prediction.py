@@ -12,6 +12,7 @@ import datetime
 import tempfile
 import requests
 import json
+import pandas as pd
 
 
 class SurveyPredictionHandler(GeneralPredictionHandler):
@@ -94,17 +95,20 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
 
     def get(self, prediction_id=None, action=None):
         if action == 'download':
+            pred_path = self._get_prediction(prediction_id).file_path
             try:
-                prediction = cesium.featureset.from_netcdf(
-                    self._get_prediction(prediction_id).file_path)
+                fset, data = cesium.featurize.load_featureset(pred_path)
             except OSError:
                 return self.error('The requested file could not be found. '
                                   'The cesium_web app must be running on the '
                                   'same machine to download prediction results.')
-            with tempfile.NamedTemporaryFile() as tf:
-                util.prediction_results_to_csv(prediction, tf.name)
-                with open(tf.name) as f:
-                    self.set_header("Content-Type", 'text/csv; charset="utf-8"')
-                    self.set_header("Content-Disposition",
-                                    "attachment; filename=survey_app_prediction_results.csv")
-                    self.write(f.read())
+            result = pd.DataFrame({'ts_name': fset.index,
+                                   'label': data['labels'],
+                                   'prediction': data['preds']},
+                                  columns=['ts_name', 'label', 'prediction'])
+            if len(data.get('pred_probs', [])) > 0:
+                result['probability'] = data['pred_probs'].max(axis=1).values
+            self.set_header("Content-Type", 'text/csv; charset="utf-8"')
+            self.set_header("Content-Disposition", "attachment; "
+                            "filename=cesium_prediction_results.csv")
+            self.write(result.to_csv(index=False))
