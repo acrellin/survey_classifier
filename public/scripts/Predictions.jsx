@@ -171,7 +171,7 @@ export const SurveyPredictionResults = (props) => {
     modelHasClass = !modelHasProba;
   }
 
-  const hasTrueTargetLabel = p => (p && p.target);
+  const hasTrueTargetLabel = p => (p && p.label);
 
   return (
     <table className="table">
@@ -213,7 +213,7 @@ export const SurveyPredictionResults = (props) => {
 
             {
               [hasTrueTargetLabel(result) &&
-                <td key="pt">{result.target}</td>,
+                <td key="pt">{result.label}</td>,
 
                modelHasProba &&
                classesSorted.map((classLabel, idx2) => ([
@@ -256,7 +256,7 @@ export const SciencePredictionResults = (props) => {
     modelHasClass = !modelHasProba;
   }
 
-  const hasTrueTargetLabel = p => (p && p.target);
+  const hasTrueTargetLabel = p => (p && p.label);
 
   const nClassesToShow = 10;
 
@@ -300,7 +300,7 @@ export const SciencePredictionResults = (props) => {
 
                {
                  [hasTrueTargetLabel(result) &&
-                  <td key="pt">{result.target}</td>,
+                  <td key="pt">{result.label}</td>,
 
                   modelHasProba &&
                   classesSorted.slice(0, nClassesToShow).map((classLabel, idx2) => ([
