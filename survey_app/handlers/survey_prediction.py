@@ -7,6 +7,7 @@ from .. import util
 import tornado.gen
 
 import cesium
+import cesium.featurize
 import uuid
 import datetime
 import tempfile

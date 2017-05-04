@@ -33,7 +33,7 @@ paths:
     # Note below that defined variables can be reused in subsequent
     # definitions.
 
-    data_path:        '~/.local/survey_app'
+    data_path:        './data'
     err_log_path:     '{data_path}/logs/errors_and_warnings.log'
     models_folder:    '{data_path}/models'
     features_folder:  '{data_path}/extracted_features'
@@ -46,10 +46,10 @@ paths:
 
 database:
     database: survey_app
-    host: 
+    host:
     port: 5432
     user: survey_app
-    password: 
+    password:
 
 docker:
     enabled: 0
