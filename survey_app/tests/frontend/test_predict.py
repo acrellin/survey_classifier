@@ -157,15 +157,11 @@ def test_download_survey_prediction_csv(driver):
             text_lines = np.genfromtxt('/tmp/survey_app_prediction_results.csv',
                                        dtype='str')
             assert text_lines[0] == (
-                'ts_name,true_class,predicted_class,probability,predicted_class,'
-                'probability,predicted_class,probability,predicted_class,'
-                'probability,predicted_class,probability,predicted_class,'
-                'probability,predicted_class,probability,predicted_class,'
-                'probability,predicted_class,probability,predicted_class,'
-                'probability')
+                'ts_name,label,ASAS,CoRoT,HATNet,Hipparcos,KELT,Kepler,'
+                'LINEAR,OGLE-III,SuperWASP,TrES')
 
             line2_els = text_lines[1].split(',')
-            assert all([el.replace('.', '').isdigit() for el in line2_els[3::2]])
+            assert all([el.replace('.', '').isdigit() for el in line2_els[2:]])
         finally:
             os.remove('/tmp/survey_app_prediction_results.csv')
 
