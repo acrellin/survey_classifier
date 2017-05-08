@@ -175,9 +175,16 @@ def test_download_science_prediction_csv(driver):
         try:
             text_lines = np.genfromtxt('/tmp/survey_app_prediction_results.csv',
                                        dtype='str')
-            assert len(text_lines[0].split(',')) == 57
+            assert text_lines[0] == (
+                'ts_name,true_class,Beta_Cephei,Beta_Lyrae,Beta_Persei,'
+                'ChemPeculiar,ClassT_Tauri,Classical_Cepheid,Delta_Scuti,'
+                'Ellipsoidal,Herbig_AEBE,LSP,Mira,MultiMode_Cepheid,'
+                'PopII_Cepheid,Pulsating_Be,RCB,RR_Lyrae_DM,RR_Lyrae_FM,'
+                'RR_Lyrae_FO,RSG,RS_CVn,RV_Tauri,SARG_A,SARG_B,SX_Phe,'
+                'S_Doradus,Semireg_PV,W_Ursae_Maj,Weakline_T_Tauri')
 
             line2_els = text_lines[1].split(',')
-            assert all([el.replace('.', '').isdigit() for el in line2_els[2::2]])
+            assert line2_els[0].isdigit() and line2_els[1] == 'ASAS'
+            assert all([el.replace('.', '').isdigit() for el in line2_els[2:]])
         finally:
             os.remove('/tmp/survey_app_prediction_results.csv')

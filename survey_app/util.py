@@ -108,3 +108,40 @@ def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs):
                 pred_results_by_ts[ts_name]['combined'][sci_class] += (
                     science_model_ids_and_probs[ts_name][model_id] * prob)
     return pred_results_by_ts
+
+
+def pred_results_to_csv(pred, outpath=None):
+    '''
+    '''
+    head = ['ts_name']
+    rows = []
+
+    first_iter = True
+
+    for ts_name, results in pred.items():
+        combined = results['combined']
+        row = [ts_name]
+        if 'label' in results:
+            row.append(results['label'])
+
+            if first_iter:
+                head.append('true_class')
+
+        labels, probs = list(zip(*sorted(combined.items(), key=itemgetter(0))))
+        row.extend(probs)
+
+        if first_iter:
+            head.extend(labels)
+
+        rows.append(row)
+        first_iter = False
+
+    all_rows = [head]
+    all_rows.extend(rows)
+
+    if outpath:
+        with open(outpath, 'w') as f:
+            csv.writer(f).writerows(all_rows)
+        return outpath
+    else:
+        return all_rows
