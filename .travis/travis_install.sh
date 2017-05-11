@@ -4,6 +4,11 @@ set -ex
 
 
 section "install.base.requirements"
+# Install v1.7 or newer of nginx to support 'if' statement for logging
+sudo apt-add-repository -y ppa:nginx/development
+sudo apt update
+sudo apt install -y nginx
+
 pip install --upgrade pip
 hash -d pip  # find upgraded pip
 pip install --retries 3 -q requests
@@ -15,16 +20,26 @@ pip install --retries 3 -r requirements.txt
 section_end "install.python.requirements"
 
 
-section "install.yarn"
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt-get update && sudo apt-get install -y yarn
-section_end "install.yarn"
+# section "install.yarn"
+# curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+# echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+# sudo apt-get update && sudo apt-get install -y yarn
+# section_end "install.yarn"
 
-section "install.npm.requirements.with.yarn"
-yarn --version
-yarn --ignore-engines
-section_end "install.npm.requirements.with.yarn"
+# section "install.npm.requirements.with.yarn"
+# yarn --version
+# yarn --ignore-engines
+# section_end "install.npm.requirements.with.yarn"
+
+
+section "install.npm.reqs"
+npm -g install npm@latest
+npm --version
+node --version
+make dependencies
+make check-js-updates
+pip list --format=columns
+section_end "install.npm.reqs"
 
 
 section "init.survey_app"
