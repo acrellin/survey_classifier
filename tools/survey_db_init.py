@@ -1,7 +1,9 @@
 '''To be run from top-level cesium_web directory, which is assumed to be
 alongside both survey_classifier and survey_classifier_data.'''
 
-from cesium_app import model_util
+import baselayer
+from baselayer.app.models import init_db
+from baselayer.app.model_util import status, create_tables, drop_tables
 from cesium_app import models
 from cesium_app.app_server import load_config
 from cesium.data_management import parse_and_store_ts_data
@@ -21,56 +23,65 @@ def setup_survey_db():
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
 
+
+    db_session = init_db(**baselayer.app.load_config()['database'])
     # Drop & create tables
-    models.db.init('cesium', user='cesium')
-    model_util.drop_tables()
-    model_util.create_tables()
+    with status('Dropping and re-creating tables'):
+        drop_tables()
+        create_tables()
 
     # Add testuser
-    models.User.create(username='testuser@gmail.com', email='testuser@gmail.com')
+    with status('Adding testuser'):
+        u = models.User(username='testuser@gmail.com')
+        models.DBSession().add(u)
+        models.DBSession().commit()
 
     # Add project
-    proj = models.Project.add_by('Survey Classifier', '', 'testuser@gmail.com')
-    assert proj.id == 1
-    print('\nAdded project:\n', proj)
+    with status('Adding project'):
+        p = models.Project(name='Survey Classifier', users=[u])
+        models.DBSession().add(p)
+        models.DBSession().commit()
 
     # Add datasets
-    for dataset_name, ts_data_dir in [
-            ['Survey Light Curve Data',
-             os.path.join( '..', 'survey_classifier_data/data/lightcurves')],
-            ['ASAS',
-             os.path.join( '..', 'survey_classifier_data/data/ASAS_lcs')],
-            ['Noisified to CoRoT',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_CoRoT_lcs')],
-            ['Noisified to HATNet',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_HATNet_lcs')],
-            ['Noisified to Hipparcos',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_Hipparcos_lcs')],
-            ['Noisified to KELT',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_KELT_lcs')],
-            ['Noisified to Kepler',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_Kepler_lcs')],
-            ['Noisified to LINEAR',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_LINEAR_lcs')],
-            ['Noisified to OGLE-III',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_OGLE-III_lcs')],
-            ['Noisified to SuperWASP',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_SuperWASP_lcs')],
-            ['Noisified to TrES',
-             os.path.join( '..', 'survey_classifier_data/data/noisified_TrES_lcs')]]:
+    with status('Adding datasets'):
+        for dataset_name, ts_data_dir in [
+                ['Survey Light Curve Data',
+                 os.path.join( '..', 'survey_classifier_data/data/lightcurves')],
+                ['ASAS',
+                 os.path.join( '..', 'survey_classifier_data/data/ASAS_lcs')],
+                ['Noisified to CoRoT',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_CoRoT_lcs')],
+                ['Noisified to HATNet',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_HATNet_lcs')],
+                ['Noisified to Hipparcos',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_Hipparcos_lcs')],
+                ['Noisified to KELT',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_KELT_lcs')],
+                ['Noisified to Kepler',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_Kepler_lcs')],
+                ['Noisified to LINEAR',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_LINEAR_lcs')],
+                ['Noisified to OGLE-III',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_OGLE-III_lcs')],
+                ['Noisified to SuperWASP',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_SuperWASP_lcs')],
+                ['Noisified to TrES',
+                 os.path.join( '..', 'survey_classifier_data/data/noisified_TrES_lcs')]]:
 
-        ts_paths = []
-        # As these are only ever accessed to determine meta features, only
-        # copy first ten (arbitrary) TS
-        for src in glob.glob(os.path.join(ts_data_dir, '*.npz'))[:10]:
-            # Add the path to the copied file in cesium data directory
-            ts_paths.append(shutil.copy(src, cfg['paths']['ts_data_folder']))
-        meta_features = list(load_ts(ts_paths[0])
-                             .meta_features.keys())
-        file_names = [os.path.basename(ts_path).split('.npz')[0] for ts_path in ts_paths]
-        dataset = models.Dataset.add(name=dataset_name, project=proj, file_names=file_names,
-                                file_uris=ts_paths, meta_features=meta_features)
-        print('\nAdded dataset:\n', dataset)
+            ts_paths = []
+            # As these are only ever accessed to determine meta features, only
+            # copy first ten (arbitrary) TS
+            for src in glob.glob(os.path.join(ts_data_dir, '*.npz'))[:10]:
+                # Add the path to the copied file in cesium data directory
+                ts_paths.append(shutil.copy(src, cfg['paths']['ts_data_folder']))
+            meta_features = list(load_ts(ts_paths[0])
+                                 .meta_features.keys())
+            files = [models.DatasetFile(uri=ts_path) for ts_path in ts_paths]
+            dataset = models.Dataset(name=dataset_name, project=p, files=files,
+                                     meta_features=meta_features)
+            models.DBSession().add_all(files + [dataset])
+            models.DBSession().commit()
+            print('\nAdded dataset:\n', dataset)
 
     # Add featuresets
     fset_dict = {}
@@ -80,47 +91,48 @@ def setup_survey_db():
              CADENCE_FEATS],
             ['ASAS',
              '../survey_classifier_data/data/ASAS_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['CoRoT',
              '../survey_classifier_data/data/noisified_CoRoT_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['HATNet',
              '../survey_classifier_data/data/noisified_HATNet_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['Hipparcos',
              '../survey_classifier_data/data/noisified_Hipparcos_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['KELT',
              '../survey_classifier_data/data/noisified_KELT_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['Kepler',
              '../survey_classifier_data/data/noisified_Kepler_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['LINEAR',
              '../survey_classifier_data/data/noisified_LINEAR_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['OGLE-III',
              '../survey_classifier_data/data/noisified_OGLE-III_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['SuperWASP',
              '../survey_classifier_data/data/noisified_SuperWASP_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS],
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['TrES',
              '../survey_classifier_data/data/noisified_TrES_features.npz',
-             LOMB_SCARGLE_FEATS + GENERAL_FEATS]]:
+             GENERAL_FEATS + LOMB_SCARGLE_FEATS]]:
         fset_path = shutil.copy(orig_fset_path, cfg['paths']['features_folder'])
-        fset = models.Featureset.create(name=fset_name,
-                                   file=models.File.create(uri=fset_path),
-                                   project=proj,
-                                   features_list=features_list,
-                                   custom_features_script=None)
-        fset.task_id = None
-        fset.finished = datetime.datetime.now()
-        fset.save()
+        fset = models.Featureset(name=fset_name, file_uri=fset_path,
+                                 project=p, features_list=features_list,
+                                 task_id=None, finished=datetime.datetime.now())
+        models.DBSession().add(fset)
+        models.DBSession().commit()
+        # fset.task_id = None
+        # fset.finished = datetime.datetime.now()
+        # fset.save()
         fset_dict[fset_name] = fset
         print('\nAdded featureset:\n', fset)
 
     # Add models
+    # TODO: Add actual model params
     for model_name, orig_model_path, model_type, params, fset_name in [
             ['Survey LCs RFC',
              os.path.join('..', 'survey_classifier_data/data/survey_classifier.pkl'),
@@ -166,13 +178,15 @@ def setup_survey_db():
                  '..', 'survey_classifier_data/data/noisified_TrES_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'TrES']]:
         model_path = shutil.copy(orig_model_path, cfg['paths']['models_folder'])
-        model_file = models.File.create(uri=model_path)
-        model = models.Model.create(name=model_name, file=model_file,
-                               featureset=fset_dict[fset_name], project=proj,
-                               params=params, type=model_type)
-        model.task_id = None
-        model.finished = datetime.datetime.now()
-        model.save()
+        model = models.Model(name=model_name, file_uri=model_path,
+                             featureset=fset_dict[fset_name], project=p,
+                             params=params, type=model_type, task_id=None,
+                             finished=datetime.datetime.now())
+        models.DBSession().add(fset)
+        models.DBSession().commit()
+        # model.task_id = None
+        # model.finished = datetime.datetime.now()
+        # model.save()
         print('\nAdded model:\n', model)
 
 
