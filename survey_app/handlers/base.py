@@ -14,7 +14,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.flow = Flow()
 
     def get_username(self):
-        return "testuser1@gmail.com"
+        return "testuser@cesium-ml.org"
 
     def push(action, payload={}):
         self.flow.push(self.get_username(), action, payload)

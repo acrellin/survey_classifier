@@ -32,7 +32,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
                     prediction.model_name = pred_info['model_name']
                     prediction.results = json.dumps(pred_info['results'])
                     prediction.isProbabilistic = pred_info['isProbabilistic']
-                    prediction.file_path = pred_info['file']
+                    prediction.file_path = pred_info['file_uri']
                     prediction.dataset_name = pred_info['dataset_name']
                     prediction.save()
                     break
@@ -60,10 +60,12 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
 
     @tornado.gen.coroutine
     def post(self):
+        print('entered survey pred handler')
         data = self.get_json()
 
         dataset_id = data['datasetID']
         model_id = data['modelID']
+        print('modelID:', model_id)
 
         username = self.get_username()
 
@@ -76,7 +78,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
         r = requests.post('{}/predictions'.format(cfg['cesium_app']['url']),
                           data=json.dumps(data)).json()
         if r['status'] != 'success':
-            return self.error('An error occurred while processing the request'
+            return self.error('An error occurred while processing the request '
                               'to cesium_web: {}'.format(r['message']))
 
         prediction = Prediction.create(dataset=dataset, project=dataset.project,

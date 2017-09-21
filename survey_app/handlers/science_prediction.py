@@ -30,7 +30,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
                 if all([pred_info['finished'] for pred_info in preds_info]):
                     prediction.science_preds_task_id = None
                     prediction.science_preds_finished = datetime.datetime.now()
-                    sci_pred_results = {pred_info['model']: pred_info['results']
+                    sci_pred_results = {pred_info['model_id']: pred_info['results']
                                         for pred_info in preds_info}
                     prediction.science_results = json.dumps(
                         util.aggregate_pred_results_by_ts(

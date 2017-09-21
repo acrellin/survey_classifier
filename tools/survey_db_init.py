@@ -32,7 +32,7 @@ def setup_survey_db():
 
     # Add testuser
     with status('Adding testuser'):
-        u = models.User(username='testuser@gmail.com')
+        u = models.User(username='testuser@cesium-ml.org')
         models.DBSession().add(u)
         models.DBSession().commit()
 
@@ -87,10 +87,10 @@ def setup_survey_db():
     fset_dict = {}
     for fset_name, orig_fset_path, features_list in [
             ['Survey LC Cadence/Error Features',
-             '../survey_classifier_data/data/survey_lc_features_100.npz',
+             '../survey_classifier_data/data/survey_lc_features.npz',
              CADENCE_FEATS],
             ['ASAS',
-             '../survey_classifier_data/data/ASAS_features_100.npz',
+             '../survey_classifier_data/data/ASAS_features.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['CoRoT',
              '../survey_classifier_data/data/noisified_CoRoT_features_100.npz',
@@ -135,59 +135,64 @@ def setup_survey_db():
     # TODO: Add actual model params
     for model_name, orig_model_path, model_type, params, fset_name in [
             ['Survey LCs RFC',
-             os.path.join('..', 'survey_classifier_data/data/survey_classifier.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/survey_classifier.pkl')),
              'RandomForestClassifier', {}, 'Survey LC Cadence/Error Features'],
             ['ASAS',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/ASAS_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/ASAS_model_compressed.pkl')),
              'RandomForestClassifier', {}, 'ASAS'],
             ['CoRoT',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_CoRoT_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_CoRoT_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'CoRoT'],
             ['HATNet',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_HATNet_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_HATNet_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'HATNet'],
             ['Hipparcos',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_Hipparcos_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_Hipparcos_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'Hipparcos'],
             ['KELT',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_KELT_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_KELT_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'KELT'],
             ['Kepler',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_Kepler_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_Kepler_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'Kepler'],
             ['LINEAR',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_LINEAR_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_LINEAR_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'LINEAR'],
             ['OGLE-III',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_OGLE-III_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_OGLE-III_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'OGLE-III'],
             ['SuperWASP',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_SuperWASP_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_SuperWASP_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'SuperWASP'],
             ['TrES',
-             os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_TrES_model_optimized_compressed_100.pkl'),
+             os.path.abspath(os.path.join(
+                 '..', 'survey_classifier_data/data/noisified_TrES_model_optimized_compressed_100.pkl')),
              'RandomForestClassifier', {}, 'TrES']]:
         model_path = shutil.copy(orig_model_path, cfg['paths']['models_folder'])
         model = models.Model(name=model_name, file_uri=model_path,
-                             featureset=fset_dict[fset_name], project=p,
+                             featureset_id=fset_dict[fset_name].id, project=p,
+                             project_id=p.id,
                              params=params, type=model_type, task_id=None,
                              finished=datetime.datetime.now())
-        models.DBSession().add(fset)
+        models.DBSession().add(model)
         models.DBSession().commit()
         # model.task_id = None
         # model.finished = datetime.datetime.now()
         # model.save()
         print('\nAdded model:\n', model)
+        print(model.id)
+
+    print(cfg)
 
 
 if __name__ == '__main__':

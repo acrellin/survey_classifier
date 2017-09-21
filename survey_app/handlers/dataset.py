@@ -68,7 +68,7 @@ class DatasetHandler(BaseHandler):
         d = Dataset.add(name=dataset_name, project=p, file_names=file_names,
                         meta_features=r['data']['meta_features'],
                         cesium_app_id=r['data']['id'],
-                        cesium_app_project_id=r['data']['project'])
+                        cesium_app_project_id=r['data']['project_id'])
 
         return self.success(d, 'survey_app/FETCH_DATASETS')
 
