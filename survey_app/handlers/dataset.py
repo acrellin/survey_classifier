@@ -1,6 +1,6 @@
-from .base import BaseHandler, AccessError
-from ..models import Project, Dataset
-from ..config import cfg
+from baselayer.app.handlers.base import BaseHandler
+from baselayer.app.custom_exceptions import AccessError
+from ..models import Project, Dataset, DBSession
 
 import os
 from os.path import join as pjoin
@@ -12,17 +12,6 @@ from cesium.data_management import parse_and_store_ts_data
 
 
 class DatasetHandler(BaseHandler):
-    def _get_dataset(self, dataset_id):
-        try:
-            d = Dataset.get(Dataset.id == dataset_id)
-        except Dataset.DoesNotExist:
-            raise AccessError('No such dataset')
-
-        if not d.is_owned_by(self.get_username()):
-            raise AccessError('No such dataset')
-
-        return d
-
     def post(self):
         if not 'tarFile' in self.request.files:
             return self.error('No tar file uploaded')
@@ -55,7 +44,7 @@ class DatasetHandler(BaseHandler):
                 if key == 'tarFile':
                     tarfile_path = tmp_path
             # Post to cesium_web
-            r = requests.post('{}/dataset'.format(cfg['cesium_app']['url']),
+            r = requests.post('{}/dataset'.format(self.cfg['cesium_app:url']),
                               files=files, data=data).json()
             if r['status'] != 'success':
                 return self.error(r['message'])
@@ -64,29 +53,32 @@ class DatasetHandler(BaseHandler):
                                                cleanup_archive=False)
             file_names = [os.path.basename(ts_path) for ts_path in ts_paths]
 
-        p = Project.get(Project.id == project_id)
-        d = Dataset.add(name=dataset_name, project=p, file_names=file_names,
-                        meta_features=r['data']['meta_features'],
-                        cesium_app_id=r['data']['id'],
-                        cesium_app_project_id=r['data']['project_id'])
+        p = Project.query.filter(Project.id == project_id).one()
+        d = Dataset(name=dataset_name, project=p, file_names=file_names,
+                    project_id=p.id, meta_features=r['data']['meta_features'],
+                    cesium_app_id=r['data']['id'],
+                    cesium_app_project_id=r['data']['project_id'])
+        DBSession().add(d)
+        DBSession().commit()
 
         return self.success(d, 'survey_app/FETCH_DATASETS')
 
     def get(self, dataset_id=None):
         if dataset_id is not None:
-            dataset = self._get_dataset(dataset_id)
+            dataset = Dataset.get_if_owned_by(dataset_id, self.current_user)
             dataset_info = dataset.display_info()
         else:
-            datasets = [d for p in Project.all(self.get_username())
-                            for d in p.datasets]
+            datasets = [d for p in self.current_user.projects
+                        for d in p.datasets]
             dataset_info = [d.display_info() for d in datasets]
 
         return self.success(dataset_info)
 
     def delete(self, dataset_id):
-        d = self._get_dataset(dataset_id)
+        d = Dataset.get_if_owned_by(dataset_id, self.current_user)
         # Make request to delete dataset in cesium_web
         r = requests.delete('{}/dataset/{}'.format(
-            cfg['cesium_app']['url'], d.cesium_app_id)).json()
-        d.delete_instance()
+            self.cfg['cesium_app:url'], d.cesium_app_id)).json()
+        DBSession().delete(d)
+        DBSession().commit()
         return self.success(action='survey_app/FETCH_DATASETS')
