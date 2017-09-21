@@ -7,15 +7,24 @@ SUPERVISORD=supervisord
 bundle = ./public/build/bundle.js
 webpack = ./node_modules/.bin/webpack --display-error-details
 
-dependencies:
-	pip install -r requirements.txt
-	./tools/check_js_deps.sh
+baselayer/README.md:
+	git submodule update --init --remote
+	$(MAKE) baselayer-update
+
+.PHONY: baselayer-update
+baselayer-update:
+	./baselayer/tools/submodule_update.sh
+
+dependencies: baselayer/README.md
+	@./baselayer/tools/silent_monitor.py pip install -r baselayer/requirements.txt
+	@./baselayer/tools/silent_monitor.py pip install -r requirements.txt
+	@./baselayer/tools/silent_monitor.py ./baselayer/tools/check_js_deps.sh
 
 db_init:
-	@./tools/silent_monitor.py ./tools/db_create.sh
+	@PYTHONPATH=. ./baselayer/tools/silent_monitor.py ./baselayer/tools/db_init.py
 
-db_drop:
-	@PYTHONPATH=. ./tools/silent_monitor.py ./tools/db_drop.py
+db_clear:
+	PYTHONPATH=. ./baselayer/tools/db_init.py -f
 
 db_test_data:
 	@PYTHONPATH=. python ./survey_app/models.py
@@ -44,17 +53,31 @@ paths:
 	mkdir -p ~/.local/$(APP_NAME)/logs
 
 log: paths
-	./tools/watch_logs.py
+	./baselayer/tools/watch_logs.py
 
 run: paths dependencies
-	$(SUPERVISORD) -c conf/supervisord.conf
+	@echo "Supervisor will now fire up various micro-services."
+	@echo
+	@echo " - Please run \`make log\` in another terminal to view logs"
+	@echo " - Press Ctrl-C to abort the server"
+	@echo " - Run \`make monitor\` in another terminal to restart services"
+	@echo
+	$(SUPERVISORD) -c baselayer/conf/supervisor/app.conf
 
 debug:
-	$(SUPERVISORD) -c conf/supervisord_debug.conf
+	@echo "Starting web service in debug mode"
+	@echo "Press Ctrl-D to stop"
+	@echo
+	@$(SUPERVISORD) -c baselayer/conf/supervisor/debug.conf &
+	@sleep 1 && $(SUPERVISORCTL) -i status
+	@$(SUPERVISORCTL) shutdown
 
 # Attach to terminal of running webserver; useful to, e.g., use pdb
 attach:
-	supervisorctl -c conf/supervisord_common.conf fg app
+	$(SUPERVISORCTL) fg app
+
+testrun: paths dependencies
+	$(SUPERVISORD) -c baselayer/conf/supervisor/testing.conf
 
 clean:
 	rm $(bundle)
@@ -65,9 +88,12 @@ test_headless: paths dependencies
 test: paths dependencies
 	PYTHONPATH='.' ./tools/frontend_tests.py
 
+stop:
+	$(SUPERVISORCTL) stop all
+
 status:
-	PYTHONPATH='.' ./tools/supervisor_status.py
+	PYTHONPATH='.' ./baselayer/tools/supervisor_status.py
 
 # Call this target to see which Javascript dependencies are not up to date
 check-js-updates:
-	./tools/check_js_updates.sh
+	./baselayer/tools/check_js_updates.sh
