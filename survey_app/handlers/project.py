@@ -1,62 +1,53 @@
-from .base import BaseHandler, AccessError
-from ..models import Project
-from ..config import cfg
+from baselayer.app.handlers.base import BaseHandler
+from baselayer.app.custom_exceptions import AccessError
+from ..models import DBSession, Project
+import tornado.web
 
 import requests
 import json
 
 
 class ProjectHandler(BaseHandler):
-    def _get_project(self, project_id):
-        try:
-            p = Project.get(Project.id == project_id)
-        except Project.DoesNotExist:
-            raise AccessError('No such project')
-
-        if not p.is_owned_by(self.get_username()):
-            raise AccessError('No such project')
-
-        return p
-
     def get(self, project_id=None):
         if project_id is not None:
-            proj_info = self._get_project(project_id)
+            proj_info = Project.get_if_owned_by(project_id, self.current_user)
         else:
-            proj_info = Project.all(self.get_username())
+            proj_info = self.current_user.projects
 
         return self.success(proj_info)
 
     def post(self):
         data = self.get_json()
         cesium_app_id = requests.post(
-            '{}/project'.format(cfg['cesium_app']['url']),
+            '{}/project'.format(self.cfg['cesium_app:url']),
             data=json.dumps(data)).json()['data']['id']
-        p = Project.add_by(data['projectName'],
-                           data.get('projectDescription', ''),
-                           cesium_app_id,
-                           self.get_username())
+        p = Project(name=data['projectName'],
+                    description=data.get('projectDescription', ''),
+                    cesium_app_id=cesium_app_id,
+                    users=[self.current_user])
+        DBSession().add(p)
+        DBSession().commit()
 
         return self.success({"id": p.id}, 'survey_app/FETCH_PROJECTS')
 
     def put(self, project_id):
-        # This ensures that the user has access to the project they
-        # want to modify
-        p = self._get_project(project_id)
-
         data = self.get_json()
-        query = Project.update(
-            name=data['projectName'],
-            description=data.get('projectDescription', ''),
-            ).where(Project.id == project_id)
-        query.execute()
+        p = Project.get_if_owned_by(project_id, self.current_user)
+
+        p.name = data['projectName']
+        p.description = data.get('projectDescription', '')
+        DBSession().commit()
 
         return self.success(action='survey_app/FETCH_PROJECTS')
 
     def delete(self, project_id):
-        p = self._get_project(project_id)
+        p = Project.get_if_owned_by(project_id, self.current_user)
+
         # Make request to delete project in cesium_web
         r = requests.delete('{}/project/{}'.format(
-            cfg['cesium_app']['url'], p.cesium_app_id)).json()
-        p.delete_instance()
+            self.cfg['cesium_app:url'], p.cesium_app_id)).json()
+
+        DBSession().delete(p)
+        DBSession().commit()
 
         return self.success(action='survey_app/FETCH_PROJECTS')
