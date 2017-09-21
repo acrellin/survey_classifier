@@ -9,10 +9,7 @@ import pandas as pd
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
-from baselayer.app.models import (init_db, join_table, Base, DBSession, User)
-
-from survey_app.json_util import to_json
-from survey_app.config import cfg
+from baselayer.app.models import (init_db, join_model, Base, DBSession, User)
 
 
 def is_owned_by(self, user):
@@ -40,12 +37,14 @@ class Project(Base):
 
 User.projects = relationship('Project', secondary='user_projects',
                              back_populates='users', cascade='all')
-user_projects = join_table('user_projects', User, Project)
+user_projects = join_model('user_projects', User, Project)
 
 
 class Dataset(Base):
     name = sa.Column(sa.String(), nullable=False)
     project = relationship('Project', back_populates='datasets')
+    project_id = sa.Column(sa.ForeignKey('projects.id', ondelete='CASCADE'),
+                           nullable=False, index=True)
     file_names = sa.Column(sa.ARRAY(sa.VARCHAR()), nullable=False, index=True)
     meta_features = sa.Column(sa.ARRAY(sa.VARCHAR()), nullable=False, index=True)
     created = sa.Column(sa.DateTime(), default=datetime.datetime.now)
