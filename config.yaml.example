@@ -1,77 +1,47 @@
 app:
-    secret-key: abcd01234 # This secret key can be any random string of
-                          # characters.  Typically ``os.urandom(24)`` is
-                          # good enough.
-
-authentication:
-    # The Stormpath API keys can be downloaded from:
-    # https://api.stormpath.com
-
-    stormpath_api_key_id: 01234
-    stormpath_api_key_secret: 0124
-    stormpath_application: survey_app
-
-    ## This section is optional.  If not filled in, Google Authentication
-    ## will be disabled.
-    ##
-    ## These values can be obtained from
-    ##   https://console.developers.google.com/project
-    ##
-    ## When filling in the form for running on localhost:
-    ##
-    ## - Appliation type: Web
-    ## - Authorized JavaScript origins: blank
-    ## - Authorized redirect URIs: http://localhost:7000/google
-    ##                             http://your.hosted.server.com
-    ##
-    ## Always include the localhost:7000 for unit testing purposes.
-
-    google_client_id:
-    google_client_secret:
+    secret-key: abc01234  # This secret key can be any random string of
+                          # characters.
+                          #
+                          # You should re-generate this for your application
+                          # using:
+                          #
+                          # base64.b64encode(os.urandom(50)).decode('ascii')
+    factory: survey_app.app_server.make_app
+    port: 65001
 
 paths:
     # Note below that defined variables can be reused in subsequent
     # definitions.
 
-    data_path:        './data'
-    err_log_path:     '{data_path}/logs/errors_and_warnings.log'
-    models_folder:    '{data_path}/models'
-    features_folder:  '{data_path}/extracted_features'
-    predictions_folder:  '{data_path}/predictions'
-    ts_data_folder:  '{data_path}/ts_data'
+    data_path: './data'
+    models_folder: './data/models'
+    features_folder: './data/extracted_features'
+    predictions_folder: './data/predictions'
+    ts_data_folder: './data/ts_data'
 
-    upload_folder:    '{data_path}/uploads'
-    custom_feature_script_folder: '{data_path}/uploads/custom_feature_scripts'
-    temp: '/tmp/survey_app'
+    upload_folder: './data/uploads'
+    custom_feature_script_folder: './data/uploads/custom_feature_scripts'
 
 database:
     database: survey_app
-    host:
+    host: localhost
     port: 5432
     user: survey_app
     password:
 
-docker:
-    enabled: 0
-
 server:
     url: http://localhost:7000
+    multi_user: False
 
-cesium_app:
-    url: http://localhost:5000
-    survey_classifier_project_id: 1
-    survey_classifier_featureset_id: 1
-    survey_classifier_model_id: 1
+    # From https://console.developers.google.com/
+    #
+    # - Create Client ID
+    # - Javascript origins: https://localhost:5000
+    # - Authorized redirect URLs: http://localhost:5000/complete/google-oauth2/
+    #
+    # You need to have Google+ API enabled; it takes a few minutes to activate.
 
-
-xr_engine: netcdf4
-##xr_engine: h5netcdf
-
-## testing:
-##    ## Disable authentication
-##    disable_auth: 1
-##
-##    ## Use a separate test database
-##    test_db: 1
-##
-##    debug: 0
+    auth:
+        debug_login: False
+        google_oauth2_key:
+        google_oauth2_secret:
