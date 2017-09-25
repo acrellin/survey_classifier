@@ -1,6 +1,6 @@
-from .base import BaseHandler, AccessError
-from ..models import Prediction, Project
-from ..config import cfg
+from baselayer.app.handlers.base import BaseHandler
+from baselayer.app.custom_exceptions import AccessError
+from ..models import Prediction, Project, DBSession
 
 import requests
 
@@ -34,6 +34,6 @@ class GeneralPredictionHandler(BaseHandler):
         prediction = self._get_prediction(prediction_id)
         # Make request to delete prediction in cesium_web
         r = requests.delete('{}/predictions/{}'.format(
-            cfg['cesium_app']['url'], prediction.cesium_app_id)).json()
+            self.cfg['cesium_app:url'], prediction.cesium_app_id)).json()
         prediction.delete_instance()
         return self.success(action='survey_app/FETCH_PREDICTIONS')

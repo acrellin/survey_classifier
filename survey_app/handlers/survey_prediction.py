@@ -1,8 +1,6 @@
-from .base import AccessError
+from baselayer.app.custom_exceptions import AccessError
 from .general_prediction import GeneralPredictionHandler
-from ..models import Prediction, Dataset, Project
-from ..config import cfg
-from .. import util
+from ..models import Prediction, Dataset, Project, DBSession
 
 import tornado.gen
 
@@ -23,7 +21,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
         try:
             while True:
                 pred_info = requests.get('{}/predictions/{}'.format(
-                    cfg['cesium_app']['url'],
+                    self.cfg['cesium_app:url'],
                     cesium_app_prediction_id)).json()['data']
                 if pred_info['finished']:
                     prediction.task_id = None
@@ -75,7 +73,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
         data = {'datasetID': cesium_dataset_id,
                 'modelID': model_id}
         # POST prediction to cesium_web
-        r = requests.post('{}/predictions'.format(cfg['cesium_app']['url']),
+        r = requests.post('{}/predictions'.format(self.cfg['cesium_app:url']),
                           data=json.dumps(data)).json()
         if r['status'] != 'success':
             return self.error('An error occurred while processing the request '

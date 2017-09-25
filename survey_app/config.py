@@ -59,7 +59,7 @@ config_files = [os.path.abspath(cf) for cf in config_files]
 # Load example config file as default template
 cfg = warn_defaultdict()
 cfg.update(yaml.load(open(os.path.join(os.path.dirname(__file__),
-                                       "../survey_app.yaml.example"))))
+                                       "../config.yaml.example"))))
 
 for cf in config_files:
     try:
