@@ -48,7 +48,7 @@ def make_app(cfg, baselayer_handlers, baselayer_settings):
             except Exception as e:
                 print(e)
 
-    handlers = [
+    handlers = baselayer_handlers + [
         (r'/project(/.*)?', ProjectHandler),
         (r'/dataset(/.*)?', DatasetHandler),
         (r'/models(/.*)?', ModelHandler),
@@ -57,9 +57,7 @@ def make_app(cfg, baselayer_handlers, baselayer_settings):
         (r'/survey_predictions/([0-9]+)/(download)', SurveyPredictionHandler),
         (r'/science_predictions(/[0-9]+)?', SciencePredictionHandler),
         (r'/science_predictions/([0-9]+)/(download)', SciencePredictionHandler),
-        (r'/socket_auth_token', SocketAuthTokenHandler),
-        (r'/(.*)', tornado.web.StaticFileHandler,
-         {'path': 'public/', 'default_filename': 'index.html'})
+        (r'/socket_auth_token', SocketAuthTokenHandler)
     ]
 
     settings = baselayer_settings
