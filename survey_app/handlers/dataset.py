@@ -7,11 +7,14 @@ from os.path import join as pjoin
 import uuid
 import tempfile
 import requests
+import tornado.web
+
 import cesium
 from cesium.data_management import parse_and_store_ts_data
 
 
 class DatasetHandler(BaseHandler):
+    @tornado.web.authenticated
     def post(self):
         if not 'tarFile' in self.request.files:
             return self.error('No tar file uploaded')
@@ -63,6 +66,7 @@ class DatasetHandler(BaseHandler):
 
         return self.success(d, 'survey_app/FETCH_DATASETS')
 
+    @tornado.web.authenticated
     def get(self, dataset_id=None):
         if dataset_id is not None:
             dataset = Dataset.get_if_owned_by(dataset_id, self.current_user)
@@ -74,6 +78,7 @@ class DatasetHandler(BaseHandler):
 
         return self.success(dataset_info)
 
+    @tornado.web.authenticated
     def delete(self, dataset_id):
         d = Dataset.get_if_owned_by(dataset_id, self.current_user)
         # Make request to delete dataset in cesium_web
