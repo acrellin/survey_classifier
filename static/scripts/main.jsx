@@ -208,7 +208,7 @@ class MainContent extends React.Component {
             <div style={style.topbar.header}>
               Cesium-ML Light Curve Survey Classifier &nbsp;
               <img
-                src="images/cesium-blue-dark.png"
+                src="static/images/cesium-blue-dark.png"
                 alt="Cesium Logo"
                 onClick={this.props.spinLogo}
                 style={{ ...(style.logo.img), ...rotateStyle }}
