@@ -7,7 +7,7 @@ app:
                           #
                           # base64.b64encode(os.urandom(50)).decode('ascii')
     factory: survey_app.app_server.make_app
-    port: 65002
+    port: 65001
 
 paths:
     # Note below that defined variables can be reused in subsequent
@@ -31,7 +31,6 @@ database:
 
 server:
     url: http://localhost:7000
-    multi_user: False
 
     # From https://console.developers.google.com/
     #
@@ -42,7 +41,7 @@ server:
     # You need to have Google+ API enabled; it takes a few minutes to activate.
 
     auth:
-        debug_login: False
+        debug_login: True
         google_oauth2_key:
         google_oauth2_secret:
 
