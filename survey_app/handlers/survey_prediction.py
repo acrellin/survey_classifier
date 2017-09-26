@@ -56,6 +56,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
         self.action('survey_app/DO_SCIENCE_PREDICTIONS',
                     payload={'prediction_id': prediction.id})
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         print('entered survey pred handler')
@@ -94,6 +95,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
 
         return self.success(prediction, 'survey_app/FETCH_PREDICTIONS')
 
+    @tornado.web.authenticated
     def get(self, prediction_id=None, action=None):
         if action == 'download':
             pred_path = self._get_prediction(prediction_id).file_path

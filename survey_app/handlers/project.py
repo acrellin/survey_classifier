@@ -8,6 +8,7 @@ import json
 
 
 class ProjectHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self, project_id=None):
         if project_id is not None:
             proj_info = Project.get_if_owned_by(project_id, self.current_user)
@@ -16,6 +17,7 @@ class ProjectHandler(BaseHandler):
 
         return self.success(proj_info)
 
+    @tornado.web.authenticated
     def post(self):
         data = self.get_json()
         cesium_app_id = requests.post(
@@ -30,6 +32,7 @@ class ProjectHandler(BaseHandler):
 
         return self.success({"id": p.id}, 'survey_app/FETCH_PROJECTS')
 
+    @tornado.web.authenticated
     def put(self, project_id):
         data = self.get_json()
         p = Project.get_if_owned_by(project_id, self.current_user)
@@ -40,6 +43,7 @@ class ProjectHandler(BaseHandler):
 
         return self.success(action='survey_app/FETCH_PROJECTS')
 
+    @tornado.web.authenticated
     def delete(self, project_id):
         p = Project.get_if_owned_by(project_id, self.current_user)
 

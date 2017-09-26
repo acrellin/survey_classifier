@@ -53,6 +53,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
 
         self.action('survey_app/FETCH_PREDICTIONS')
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
         username = self.get_username()
@@ -94,6 +95,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
         return self.success(prediction.display_info(),
                             'survey_app/FETCH_PREDICTIONS')
 
+    @tornado.web.authenticated
     def get(self, prediction_id=None, action=None):
         if action == 'download':
             try:
