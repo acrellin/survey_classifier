@@ -42,9 +42,9 @@ user_projects = join_model('user_projects', User, Project)
 
 class Dataset(Base):
     name = sa.Column(sa.String(), nullable=False)
-    project = relationship('Project', back_populates='datasets')
     project_id = sa.Column(sa.ForeignKey('projects.id', ondelete='CASCADE'),
                            nullable=False, index=True)
+    project = relationship('Project', back_populates='datasets')
     file_names = sa.Column(sa.ARRAY(sa.VARCHAR()), nullable=False, index=True)
     meta_features = sa.Column(sa.ARRAY(sa.VARCHAR()), nullable=False, index=True)
     created = sa.Column(sa.DateTime(), default=datetime.datetime.now)
@@ -54,8 +54,10 @@ class Dataset(Base):
 
 class Prediction(Base):
     """ORM model of the Prediction table"""
-    project = relationship('Project')
+    project = relationship('Project', back_populates='predictions')
     project_id = sa.Column(sa.ForeignKey('projects.id', ondelete='CASCADE'),
+                           nullable=False, index=True)
+    dataset_id = sa.Column(sa.ForeignKey('datasets.id', ondelete='CASCADE'),
                            nullable=False, index=True)
     dataset = relationship('Dataset')
     model_id = sa.Column(sa.String())
