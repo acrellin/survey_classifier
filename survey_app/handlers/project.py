@@ -1,4 +1,4 @@
-from baselayer.app.handlers.base import BaseHandler
+from .base import BaseHandler
 from baselayer.app.custom_exceptions import AccessError
 from ..models import DBSession, Project
 import tornado.web
@@ -19,10 +19,12 @@ class ProjectHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self):
+        print("PROJECT POST ENDPOINT ENTERED!!")
         data = self.get_json()
         cesium_app_id = requests.post(
             '{}/project'.format(self.cfg['cesium_app:url']),
-            data=json.dumps(data)).json()['data']['id']
+            data=json.dumps(data),
+            cookies=self.get_cesium_auth_cookie()).json()['data']['id']
         p = Project(name=data['projectName'],
                     description=data.get('projectDescription', ''),
                     cesium_app_id=cesium_app_id,
@@ -48,8 +50,9 @@ class ProjectHandler(BaseHandler):
         p = Project.get_if_owned_by(project_id, self.current_user)
 
         # Make request to delete project in cesium_web
-        r = requests.delete('{}/project/{}'.format(
-            self.cfg['cesium_app:url'], p.cesium_app_id)).json()
+        r = requests.delete(
+            '{}/project/{}'.format(self.cfg['cesium_app:url'], p.cesium_app_id),
+            cookies=self.get_cesium_auth_cookie()).json()
 
         DBSession().delete(p)
         DBSession().commit()

@@ -1,4 +1,4 @@
-from baselayer.app.handlers.base import BaseHandler
+from .base import BaseHandler
 from baselayer.app.custom_exceptions import AccessError
 from ..models import Project, Dataset, DBSession
 
@@ -48,7 +48,8 @@ class DatasetHandler(BaseHandler):
                     tarfile_path = tmp_path
             # Post to cesium_web
             r = requests.post('{}/dataset'.format(self.cfg['cesium_app:url']),
-                              files=files, data=data).json()
+                              files=files, data=data,
+                              cookies=self.get_cesium_auth_cookie()).json()
             if r['status'] != 'success':
                 return self.error(r['message'])
 
@@ -82,8 +83,9 @@ class DatasetHandler(BaseHandler):
     def delete(self, dataset_id):
         d = Dataset.get_if_owned_by(dataset_id, self.current_user)
         # Make request to delete dataset in cesium_web
-        r = requests.delete('{}/dataset/{}'.format(
-            self.cfg['cesium_app:url'], d.cesium_app_id)).json()
+        r = requests.delete(
+            '{}/dataset/{}'.format(self.cfg['cesium_app:url'], d.cesium_app_id),
+            cookies=self.get_cesium_auth_cookie()).json()
         DBSession().delete(d)
         DBSession().commit()
         return self.success(action='survey_app/FETCH_DATASETS')

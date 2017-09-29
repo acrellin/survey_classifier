@@ -21,9 +21,10 @@ class SciencePredictionHandler(GeneralPredictionHandler):
         try:
             while True:
                 preds_info = [
-                    requests.get('{}/predictions/{}'.format(
-                        self.cfg['cesium_app:url'],
-                        cesium_app_prediction_id)).json()['data']
+                    requests.get(
+                        '{}/predictions/{}'.format(self.cfg['cesium_app:url'],
+                                                   cesium_app_prediction_id),
+                        cookies=self.get_cesium_auth_cookie()).json()['data']
                     for cesium_app_prediction_id in
                     prediction.cesium_app_sci_pred_ids]
                 if all([pred_info['finished'] for pred_info in preds_info]):
@@ -78,7 +79,8 @@ class SciencePredictionHandler(GeneralPredictionHandler):
                                  if model_id in science_model_ids_and_probs[ts_name]]}
             # POST prediction to cesium_web
             r = requests.post('{}/predictions'.format(self.cfg['cesium_app:url']),
-                              data=json.dumps(data)).json()
+                              data=json.dumps(data),
+                              cookies=self.get_cesium_auth_cookie()).json()
             if r['status'] != 'success':
                 return self.error('An error occurred while processing the request'
                                   'to cesium_web: {}'.format(r['message']))

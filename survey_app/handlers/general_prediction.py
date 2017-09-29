@@ -1,4 +1,4 @@
-from baselayer.app.handlers.base import BaseHandler
+from .base import BaseHandler
 from baselayer.app.custom_exceptions import AccessError
 from ..models import Prediction, Project, DBSession
 
