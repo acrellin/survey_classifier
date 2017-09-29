@@ -38,7 +38,7 @@ install_cesium_web:
 	pip install -r ../cesium_web/requirements.txt
 
 cesium_web_init: download_data
-	./tools/survey_db_init.sh
+	@PYTHONPATH=. ./tools/survey_db_init.sh
 
 $(bundle): webpack.config.js package.json
 	$(webpack)
