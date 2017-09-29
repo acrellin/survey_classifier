@@ -2,6 +2,7 @@
 // https://github.com/acdlite/flux-standard-action
 
 import { reset as resetForm } from 'redux-form';
+// import * as API from './API';
 
 export const HYDRATE = 'survey_app/HYDRATE';
 
@@ -65,7 +66,7 @@ export function fetchProjects() {
       dispatch,
       FETCH_PROJECTS,
 
-      fetch('/project')
+      fetch('/project', {credentials: 'same-origin'})
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -91,11 +92,12 @@ export function addProject(form) {
       ADD_PROJECT,
 
       fetch('/project',
-            { method: 'POST',
-             body: JSON.stringify(form),
-             headers: new Headers({
-               'Content-Type': 'application/json'
-             }) })
+            { credentials: 'same-origin',
+              method: 'POST',
+              body: JSON.stringify(form),
+              headers: new Headers({
+                'Content-Type': 'application/json'
+              }) })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -119,11 +121,12 @@ export function updateProject(form) {
       UPDATE_PROJECT,
 
       fetch('/project/{}'.format(form.projectId),
-            { method: 'PUT',
-             body: JSON.stringify(form),
-             headers: new Headers({
-               'Content-Type': 'application/json'
-             }) })
+            { credentials: 'same-origin',
+              method: 'PUT',
+              body: JSON.stringify(form),
+              headers: new Headers({
+                'Content-Type': 'application/json'
+              }) })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -144,7 +147,7 @@ export function deleteProject(id) {
       dispatch,
       DELETE_PROJECT,
 
-      fetch(`/project/${id}`, { method: 'DELETE' })
+      fetch(`/project/${id}`, { credentials: 'same-origin', method: 'DELETE' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -190,7 +193,8 @@ export function uploadDataset(form) {
       dispatch,
       UPLOAD_DATASET,
 
-      fetch('/dataset', { method: 'POST', body: formData })
+      fetch('/dataset', { credentials: 'same-origin', method: 'POST',
+                          body: formData })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -213,7 +217,7 @@ export function fetchDatasets() {
       dispatch,
       FETCH_DATASETS,
 
-      fetch('/dataset')
+      fetch('/dataset', { credentials: 'same-origin' })
         .then(response => response.json())
         .then((json) => (
           dispatch(receiveDatasets(json.data))
@@ -238,7 +242,7 @@ export function deleteDataset(id) {
       dispatch,
       DELETE_DATASET,
 
-      fetch(`/dataset/${id}`, { method: 'DELETE' })
+      fetch(`/dataset/${id}`, { credentials: 'same-origin', method: 'DELETE' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -260,7 +264,7 @@ export function deleteFeatureset(id) {
       dispatch,
       DELETE_FEATURESET,
 
-      fetch(`/features/${id}`, { method: 'DELETE' })
+      fetch(`/features/${id}`, { credentials: 'same-origin', method: 'DELETE' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -283,7 +287,7 @@ export function fetchModels() {
       dispatch,
       FETCH_MODELS,
 
-      fetch('/models')
+      fetch('/models', { credentials: 'same-origin' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -315,11 +319,12 @@ export function doSurveyPrediction(form) {
       DO_SURVEY_PREDICTION,
 
       fetch('/survey_predictions',
-            { method: 'POST',
-             body: JSON.stringify(form),
-             headers: new Headers({
-               'Content-Type': 'application/json'
-             }) }
+            { credentials: 'same-origin',
+              method: 'POST',
+              body: JSON.stringify(form),
+              headers: new Headers({
+                'Content-Type': 'application/json'
+              }) }
       ).then(response => response.json()
       ).then((json) => {
         if (json.status == 'success') {
@@ -342,7 +347,8 @@ export function doSciencePredictions(payload) {
       DO_SCIENCE_PREDICTIONS,
 
       fetch('/science_predictions',
-            { method: 'POST',
+            { credentials: 'same-origin',
+              method: 'POST',
               body: JSON.stringify(payload),
               headers: new Headers({
                 'Content-Type': 'application/json'
@@ -374,7 +380,8 @@ export function uploadAndPredict(form) {
       dispatch,
       UPLOAD_DATASET,
 
-      fetch('/dataset', { method: 'POST', body: formData })
+      fetch('/dataset', { credentials: 'same-origin', method: 'POST',
+                          body: formData })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -402,7 +409,7 @@ export function deletePrediction(id) {
       dispatch,
       DELETE_PREDICTION,
 
-      fetch(`/predictions/${id}`, { method: 'DELETE' })
+      fetch(`/predictions/${id}`, { credentials: 'same-origin', method: 'DELETE' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
@@ -425,7 +432,7 @@ export function fetchPredictions() {
       dispatch,
       FETCH_PREDICTIONS,
 
-      fetch('/predictions')
+      fetch('/predictions', { credentials: 'same-origin' })
         .then(response => response.json())
         .then((json) => {
           if (json.status == 'success') {
