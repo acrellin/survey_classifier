@@ -26,7 +26,8 @@ class DatasetHandler(BaseHandler):
 
         dataset_name = self.get_argument('datasetName')
         project_id = self.get_argument('projectID')
-        cesium_app_project_id = Project.get(Project.id == project_id).cesium_app_id
+        cesium_app_project_id = Project.get_if_owned_by(
+            project_id, self.current_user).cesium_app_id
 
         # Header file is optional for unlabled data w/o metafeatures
         if 'headerFile' in self.request.files:
