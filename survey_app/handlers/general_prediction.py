@@ -20,7 +20,7 @@ class GeneralPredictionHandler(BaseHandler):
                                                     self.current_user)
             prediction_info = prediction.display_info()
 
-            return self.success(prediction_info)
+        return self.success(prediction_info)
 
     @tornado.web.authenticated
     def delete(self, prediction_id):

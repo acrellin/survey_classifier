@@ -18,9 +18,6 @@ class ModelHandler(BaseHandler):
             response = requests.get(
                 '{}/models'.format(self.cfg['cesium_app:url']),
                 cookies=self.get_cesium_auth_cookie())
-            print('\n\nself.get_cesium_auth_cookie():', self.get_cesium_auth_cookie())
-            print('\n\n ----- model response from cesium web:', response, '\n\n')
-            print(response.content, '\n\n')
             model_info = [model for model in response.json()['data'] if
                           model['project_id'] ==
                           self.cfg['cesium_app:survey_classifier_project_id']]
