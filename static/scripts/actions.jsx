@@ -2,7 +2,6 @@
 // https://github.com/acdlite/flux-standard-action
 
 import { reset as resetForm } from 'redux-form';
-// import * as API from './API';
 
 export const HYDRATE = 'survey_app/HYDRATE';
 
