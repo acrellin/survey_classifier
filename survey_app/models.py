@@ -64,8 +64,7 @@ class Prediction(Base):
     created = sa.Column(sa.DateTime(), default=datetime.datetime.now)
     task_id = sa.Column(sa.String())
     science_preds_task_id = sa.Column(sa.String())
-    cesium_app_sci_pred_ids = sa.Column(sa.ARRAY(sa.VARCHAR()), nullable=False,
-                                        index=True)
+    cesium_app_sci_pred_ids = sa.Column(sa.ARRAY(sa.VARCHAR()), index=True)
     cesium_app_id = sa.Column(sa.String())
     cesium_app_project_id = sa.Column(sa.String())
     finished = sa.Column(sa.DateTime())
@@ -80,7 +79,7 @@ class Prediction(Base):
 
     def display_info(self):
         info = self.to_dict()
-        info['results'] = (json.loads(self.results.tobytes().decode())
+        info['results'] = (json.loads(self.results.decode())
                            if self.results else None)
         info['science_results'] = (json.loads(self.science_results.tobytes().decode())
                                    if self.science_results else None)
