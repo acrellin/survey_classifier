@@ -17,23 +17,25 @@ import pandas as pd
 class SurveyPredictionHandler(GeneralPredictionHandler):
     """Handler for performing survey predictions."""
     @tornado.gen.coroutine
-    def _await_prediction(self, prediction, cesium_app_prediction_id):
+    def _await_prediction(self, prediction):
         try:
             while True:
                 pred_info = requests.get(
                     '{}/predictions/{}'.format(self.cfg['cesium_app:url'],
-                                               cesium_app_prediction_id),
+                                               prediction.cesium_app_id),
                     cookies=self.get_cesium_auth_cookie()).json()['data']
                 if pred_info['finished']:
                     prediction.task_id = None
                     prediction.finished = datetime.datetime.now()
                     prediction.model_type = pred_info['model_type']
                     prediction.model_name = pred_info['model_name']
-                    prediction.results = json.dumps(pred_info['results'])
+                    prediction.results = bytes(json.dumps(pred_info['results']),
+                                               encoding='utf-8')
                     prediction.isProbabilistic = pred_info['isProbabilistic']
                     prediction.file_path = pred_info['file_uri']
                     prediction.dataset_name = pred_info['dataset_name']
-                    prediction.save()
+                    DBSession().add(prediction)
+                    DBSession().commit()
                     break
                 else:
                     yield tornado.gen.sleep(1)
@@ -60,17 +62,13 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
     @tornado.web.authenticated
     @tornado.gen.coroutine
     def post(self):
-        print('entered survey pred handler')
         data = self.get_json()
 
         dataset_id = data['datasetID']
         model_id = data['modelID']
-        print('modelID:', model_id)
 
-        username = self.get_username()
-
-        dataset = Dataset.get(Dataset.id == dataset_id)
-        cesium_dataset_id = Dataset.get(Dataset.id == dataset_id).cesium_app_id
+        dataset = Dataset.get_if_owned_by(dataset_id, self.current_user)
+        cesium_dataset_id = dataset.cesium_app_id
 
         data = {'datasetID': cesium_dataset_id,
                 'modelID': model_id}
@@ -82,25 +80,27 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
             return self.error('An error occurred while processing the request '
                               'to cesium_web: {}'.format(r['message']))
 
-        prediction = Prediction.create(dataset=dataset, project=dataset.project,
-                                       model_id=model_id)
+        prediction = Prediction(dataset=dataset, project=dataset.project,
+                                model_id=model_id)
 
         prediction.task_id = str(uuid.uuid4())
         prediction.cesium_app_id = r['data']['id']
         prediction.model_type = r['data']['model_type']
         prediction.model_name = r['data']['model_name']
         prediction.dataset_name = r['data']['dataset_name']
-        prediction.save()
+        DBSession().add(prediction)
+        DBSession().commit()
 
         loop = tornado.ioloop.IOLoop.current()
-        loop.spawn_callback(self._await_prediction, prediction, r['data']['id'])
+        loop.spawn_callback(self._await_prediction, prediction)
 
         return self.success(prediction, 'survey_app/FETCH_PREDICTIONS')
 
     @tornado.web.authenticated
     def get(self, prediction_id=None, action=None):
         if action == 'download':
-            pred_path = self._get_prediction(prediction_id).file_path
+            pred_path = Prediction.get_if_owned_by(prediction_id,
+                                                   self.current_user).file_path
             try:
                 fset, data = cesium.featurize.load_featureset(pred_path)
             except OSError:
