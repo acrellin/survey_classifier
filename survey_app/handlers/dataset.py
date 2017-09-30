@@ -72,11 +72,11 @@ class DatasetHandler(BaseHandler):
     def get(self, dataset_id=None):
         if dataset_id is not None:
             dataset = Dataset.get_if_owned_by(dataset_id, self.current_user)
-            dataset_info = dataset.display_info()
+            dataset_info = dataset.to_dict()
         else:
             datasets = [d for p in self.current_user.projects
                         for d in p.datasets]
-            dataset_info = [d.display_info() for d in datasets]
+            dataset_info = [d.to_dict() for d in datasets]
 
         return self.success(dataset_info)
 
