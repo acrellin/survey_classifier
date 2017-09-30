@@ -68,7 +68,7 @@ PredictForm.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const filteredDatasets = state.datasets.filter(dataset =>
-    (dataset.project === ownProps.selectedProject.id));
+    (dataset.project_id === ownProps.selectedProject.id));
   const zerothDataset = filteredDatasets[0];
 
   const models = JSON.parse(JSON.stringify(state.models));
@@ -321,7 +321,7 @@ SciencePredictionResults.propTypes = {
 
 const ptMapStateToProps = (state, ownProps) => {
   const filteredPredictions = state.predictions.filter(pred =>
-    (pred.project === ownProps.selectedProject.id));
+    (pred.project_id === ownProps.selectedProject.id));
   return {
     predictions: filteredPredictions
   };
