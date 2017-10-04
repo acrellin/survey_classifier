@@ -81,6 +81,6 @@ class Prediction(Base):
         info = self.to_dict()
         info['results'] = (json.loads(self.results.decode())
                            if self.results else None)
-        info['science_results'] = (json.loads(self.science_results.tobytes().decode())
+        info['science_results'] = (json.loads(self.science_results.decode())
                                    if self.science_results else None)
         return info
