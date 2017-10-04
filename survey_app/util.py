@@ -7,7 +7,7 @@ import requests
 from collections import defaultdict
 from operator import itemgetter
 import pandas as pd
-from .config import cfg
+from baselayer.app.config import load_config
 
 
 __all__ = ['robust_literal_eval', 'prediction_results_to_csv',
@@ -33,7 +33,7 @@ def robust_literal_eval(val):
         return val
 
 
-def determine_model_ids(prediction_results):
+def determine_model_ids(prediction_results, cookie):
     """Parse results and group model IDs and probabilities by time series name.
 
     Parameters
@@ -49,8 +49,10 @@ def determine_model_ids(prediction_results):
         model IDs and their associated probabilities, respectively,
         e.g. {'ts_1': {mdl_id_1: mdl_id_1_prob, ...}, ...}.
     """
+    cfg = load_config()
     model_name_to_id = {model['name']: model['id'] for model in
-                        requests.get('{}/models'.format(cfg['cesium_app']['url']))
+                        requests.get('{}/models'.format(cfg['cesium_app']['url']),
+                                     cookies=cookie)
                         .json()['data'] if model['project_id'] ==
                         cfg['cesium_app']['survey_classifier_project_id']}
     ts_name_model_ids_and_probs = {}
@@ -67,7 +69,8 @@ def determine_model_ids(prediction_results):
     return ts_name_model_ids_and_probs
 
 
-def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs):
+def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs,
+                                 cookie):
     """Map model-wise prediction results to TS-wise results.
 
     Parameters
@@ -93,8 +96,10 @@ def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs):
                        'combined': {'class_1': 0.5, 'class_2': 0.2, ...}},
               ...}
     """
+    cfg = load_config()
     model_id_to_name = {model['id']: model['name'] for model in
-                        requests.get('{}/models'.format(cfg['cesium_app']['url']))
+                        requests.get('{}/models'.format(cfg['cesium_app']['url']),
+                                     cookies=cookie)
                         .json()['data'] if model['project_id'] ==
                         cfg['cesium_app']['survey_classifier_project_id']}
     ts_names = set([ts_name for model_id in sci_pred_results
