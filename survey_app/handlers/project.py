@@ -19,7 +19,6 @@ class ProjectHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self):
-        print("PROJECT POST ENDPOINT ENTERED!!")
         data = self.get_json()
         cesium_app_id = requests.post(
             '{}/project'.format(self.cfg['cesium_app:url']),

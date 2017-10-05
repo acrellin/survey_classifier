@@ -113,9 +113,7 @@ class WebSocket(websocket.WebSocketHandler):
 
     def authenticate(self, auth_token):
         try:
-            print('jwt:', jwt)
             token_payload = jwt.decode(auth_token, secret)
-            print("GOT HERE")
             username = token_payload['username']
 
             self.username = username
@@ -129,12 +127,9 @@ class WebSocket(websocket.WebSocketHandler):
                 WebSocket.subscribe(username)
 
             WebSocket.sockets[username].add(self)
-            print("AUTH SUCCESSFUL")
         except jwt.DecodeError:
             self.send_json(action='AUTH FAILED')
-            print("AUTH FAILED _ JSON DECODE ERRRO")
         except jwt.ExpiredSignatureError:
-            print("AUTH FAILED _ SIGNATURE")
             self.send_json(action='AUTH FAILED')
 
     @classmethod
