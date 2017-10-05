@@ -48,6 +48,9 @@ const config = {
     })
   ],
   resolve: {
+    alias: {
+      baselayer: path.resolve(__dirname, 'baselayer/static/js')
+    },
     extensions: ['.js', '.jsx']
   }
 };

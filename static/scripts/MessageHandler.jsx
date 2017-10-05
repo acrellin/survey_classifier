@@ -1,38 +1,30 @@
 import * as Action from './actions';
-import { SHOW_NOTIFICATION, showNotification } from './Notifications';
+import { SHOW_NOTIFICATION, showNotification } from 'baselayer/components/Notifications';
+import MessageHandler from 'baselayer/MessageHandler';
 
-class MessageHandler {
-  constructor(dispatch) {
-    this.dispatch = dispatch;
-    this.handle = this.handle.bind(this);
-  }
-
-  handle(message) {
+let AppMessageHandler = dispatch => {
+  return new MessageHandler(dispatch, message => {
     switch (message.action) {
       case Action.FETCH_PROJECTS:
-        this.dispatch(Action.fetchProjects());
+        dispatch(Action.fetchProjects());
         break;
       case Action.FETCH_DATASETS:
-        this.dispatch(Action.fetchDatasets());
+        dispatch(Action.fetchDatasets());
         break;
       case Action.FETCH_MODELS:
-        this.dispatch(Action.fetchModels());
+        dispatch(Action.fetchModels());
         break;
       case Action.FETCH_PREDICTIONS:
-        this.dispatch(Action.fetchPredictions());
+        dispatch(Action.fetchPredictions());
         break;
       case Action.DO_SCIENCE_PREDICTIONS:
-        this.dispatch(Action.doSciencePredictions(message.payload));
-        break;
-      case SHOW_NOTIFICATION:
-        this.dispatch(showNotification(message.payload.note,
-                                       message.payload.type));
+        dispatch(Action.doSciencePredictions(message.payload));
         break;
       default:
         console.log('Unknown message received through flow:',
                     message);
     }
-  }
+  });
 }
 
-export default MessageHandler;
+export default AppMessageHandler;

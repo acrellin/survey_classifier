@@ -36,7 +36,7 @@ export const SHOW_EXPANDER = 'survey_app/SHOW_EXPANDER';
 
 export const SPIN_LOGO = 'survey_app/SPIN_LOGO';
 
-import { showNotification } from './Notifications';
+import { showNotification, reduceNotifications } from 'baselayer/components/Notifications';
 import promiseAction from './action_tools';
 import { objectType } from './utils';
 

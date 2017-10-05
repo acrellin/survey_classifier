@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 
 import * as Action from './actions';
-import { reducer as notifications } from './Notifications';
+import { reducer as notifications } from 'baselayer/components/Notifications';
 import { contains, joinObjectValues } from './utils';
 
 
@@ -97,6 +97,16 @@ function misc(state={ logoSpinAngle: 0 }, action) {
 }
 
 
+function profile(state={ username: '' }, action) {
+  switch (action.type) {
+    case Action.RECEIVE_USER_PROFILE:
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
+
 const rootReducer = combineReducers({
   projects,
   datasets,
@@ -104,6 +114,7 @@ const rootReducer = combineReducers({
   predictions,
   notifications,
   expander,
+  profile,
   form: myFormReducer(formReducer),
   misc
 });

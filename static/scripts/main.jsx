@@ -8,12 +8,12 @@ import 'bootstrap';
 
 import configureStore from './configureStore';
 import * as Action from './actions';
-import WebSocket from './WebSocket';
-import MessageHandler from './MessageHandler';
+import WebSocket from 'baselayer/components/WebSocket';
+import AppMessageHandler from './MessageHandler';
 import { ProjectSelector, AddProject, ProjectTab } from './Projects';
 import DatasetsTab from './Datasets';
 import PredictTab from './Predictions';
-import { Notifications } from './Notifications';
+import { Notifications } from 'baselayer/components/Notifications';
 import colorScheme from './colorscheme';
 import Tooltip from './Tooltip';
 import UploadPredictTab from './UploadAndPredict';
@@ -25,8 +25,7 @@ const TabPanel = ReactTabs.TabPanel;
 const cs = colorScheme;
 
 const store = configureStore();
-
-const messageHandler = (new MessageHandler(store.dispatch)).handle;
+const messageHandler = AppMessageHandler(store.dispatch);
 
 
 class MainContent extends React.Component {
@@ -256,7 +255,9 @@ class MainContent extends React.Component {
                   url={`ws://${this.props.root}websocket`}
                   auth_url={`${location.protocol}//${this.props.root}socket_auth_token`}
                   messageHandler={messageHandler}
+                  dispatch={store.dispatch}
                 />
+                {this.props.username}
               </Tab>
             </TabList>
             <TabPanel style={style.tabPanel}>
