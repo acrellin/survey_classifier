@@ -10,6 +10,10 @@ import peewee
 import joblib
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
+from tempfile import mkdtemp
+
+
+TMP_DIR = mkdtemp()
 
 
 @contextmanager

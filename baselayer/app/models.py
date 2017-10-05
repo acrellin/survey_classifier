@@ -16,14 +16,17 @@ DBSession = scoped_session(sessionmaker())
 # The db has to be initialized later; this is done by the app itself
 # See `app_server.py`
 def init_db(user, database, password=None, host=None, port=None):
+    print(user, database, password, host, port)
     url = 'postgresql://{}:{}@{}:{}/{}'
     url = url.format(user, password or '', host or '', port or '', database)
-
+    print(url)
+    print('creating conn')
     conn = sa.create_engine(url, client_encoding='utf8')
-
+    print('conn:', conn)
     DBSession.configure(bind=conn)
     Base.metadata.bind = conn
 
+    print('returning con')
     return conn
 
 

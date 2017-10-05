@@ -6,6 +6,7 @@ import os
 from . import models
 
 from baselayer.app import model_util
+from baselayer.app.config import load_config
 
 from .handlers import (
     SocketAuthTokenHandler,
