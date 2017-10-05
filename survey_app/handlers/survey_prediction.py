@@ -40,7 +40,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
                 else:
                     yield tornado.gen.sleep(1)
 
-            self.action('survey_app/SHOW_NOTIFICATION',
+            self.action('baselayer/SHOW_NOTIFICATION',
                         payload={
                             "note": "Prediction '{}/{}' completed".format(
                                 pred_info['dataset_name'],
@@ -49,7 +49,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
 
         except Exception as e:
             prediction.delete_instance()
-            self.action('survey_app/SHOW_NOTIFICATION',
+            self.action('baselayer/SHOW_NOTIFICATION',
                         payload={
                             "note": "Prediction failed "
                             "with error {}. Please try again.".format(e),
