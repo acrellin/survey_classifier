@@ -11,5 +11,5 @@ rm survey_db_init.py
 make log &
 make &
 sleep 3
-PYTHONPATH=.. python cesium_web_login.py
-cd $APP_REPO_DIR
+cd $APP_REPO_DIR/..
+PYTHONPATH=. python ./tools/cesium_web_login.py
