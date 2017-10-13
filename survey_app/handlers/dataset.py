@@ -50,7 +50,7 @@ class DatasetHandler(BaseHandler):
             # Post to cesium_web
             r = requests.post('{}/dataset'.format(self.cfg['cesium_app:url']),
                               files=files, data=data,
-                              cookies=self.get_cesium_auth_cookie()).json()
+                              json={'token': self.get_cesium_auth_token()}).json()
             if r['status'] != 'success':
                 return self.error(r['message'])
 
@@ -86,7 +86,7 @@ class DatasetHandler(BaseHandler):
         # Make request to delete dataset in cesium_web
         r = requests.delete(
             '{}/dataset/{}'.format(self.cfg['cesium_app:url'], d.cesium_app_id),
-            cookies=self.get_cesium_auth_cookie()).json()
+            json={'token': self.get_cesium_auth_token()}).json()
         DBSession().delete(d)
         DBSession().commit()
         return self.success(action='survey_app/FETCH_DATASETS')

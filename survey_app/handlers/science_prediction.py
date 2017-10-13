@@ -25,7 +25,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
                     requests.get(
                         '{}/predictions/{}'.format(self.cfg['cesium_app:url'],
                                                    cesium_app_prediction_id),
-                        cookies=self.get_cesium_auth_cookie()).json()['data']
+                        json={'token': self.get_cesium_auth_token()}).json()['data']
                     for cesium_app_prediction_id in
                     prediction.cesium_app_sci_pred_ids]
                 if all([pred_info['finished'] for pred_info in preds_info]):
@@ -36,7 +36,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
                     prediction.science_results = bytes(json.dumps(
                         util.aggregate_pred_results_by_ts(
                             sci_pred_results, science_model_ids_and_probs,
-                            cookie=self.get_cesium_auth_cookie())),
+                            token=self.get_cesium_auth_token())),
                                                        encoding='utf-8')
                     DBSession().add(prediction)
                     DBSession().commit()
@@ -72,7 +72,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
 
         science_model_ids_and_probs = util.determine_model_ids(
             prediction.display_info()['results'],
-            cookie=self.get_cesium_auth_cookie())
+            token=self.get_cesium_auth_token())
 
         cesium_app_pred_ids = []
         for model_id in set([mdl_id for ts_name in science_model_ids_and_probs
@@ -85,7 +85,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
             # POST prediction to cesium_web
             r = requests.post('{}/predictions'.format(self.cfg['cesium_app:url']),
                               data=json.dumps(data),
-                              cookies=self.get_cesium_auth_cookie()).json()
+                              json={'token': self.get_cesium_auth_token()}).json()
             if r['status'] != 'success':
                 return self.error('An error occurred while processing the request'
                                   'to cesium_web: {}'.format(r['message']))

@@ -13,11 +13,11 @@ class ModelHandler(BaseHandler):
         if model_id is not None:
             model_info = requests.get(
                 '{}/models/{}'.format(self.cfg['cesium_app:url'], model_id),
-                cookies=self.get_cesium_auth_cookie()).json()['data']
+                json={'token': self.get_cesium_auth_token()}).json()['data']
         else:
             response = requests.get(
                 '{}/models'.format(self.cfg['cesium_app:url']),
-                cookies=self.get_cesium_auth_cookie())
+                json={'token': self.get_cesium_auth_token()})
             model_info = [model for model in response.json()['data'] if
                           model['project_id'] ==
                           self.cfg['cesium_app:survey_classifier_project_id']]

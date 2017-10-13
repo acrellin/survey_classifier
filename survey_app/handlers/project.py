@@ -23,7 +23,7 @@ class ProjectHandler(BaseHandler):
         cesium_app_id = requests.post(
             '{}/project'.format(self.cfg['cesium_app:url']),
             data=json.dumps(data),
-            cookies=self.get_cesium_auth_cookie()).json()['data']['id']
+            json={'token': self.get_cesium_auth_token()}).json()['data']['id']
         p = Project(name=data['projectName'],
                     description=data.get('projectDescription', ''),
                     cesium_app_id=cesium_app_id,
@@ -51,7 +51,7 @@ class ProjectHandler(BaseHandler):
         # Make request to delete project in cesium_web
         r = requests.delete(
             '{}/project/{}'.format(self.cfg['cesium_app:url'], p.cesium_app_id),
-            cookies=self.get_cesium_auth_cookie()).json()
+            json={'token': self.get_cesium_auth_token()}).json()
 
         DBSession().delete(p)
         DBSession().commit()

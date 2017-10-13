@@ -24,7 +24,7 @@ def setup_survey_db():
             os.makedirs(data_dir)
 
 
-    db_session = init_db(**baselayer.app.load_config()['database'])
+    db_session = init_db(**baselayer.app.config.load_config()['database'])
     # Drop & create tables
     with status('Dropping and re-creating tables'):
         drop_tables()

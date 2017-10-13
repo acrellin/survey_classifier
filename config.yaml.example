@@ -20,7 +20,7 @@ paths:
     ts_data_folder: './data/ts_data'
     upload_folder: './data/uploads'
     custom_feature_script_folder: './data/uploads/custom_feature_scripts'
-    cesium_web_login_cookie_folder: './tmp/cookies'
+    cesium_web_login_token_folder: './tmp/cookies'
 
 database:
     database: survey_app
