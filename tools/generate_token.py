@@ -22,6 +22,7 @@ def generate_token():
     token = str(uuid.uuid4())
     return token
 
+
 def add_token_to_db(bot_name, token):
     u = models.User(username=bot_name)
     p = models.Project.query.get(cfg['cesium_app:survey_classifier_project_id'])

@@ -36,7 +36,8 @@ class DatasetHandler(BaseHandler):
             headerfile = None
 
         data = {'datasetName': dataset_name,
-                'projectID': cesium_app_project_id}
+                'projectID': cesium_app_project_id,
+                'token': self.get_cesium_auth_token()}
         files = {}
         with tempfile.TemporaryDirectory() as temp_dir:
             for posted_file, key in [[f, k] for f, k in [[headerfile, 'headerFile'],
@@ -49,8 +50,7 @@ class DatasetHandler(BaseHandler):
                     tarfile_path = tmp_path
             # Post to cesium_web
             r = requests.post('{}/dataset'.format(self.cfg['cesium_app:url']),
-                              files=files, data=data,
-                              json={'token': self.get_cesium_auth_token()}).json()
+                              files=files, data=data).json()
             if r['status'] != 'success':
                 return self.error(r['message'])
 

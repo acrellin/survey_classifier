@@ -20,10 +20,11 @@ class ProjectHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         data = self.get_json()
-        cesium_app_id = requests.post(
+        data.update({'token': self.get_cesium_auth_token()})
+        r = requests.post(
             '{}/project'.format(self.cfg['cesium_app:url']),
-            data=json.dumps(data),
-            json={'token': self.get_cesium_auth_token()}).json()['data']['id']
+            data=json.dumps(data)).json()
+        cesium_app_id = r['data']['id']
         p = Project(name=data['projectName'],
                     description=data.get('projectDescription', ''),
                     cesium_app_id=cesium_app_id,

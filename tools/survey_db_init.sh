@@ -15,4 +15,3 @@ make log &
 make &
 sleep 3
 cd $APP_REPO_DIR/..
-PYTHONPATH=. python ./tools/cesium_web_login.py
