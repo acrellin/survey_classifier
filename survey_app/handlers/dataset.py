@@ -16,50 +16,44 @@ from cesium.data_management import parse_and_store_ts_data
 class DatasetHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
-        if not 'tarFile' in self.request.files:
+        data = self.get_json()
+        if not 'tarFile' in data:
             return self.error('No tar file uploaded')
 
-        tarfile = self.request.files['tarFile'][0]
+        zipfile = data['tarFile']
+        tarball_content_type_str = 'data:application/gzip;base64,'
 
-        if tarfile.filename == '':
+        if not zipfile['body'].startswith(tarball_content_type_str):
+            return self.error('Invalid tar file - please ensure file is gzip '
+                              'format.')
+
+        if zipfile['name'] == '':
             return self.error('Empty tar file uploaded')
 
-        dataset_name = self.get_argument('datasetName')
-        project_id = self.get_argument('projectID')
+        dataset_name = data['datasetName']
+        project_id = data['projectID']
         cesium_app_project_id = Project.get_if_owned_by(
             project_id, self.current_user).cesium_app_id
 
         # Header file is optional for unlabled data w/o metafeatures
-        if 'headerFile' in self.request.files:
-            headerfile = self.request.files['headerFile'][0]
+        if 'headerFile' in data:
+            headerfile = data['headerFile']
         else:
             headerfile = None
 
-        data = {'datasetName': dataset_name,
-                'projectID': cesium_app_project_id,
-                'token': self.get_cesium_auth_token()}
-        files = {}
-        with tempfile.TemporaryDirectory() as temp_dir:
-            for posted_file, key in [[f, k] for f, k in [[headerfile, 'headerFile'],
-                                     [tarfile, 'tarFile']] if f is not None]:
-                tmp_path = os.path.join(temp_dir, posted_file.filename)
-                with open(tmp_path, 'wb') as fout:
-                    fout.write(posted_file['body'])
-                files[key] = open(tmp_path, 'rb')
-                if key == 'tarFile':
-                    tarfile_path = tmp_path
-            # Post to cesium_web
-            r = requests.post('{}/dataset'.format(self.cfg['cesium_app:url']),
-                              files=files, data=data).json()
-            if r['status'] != 'success':
-                return self.error(r['message'])
+        json_data = {'datasetName': dataset_name,
+                     'projectID': cesium_app_project_id,
+                     'headerFile': headerfile,
+                     'tarFile': zipfile,
+                     'token': self.get_cesium_auth_token()}
 
-            ts_paths = parse_and_store_ts_data(tarfile_path, temp_dir,
-                                               cleanup_archive=False)
-            file_names = [os.path.basename(ts_path) for ts_path in ts_paths]
+        r = requests.post('{}/dataset'.format(self.cfg['cesium_app:url']),
+                          json=json_data).json()
+        if r['status'] != 'success':
+            return self.error(r['message'])
 
         p = Project.query.filter(Project.id == project_id).one()
-        d = Dataset(name=dataset_name, project=p, file_names=file_names,
+        d = Dataset(name=dataset_name, project=p, file_names=r['data']['files'],
                     project_id=p.id, meta_features=r['data']['meta_features'],
                     cesium_app_id=r['data']['id'],
                     cesium_app_project_id=r['data']['project_id'])

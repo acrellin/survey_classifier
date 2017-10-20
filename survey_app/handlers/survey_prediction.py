@@ -75,7 +75,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
                 'token': self.get_cesium_auth_token()}
         # POST prediction to cesium_web
         r = requests.post('{}/predictions'.format(self.cfg['cesium_app:url']),
-                          data=json.dumps(data)).json()
+                          json=data).json()
         if r['status'] != 'success':
             return self.error('An error occurred while processing the request '
                               'to cesium_web: {}'.format(r['message']))

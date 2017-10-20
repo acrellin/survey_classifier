@@ -52,11 +52,11 @@ cesium_app:
     survey_classifier_model_id: 1
 
 ports:
-    websocket_port: 64001
-    fake_oauth_port: 63001
-    exposed_app_port: 7000
-    aws_proxy_port: 7001
-    internal_app_port: 65001
-    dask_port: 63501
+    websocket: 64001
+    fake_oauth: 63001
+    app: 7000
+    app_http_proxy: 7001
+    app_internal: 65001
+    dask: 63501
     websocket_path_in: 'ipc:///tmp/message_flow_in_sa'
     websocket_path_out: 'ipc:///tmp/message_flow_out_sa'
