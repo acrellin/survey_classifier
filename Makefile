@@ -16,6 +16,9 @@ baselayer/README.md:
 baselayer-update:
 	./baselayer/tools/submodule_update.sh
 
+fill_conf_values:
+	PYTHONPATH=. ./baselayer/tools/fill_conf_values.py
+
 dependencies: baselayer/README.md
 	@./baselayer/tools/silent_monitor.py pip install -r baselayer/requirements.txt
 	@./baselayer/tools/silent_monitor.py pip install -r requirements.txt
@@ -56,7 +59,7 @@ paths:
 log: paths
 	./baselayer/tools/watch_logs.py
 
-run: paths dependencies
+run: paths dependencies fill_conf_values
 	@echo "Supervisor will now fire up various micro-services."
 	@echo
 	@echo " - Please run \`make log\` in another terminal to view logs"
@@ -65,7 +68,7 @@ run: paths dependencies
 	@echo
 	$(SUPERVISORD)
 
-debug:
+debug: fill_conf_values
 	@echo "Starting web service in debug mode"
 	@echo "Press Ctrl-D to stop"
 	@echo
@@ -77,16 +80,16 @@ debug:
 attach:
 	$(SUPERVISORCTL) fg app
 
-testrun: paths dependencies
+testrun: paths dependencies fill_conf_values
 	export FLAGS="--config _test_config.yaml" && $(SUPERVISORD)
 
 clean:
 	rm $(bundle)
 
-test_headless: paths dependencies
+test_headless: paths dependencies fill_conf_values
 	PYTHONPATH='.' xvfb-run ./tools/frontend_tests.py
 
-test: paths dependencies
+test: paths dependencies fill_conf_values
 	PYTHONPATH='.' ./tools/frontend_tests.py
 
 stop:
