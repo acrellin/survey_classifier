@@ -4,8 +4,8 @@ alongside both survey_classifier and survey_classifier_data.'''
 import baselayer
 from baselayer.app.models import init_db
 from baselayer.app.model_util import status, create_tables, drop_tables
+from baselayer.app.env import load_env
 from cesium_app import models
-from cesium_app.app_server import load_config
 from cesium.data_management import parse_and_store_ts_data
 from cesium.features import CADENCE_FEATS, LOMB_SCARGLE_FEATS, GENERAL_FEATS
 from cesium.time_series import load as load_ts
@@ -18,7 +18,7 @@ import os
 
 
 def setup_survey_db():
-    cfg = load_config()
+    env, cfg = load_env()
     for data_dir in cfg['paths'].values():
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
