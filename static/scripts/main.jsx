@@ -17,6 +17,7 @@ import { Notifications } from 'baselayer/components/Notifications';
 import colorScheme from './colorscheme';
 import Tooltip from './Tooltip';
 import UploadPredictTab from './UploadAndPredict';
+import UserProfile from './UserProfile';
 
 const Tab = ReactTabs.Tab;
 const Tabs = ReactTabs.Tabs;
@@ -77,16 +78,20 @@ class MainContent extends React.Component {
         paddingRight: '1em',
         paddingTop: 0,
         header: {
-          float: 'right',
+          float: 'left',
           fontWeight: 'bold',
           fontSize: '200%',
           lineHeight: '50px',
-          verticalAlign: 'bottom'
+          verticalAlign: 'bottom',
         },
         subheader: {
           fontStyle: 'italic',
           fontSize: '100%',
           float: 'right'
+        },
+        login: {
+          float: 'right',
+          fontSize: '150%'
         },
         text: {
           paddingTop: '0.5em'
@@ -213,7 +218,7 @@ class MainContent extends React.Component {
                 style={{ ...(style.logo.img), ...rotateStyle }}
               />
             </div>
-
+            <UserProfile style={style.topbar.login}/>
           </div>
         </div>
 

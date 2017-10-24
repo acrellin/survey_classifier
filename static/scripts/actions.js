@@ -34,6 +34,9 @@ export const TOGGLE_EXPANDER = 'survey_app/TOGGLE_EXPANDER';
 export const HIDE_EXPANDER = 'survey_app/HIDE_EXPANDER';
 export const SHOW_EXPANDER = 'survey_app/SHOW_EXPANDER';
 
+export const FETCH_USER_PROFILE = 'survey_app/FETCH_USER_PROFILE';
+export const RECEIVE_USER_PROFILE = 'survey_app/FETCH_USER_PROFILE';
+
 export const SPIN_LOGO = 'survey_app/SPIN_LOGO';
 
 import { showNotification, reduceNotifications } from 'baselayer/components/Notifications';
@@ -496,12 +499,45 @@ export function spinLogo() {
 }
 
 
+export function fetchUserProfile() {
+  return dispatch =>
+    promiseAction(
+      dispatch,
+      FETCH_USER_PROFILE,
+
+      fetch('/profile', {
+        credentials: 'same-origin'
+      })
+        .then(response => response.json())
+        .then((json) => {
+          if (json.status == 'success') {
+            dispatch(receiveUserProfile(json.data));
+          } else {
+            dispatch(
+              showNotification(
+                'Error downloading user profile ({})'.format(json.message)
+              ));
+          }
+          return json;
+        }
+        ).catch(ex => console.log('fetchUserProfile exception:', ex))
+    );
+}
+
+function receiveUserProfile(userProfile) {
+  return {
+    type: RECEIVE_USER_PROFILE,
+    payload: userProfile
+  };
+}
+
 
 export function hydrate() {
   return (dispatch) => {
     dispatch(fetchProjects())
       .then((proj) => {
         Promise.all([
+          dispatch(fetchUserProfile()),
           dispatch(fetchDatasets()),
           dispatch(fetchPredictions()),
           dispatch(fetchModels())
@@ -511,7 +547,6 @@ export function hydrate() {
       });
   };
 }
-
 
 
 
