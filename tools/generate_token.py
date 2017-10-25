@@ -28,8 +28,12 @@ if __name__ == '__main__':
     token = model_util.create_token_user(
         args.bot_name, [cfg['cesium_app:survey_classifier_project_id']])
 
-    with open(cfg['paths:cesium_web_login_token_path'], 'w') as f:
+    token_path = os.path.abspath(os.path.join(
+        cfg['paths:cesium_web_login_token_folder'], 'cesium_web_token'))
+
+    with open(token_path, 'w') as f:
         f.write(token)
 
-    print('Successfully created token user and stored token to disk')
+    print('Successfully created token user and stored token to disk'
+          f' ({token_path})')
     print(token)
