@@ -1,0 +1,11 @@
+database:
+    database: survey_app_test
+    user: survey_app
+    host: localhost
+    port: 5432
+
+server:
+  auth:
+    debug_login: True
+    google_oauth2_key:
+    google_oauth2_secret:
