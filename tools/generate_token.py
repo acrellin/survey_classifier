@@ -30,6 +30,9 @@ if __name__ == '__main__':
 
     token_path = os.path.abspath(os.path.join(
         cfg['paths:cesium_web_login_token_folder'], 'cesium_web_token'))
+    if not os.path.exists(os.path.dirname(token_path)):
+        print(f'{os.path.dirname(token_path)} does not exist - creating it now')
+        os.makedirs(os.path.dirname(token_path))
 
     with open(token_path, 'w') as f:
         f.write(token)
