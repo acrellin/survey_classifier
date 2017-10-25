@@ -25,13 +25,13 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    token = model_util.create_token_user(args.bot_name,
-                                         [cfg['cesium_app:cesium_app_project_id']])
+    token = model_util.create_token_user(
+        args.bot_name, [cfg['cesium_app:survey_classifier_project_id']])
 
     with open((os.path.abspath(os.path.join(
             '../survey_app/', cfg['paths:cesium_web_login_token_folder'],
             'cesium_web_token'))), 'w') as f:
         f.write(token)
 
-    print('Successfully generated token, added to DB and stored to disk')
+    print('Successfully created token user and stored token to disk')
     print(token)
