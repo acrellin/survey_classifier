@@ -10,9 +10,9 @@ from baselayer.app.models import init_db
 from cesium_app import model_util
 
 cfg_paths = [os.path.join(os.path.dirname(__file__),
-                          '../../survey_app/config.yaml.example'),
+                          '../../survey_app/config.yaml.defaults'),
              os.path.join(os.path.dirname(__file__),
-                          '../config.yaml.example')]
+                          '../config.yaml.defaults')]
 
 cfg = load_config(cfg_paths)
 
