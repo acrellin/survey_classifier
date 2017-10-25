@@ -1,16 +1,10 @@
 #!/bin/bash
 
-APP_REPO_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cp ./tools/survey_db_init.py ../cesium_web
-cp ./tools/generate_token.py ../cesium_web/tools
-cd ../cesium_web
-make baselayer/README.md
-make db_init
-PYTHONPATH=.. python survey_db_init.py
-PYTHONPATH=. python tools/generate_token.py survey_app_bot
-rm survey_db_init.py
-rm tools/generate_token.py
-make log &
-make &
+pwd
+make -C ../cesium_web baselayer/README.md
+make -C ../cesium_web db_init
+PYTHONPATH=../cesium_web python ./tools/survey_db_init.py
+PYTHONPATH=../cesium_web python ./tools/generate_token.py survey_app_bot
+make -C ../cesium_web log &
+make -C ../cesium_web &
 sleep 3
-cd $APP_REPO_DIR/..
