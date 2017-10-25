@@ -42,6 +42,7 @@ section_end "install.npm.reqs"
 
 section "init.survey_app"
 make db_init
+make -C baselayer paths
 section_end "init.survey_app"
 
 
@@ -65,5 +66,7 @@ section_end "install.cesium_web.and.requirements"
 
 
 section "initialize.cesium_web"
+ls -l /home/travis/build/acrellin/survey_classifier/tmp/cookies | cat
 make cesium_web_init
+ls -l /home/travis/build/acrellin/survey_classifier/tmp/cookies | cat
 section_end "initialize.cesium_web"
