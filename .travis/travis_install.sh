@@ -36,16 +36,12 @@ section "install.npm.reqs"
 npm -g install npm@latest
 npm --version
 node --version
-make dependencies
-make check-js-updates
 pip list --format=columns
 section_end "install.npm.reqs"
 
 
 section "init.survey_app"
-make paths
 make db_init
-make bundle
 section_end "init.survey_app"
 
 
@@ -71,8 +67,3 @@ section_end "install.cesium_web.and.requirements"
 section "initialize.cesium_web"
 make cesium_web_init
 section_end "initialize.cesium_web"
-
-
-section "list.packages"
-pip list --format=columns
-section_end "list.packages"
