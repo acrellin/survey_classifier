@@ -38,7 +38,6 @@ class SciencePredictionHandler(GeneralPredictionHandler):
                             sci_pred_results, science_model_ids_and_probs,
                             token=self.get_cesium_auth_token())),
                                                        encoding='utf-8')
-                    DBSession().add(prediction)
                     DBSession().commit()
                     break
                 else:

@@ -10,6 +10,7 @@ import uuid
 import datetime
 import tempfile
 import requests
+import traceback
 import json
 import pandas as pd
 
@@ -18,13 +19,15 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
     """Handler for performing survey predictions."""
     @tornado.gen.coroutine
     def _await_prediction(self, prediction):
+        prediction = DBSession().merge(prediction)
         try:
             while True:
                 pred_info = requests.get(
                     '{}/predictions/{}'.format(self.cfg['cesium_app:url'],
                                                prediction.cesium_app_id),
-                    json={'token': self.get_cesium_auth_token()}).json()['data']
-                if pred_info['finished']:
+                    json={'token': self.get_cesium_auth_token()}).json()
+                if pred_info['data']['finished']:
+                    pred_info = pred_info['data']
                     prediction.task_id = None
                     prediction.finished = datetime.datetime.now()
                     prediction.model_type = pred_info['model_type']
@@ -34,7 +37,6 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
                     prediction.isProbabilistic = pred_info['isProbabilistic']
                     prediction.file_path = pred_info['file_uri']
                     prediction.dataset_name = pred_info['dataset_name']
-                    DBSession().add(prediction)
                     DBSession().commit()
                     break
                 else:
@@ -48,7 +50,9 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
                             })
 
         except Exception as e:
-            prediction.delete_instance()
+            traceback.print_exc()
+            DBSession().delete(prediction)
+            DBSession().commit()
             self.action('baselayer/SHOW_NOTIFICATION',
                         payload={
                             "note": "Prediction failed "
