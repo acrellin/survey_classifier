@@ -46,7 +46,7 @@ section_end "init.survey_app"
 
 
 section "install.chromedriver"
-wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
+wget https://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip
 sudo unzip chromedriver_linux64.zip chromedriver -d /usr/local/bin
 rm chromedriver_linux64.zip
 which chromium-browser
