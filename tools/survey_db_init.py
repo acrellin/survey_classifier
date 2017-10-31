@@ -18,6 +18,8 @@ import os
 
 
 def setup_survey_db():
+    if os.getcwd().endswith('survey_app'):
+        os.chdir('../cesium_web')
     env, cfg = load_env()
     for data_dir in cfg['paths'].values():
         if not os.path.exists(data_dir):
