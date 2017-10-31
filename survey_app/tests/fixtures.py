@@ -6,7 +6,6 @@ from os.path import join as pjoin
 from contextlib import contextmanager
 from survey_app import models as m
 import shutil
-import peewee
 import joblib
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
