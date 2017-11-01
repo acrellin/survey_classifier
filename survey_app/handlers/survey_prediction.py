@@ -37,6 +37,7 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
                     prediction.isProbabilistic = pred_info['isProbabilistic']
                     prediction.file_path = pred_info['file_uri']
                     prediction.dataset_name = pred_info['dataset_name']
+                    DBSession().add(prediction)
                     DBSession().commit()
                     break
                 else:
