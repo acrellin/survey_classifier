@@ -57,8 +57,8 @@ def _add_prediction(proj_name, driver):
         "//div[contains(text(),'Successfully uploaded new dataset')]", 5)
     driver.wait_for_xpath(
         "//div[contains(text(),'Survey classifier model predictions begun')]", 5)
-    driver.wait_for_xpath(
-        "//div[contains(text(),'Science classifier model predictions begun')]", 20)
+    #driver.wait_for_xpath(
+    #    "//div[contains(text(),'Science classifier model predictions begun')]", 20)
     driver.wait_for_xpath(
         "//div[contains(text(),'Science prediction completed')]", 30)
 
