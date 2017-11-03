@@ -44,7 +44,7 @@ download_data:
 	git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data || echo 'Data has already been downloaded.'
 
 install_cesium_web:
-	git clone https://github.com/acrellin/cesium_web.git ../cesium_web
+	git clone https://github.com/cesium-ml/cesium_web.git ../cesium_web
 	pip install -r ../cesium_web/requirements.txt
 
 cesium_web_init: download_data
