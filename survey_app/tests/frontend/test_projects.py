@@ -25,6 +25,7 @@ def test_create_project(driver):
         "//div[contains(text(),'Added new project')]")
     time.sleep(0.1)
 
+    driver.refresh()
     proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
     proj_select.select_by_visible_text(test_proj_name)
     time.sleep(0.1)
