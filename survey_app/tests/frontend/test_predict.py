@@ -13,7 +13,7 @@ from survey_app.tests.fixtures import create_test_project
 
 
 def _click_delete(driver):
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 15)
     elem = wait.until(EC.element_to_be_clickable(
         (By.PARTIAL_LINK_TEXT, 'Delete')))
     elem.click()
@@ -54,7 +54,7 @@ def _add_prediction(proj_name, driver):
     driver.wait_for_xpath(
         "//div[contains(text(),'Survey classifier model predictions begun')]", 5)
     driver.wait_for_xpath(
-        "//div[contains(text(),'Science classifier model predictions begun')]", 15)
+        "//div[contains(text(),'Science classifier model predictions begun')]", 20)
     driver.wait_for_xpath(
         "//div[contains(text(),'Science prediction completed')]", 30)
 
@@ -155,7 +155,8 @@ def _click_download(proj_name, driver, idx):
     dl_links = driver.find_elements_by_xpath("//a[contains(text(),'Download')]")
     elem = dl_links[idx]
     wait = WebDriverWait(driver, 10)
-    clickable_elem = wait.until(EC.element_to_be_clickable(elem))
+    clickable_elem = wait.until(EC.element_to_be_clickable(
+        (By.XPATH, "//a[contains(text(),'Download')]")))
     clickable_elem.click()
     time.sleep(0.5)
 
