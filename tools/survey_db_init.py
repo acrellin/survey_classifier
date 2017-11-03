@@ -75,7 +75,8 @@ def setup_survey_db():
             # copy first ten (arbitrary) TS
             for src in glob.glob(os.path.join(ts_data_dir, '*.npz'))[:10]:
                 # Add the path to the copied file in cesium data directory
-                ts_paths.append(shutil.copy(src, cfg['paths']['ts_data_folder']))
+                ts_paths.append(os.path.abspath(shutil.copy(
+                    src, cfg['paths']['ts_data_folder'])))
             meta_features = list(load_ts(ts_paths[0])
                                  .meta_features.keys())
             files = [models.DatasetFile(uri=ts_path) for ts_path in ts_paths]
@@ -121,7 +122,8 @@ def setup_survey_db():
             ['TrES',
              '../survey_classifier_data/data/noisified_TrES_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS]]:
-        fset_path = shutil.copy(orig_fset_path, cfg['paths']['features_folder'])
+        fset_path = os.path.abspath(
+            shutil.copy(orig_fset_path, cfg['paths']['features_folder']))
         fset = models.Featureset(name=fset_name, file_uri=fset_path,
                                  project=p, features_list=features_list,
                                  task_id=None, finished=datetime.datetime.now())
@@ -180,7 +182,8 @@ def setup_survey_db():
              os.path.abspath(os.path.join(
                  '..', 'survey_classifier_data/data/noisified_TrES_model_compressed.pkl')),
              'RandomForestClassifier', {}, 'TrES']]:
-        model_path = shutil.copy(orig_model_path, cfg['paths']['models_folder'])
+        model_path = os.path.abspath(
+            shutil.copy(orig_model_path, cfg['paths']['models_folder']))
         model = models.Model(name=model_name, file_uri=model_path,
                              featureset_id=fset_dict[fset_name].id, project=p,
                              project_id=p.id,
