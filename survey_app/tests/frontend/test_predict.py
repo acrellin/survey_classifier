@@ -14,9 +14,13 @@ from survey_app.tests.fixtures import create_test_project
 
 def _click_delete(driver):
     wait = WebDriverWait(driver, 15)
-    elem = wait.until(EC.element_to_be_clickable(
-        (By.PARTIAL_LINK_TEXT, 'Delete')))
-    elem.click()
+    try:
+        elem = wait.until(EC.element_to_be_clickable(
+            (By.PARTIAL_LINK_TEXT, 'Delete')))
+        elem.click()
+    except:
+        driver.save_screenshot("/tmp/pred_fail_click_delete.png")
+        raise
 
 
 def _click_completed(driver):
