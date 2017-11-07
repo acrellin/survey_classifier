@@ -157,8 +157,12 @@ def test_delete_prediction(driver):
         _click_completed(driver)
         _click_delete(driver)
         driver.implicitly_wait(10)
-        status_td = driver.find_element_by_xpath(
-            "//div[contains(text(),'Prediction deleted')]")
+        try:
+            status_td = driver.find_element_by_xpath(
+                "//div[contains(text(),'Prediction deleted')]")
+        except:
+            driver.save_screenshot("/tmp/pred_delete_fail.png")
+            raise
 
 
 def _click_download(proj_name, driver, idx):
