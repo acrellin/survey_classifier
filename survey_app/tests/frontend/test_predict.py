@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import WebDriverException
 import uuid
 import time
 import os
@@ -15,9 +16,21 @@ from survey_app.tests.fixtures import create_test_project
 def _click_delete(driver):
     wait = WebDriverWait(driver, 15)
     try:
-        elem = wait.until(EC.element_to_be_clickable(
-            (By.PARTIAL_LINK_TEXT, 'Delete')))
-        elem.click()
+        n_attempts = 10
+        attempt = 0
+        while attempt < n_attempts:
+            try:
+                time.sleep(1)
+                elem = wait.until(EC.element_to_be_clickable(
+                    (By.PARTIAL_LINK_TEXT, 'Delete')))
+                elem.click()
+                break
+            except WebDriverException as e:
+                if 'is not clickable at point' in str(e):
+                    print('Failed click delete - waiting and trying again.')
+                    attempt += 1
+                else:
+                    raise e
     except:
         driver.save_screenshot("/tmp/pred_fail_click_delete.png")
         raise
