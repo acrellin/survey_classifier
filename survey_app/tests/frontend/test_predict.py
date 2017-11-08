@@ -10,6 +10,8 @@ import os
 from os.path import join as pjoin
 import numpy as np
 import numpy.testing as npt
+import traceback
+
 from survey_app.tests.fixtures import create_test_project
 
 
@@ -37,8 +39,8 @@ def _click_delete(driver):
 
 
 def _click_completed(driver):
-    driver.wait_for_xpath("//td[contains(text(),'Completed')]", 10)
-    wait = WebDriverWait(driver, 10)
+    driver.wait_for_xpath("//td[contains(text(),'Completed')]", 20)
+    wait = WebDriverWait(driver, 20)
     clickable_elem = wait.until(EC.element_to_be_clickable(
         (By.XPATH, "//td[contains(text(),'Completed')]")))
     clickable_elem.click()
@@ -161,6 +163,7 @@ def test_delete_prediction(driver):
             status_td = driver.find_element_by_xpath(
                 "//div[contains(text(),'Prediction deleted')]")
         except:
+            traceback.print_exc()
             driver.save_screenshot("/tmp/pred_delete_fail.png")
             raise
 
