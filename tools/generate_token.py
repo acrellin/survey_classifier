@@ -15,7 +15,6 @@ cfg_paths = [os.path.join(os.path.dirname(__file__),
                           '../../cesium_web/config.yaml.defaults')]
 
 cfg = load_config(cfg_paths)
-
 conn = init_db(**cfg['database'])
 
 
