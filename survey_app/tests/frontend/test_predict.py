@@ -69,9 +69,9 @@ def _add_prediction(proj_name, driver):
     driver.find_element_by_class_name('btn-primary').click()
 
     driver.wait_for_xpath(
-        "//div[contains(text(),'Successfully uploaded new dataset')]", 5)
+        "//div[contains(text(),'Successfully uploaded new dataset')]", 10)
     driver.wait_for_xpath(
-        "//div[contains(text(),'Survey classifier model predictions begun')]", 5)
+        "//div[contains(text(),'Survey classifier model predictions begun')]", 10)
     #driver.wait_for_xpath(
     #    "//div[contains(text(),'Science classifier model predictions begun')]", 20)
     #driver.wait_for_xpath(
@@ -80,6 +80,18 @@ def _add_prediction(proj_name, driver):
     try:
         driver.wait_for_xpath("//td[contains(text(),'Completed')]", 30)
     except:
+        try:
+            driver.refresh()
+            time.sleep(1)
+            proj_select = Select(driver.find_element_by_css_selector('[name=project]'))
+            proj_select.select_by_visible_text(proj_name)
+            driver.find_element_by_id('react-tabs-2').click()
+            driver.wait_for_xpath("//td[contains(text(),'Completed')]", 30)
+        except:
+            driver.save_screenshot("/tmp/pred_fail.png")
+            raise
+        else:
+            return
         driver.save_screenshot("/tmp/pred_fail.png")
         raise
 
