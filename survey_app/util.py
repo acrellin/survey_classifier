@@ -41,6 +41,8 @@ def determine_model_ids(prediction_results, token):
     prediction_results : dict
         Dictionary whose keys are time series names, and values are dictionaries
         containing the results as returned by `cesium_web`.
+    token : str
+        Valid authentication token to be used with all `cesium_web` requests.
 
     Returns
     -------
@@ -82,6 +84,8 @@ def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs,
         Dictionary whose primary keys are TS names, and values are dicts with
         associated model IDs and probabilities as keys and values, respectively,
         e.g. {'ts_1': {mdl_id_1: mdl_id_1_prob, mdl_id_2: mdl_id_2_prob}, ...}
+    token : str
+        Valid authentication token to be used with all `cesium_web` requests.
 
     Returns
     -------
@@ -116,8 +120,25 @@ def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs,
 
 
 def pred_results_to_csv(pred, outpath=None):
-    '''
-    '''
+    """Parse prediction results and either return as CSV or write to disk.
+
+    Parameters
+    ----------
+    pred : dict
+        Dictionary containing prediction results.
+    outpath : str, optional
+        Path to optionally write CSV to disk. If provided, CSV is written to
+        `outpath`, which is also returned. If `None`, a list of CSV strings
+        (each element corresponding to a distinct line) is returned. Defaults to
+        `None`.
+
+    Returns
+    -------
+    list of str or str
+        If `outpath` is `None`, returns list of comma-separated strings, each
+        element corresponding to a line. If `outpath` is specified, the CSV data
+        are written to the disk and `outpath` is returned.
+    """
     head = ['ts_name']
     rows = []
 
