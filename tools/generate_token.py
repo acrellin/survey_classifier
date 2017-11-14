@@ -2,7 +2,6 @@
 
 import argparse
 import uuid
-import jwt
 import os
 
 from baselayer.app.config import load_config
