@@ -81,7 +81,7 @@ def setup_survey_db():
                                      meta_features=meta_features)
             models.DBSession().add_all(files + [dataset])
             models.DBSession().commit()
-            print('\nAdded dataset:\n', dataset)
+            print(f'Added dataset {dataset.id}')
 
     # Add featuresets
     fset_dict = {}
@@ -130,7 +130,7 @@ def setup_survey_db():
         # fset.finished = datetime.datetime.now()
         # fset.save()
         fset_dict[fset_name] = fset
-        print('\nAdded featureset:\n', fset)
+        print(f'Added featureset {fset.id}')
 
     # Add models
     # TODO: Add actual model params
@@ -191,9 +191,7 @@ def setup_survey_db():
         # model.task_id = None
         # model.finished = datetime.datetime.now()
         # model.save()
-        print('\nAdded model:\n', model)
-        print(model.id)
-
+        print(f'Added model {model.id}')
     print(cfg)
 
 
