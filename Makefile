@@ -38,14 +38,10 @@ attach:
 clean:
 	make -C baselayer clean
 
--include "baselayer/README.md"  # always clone baselayer if it doesn't exist
-
-download_data:
-	git clone https://github.com/acrellin/survey_classifier_data.git ../survey_classifier_data || echo 'Data has already been downloaded.'
-
 install_cesium_web:
-	git clone https://github.com/acrellin/cesium_web.git ../cesium_web
-	pip install -r ../cesium_web/requirements.txt
+	pip install -r ./cesium_web/requirements.txt
 
-cesium_web_init: download_data
+cesium_web_init:
 	@PYTHONPATH=. ./tools/survey_db_init.sh
+
+-include "baselayer/README.md"  # always clone baselayer if it doesn't exist

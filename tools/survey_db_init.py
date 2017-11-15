@@ -1,6 +1,3 @@
-'''To be run from top-level cesium_web directory, which is assumed to be
-alongside both survey_classifier and survey_classifier_data.'''
-
 import baselayer
 from baselayer.app.models import init_db
 from baselayer.app.model_util import status, create_tables, drop_tables
@@ -19,7 +16,7 @@ import os
 
 def setup_survey_db():
     if os.getcwd().endswith('survey_app'):
-        os.chdir('../cesium_web')
+        os.chdir('./cesium_web')
     env, cfg = load_env()
     for data_dir in cfg['paths'].values():
         if not os.path.exists(data_dir):

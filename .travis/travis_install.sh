@@ -54,14 +54,14 @@ chromium-browser --version
 section_end "install.chromedriver"
 
 
-section "download.data"
-make download_data
-section_end "download.data"
+section "init.submodules"
+make baselayer/README.md
+section_end "init.submodules"
 
 
-section "install.cesium_web.and.requirements"
+section "install.cesium_web.requirements"
 make install_cesium_web
-section_end "install.cesium_web.and.requirements"
+section_end "install.cesium_web.requirements"
 
 
 section "initialize.cesium_web"
