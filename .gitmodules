@@ -1,3 +1,9 @@
 [submodule "baselayer"]
 	path = baselayer
 	url = git://github.com/cesium-ml/baselayer.git
+[submodule "cesium_web"]
+	path = cesium_web
+	url = https://github.com/acrellin/cesium_web.git
+[submodule "survey_classifier_data"]
+	path = survey_classifier_data
+	url = https://github.com/acrellin/survey_classifier_data.git
