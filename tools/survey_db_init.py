@@ -45,27 +45,27 @@ def setup_survey_db():
     with status('Adding datasets'):
         for dataset_name, ts_data_dir in [
                 ['Survey Light Curve Data',
-                 os.path.join( '..', 'survey_classifier_data/data/lightcurves')],
+                 'survey_classifier_data/data/lightcurves'],
                 ['ASAS',
-                 os.path.join( '..', 'survey_classifier_data/data/ASAS_lcs')],
+                 'survey_classifier_data/data/ASAS_lcs'],
                 ['Noisified to CoRoT',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_CoRoT_lcs')],
+                 'survey_classifier_data/data/noisified_CoRoT_lcs'],
                 ['Noisified to HATNet',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_HATNet_lcs')],
+                 'survey_classifier_data/data/noisified_HATNet_lcs'],
                 ['Noisified to Hipparcos',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_Hipparcos_lcs')],
+                 'survey_classifier_data/data/noisified_Hipparcos_lcs'],
                 ['Noisified to KELT',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_KELT_lcs')],
+                 'survey_classifier_data/data/noisified_KELT_lcs'],
                 ['Noisified to Kepler',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_Kepler_lcs')],
+                 'survey_classifier_data/data/noisified_Kepler_lcs'],
                 ['Noisified to LINEAR',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_LINEAR_lcs')],
+                 'survey_classifier_data/data/noisified_LINEAR_lcs'],
                 ['Noisified to OGLE-III',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_OGLE-III_lcs')],
+                 'survey_classifier_data/data/noisified_OGLE-III_lcs'],
                 ['Noisified to SuperWASP',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_SuperWASP_lcs')],
+                 'survey_classifier_data/data/noisified_SuperWASP_lcs'],
                 ['Noisified to TrES',
-                 os.path.join( '..', 'survey_classifier_data/data/noisified_TrES_lcs')]]:
+                 'survey_classifier_data/data/noisified_TrES_lcs']]:
 
             ts_paths = []
             # As these are only ever accessed to determine meta features, only
@@ -91,37 +91,37 @@ def setup_survey_db():
     fset_dict = {}
     for fset_name, orig_fset_path, features_list in [
             ['Survey LC Cadence/Error Features',
-             '../survey_classifier_data/data/survey_lc_features.npz',
+             './survey_classifier_data/data/survey_lc_features.npz',
              CADENCE_FEATS],
             ['ASAS',
-             '../survey_classifier_data/data/ASAS_features.npz',
+             './survey_classifier_data/data/ASAS_features.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['CoRoT',
-             '../survey_classifier_data/data/noisified_CoRoT_features_100.npz',
+             './survey_classifier_data/data/noisified_CoRoT_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['HATNet',
-             '../survey_classifier_data/data/noisified_HATNet_features_100.npz',
+             './survey_classifier_data/data/noisified_HATNet_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['Hipparcos',
-             '../survey_classifier_data/data/noisified_Hipparcos_features_100.npz',
+             './survey_classifier_data/data/noisified_Hipparcos_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['KELT',
-             '../survey_classifier_data/data/noisified_KELT_features_100.npz',
+             './survey_classifier_data/data/noisified_KELT_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['Kepler',
-             '../survey_classifier_data/data/noisified_Kepler_features_100.npz',
+             './survey_classifier_data/data/noisified_Kepler_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['LINEAR',
-             '../survey_classifier_data/data/noisified_LINEAR_features_100.npz',
+             './survey_classifier_data/data/noisified_LINEAR_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['OGLE-III',
-             '../survey_classifier_data/data/noisified_OGLE-III_features_100.npz',
+             './survey_classifier_data/data/noisified_OGLE-III_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['SuperWASP',
-             '../survey_classifier_data/data/noisified_SuperWASP_features_100.npz',
+             './survey_classifier_data/data/noisified_SuperWASP_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS],
             ['TrES',
-             '../survey_classifier_data/data/noisified_TrES_features_100.npz',
+             './survey_classifier_data/data/noisified_TrES_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS]]:
         fset_path = os.path.abspath(
             shutil.copy(os.path.abspath(orig_fset_path),
@@ -141,48 +141,37 @@ def setup_survey_db():
     # TODO: Add actual model params
     for model_name, orig_model_path, model_type, params, fset_name in [
             ['Survey LCs RFC',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/survey_classifier.pkl')),
+             os.path.abspath('./survey_classifier_data/data/survey_classifier.pkl'),
              'RandomForestClassifier', {}, 'Survey LC Cadence/Error Features'],
             ['ASAS',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/ASAS_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/ASAS_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'ASAS'],
             ['CoRoT',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_CoRoT_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_CoRoT_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'CoRoT'],
             ['HATNet',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_HATNet_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_HATNet_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'HATNet'],
             ['Hipparcos',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_Hipparcos_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_Hipparcos_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'Hipparcos'],
             ['KELT',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_KELT_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_KELT_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'KELT'],
             ['Kepler',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_Kepler_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_Kepler_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'Kepler'],
             ['LINEAR',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_LINEAR_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_LINEAR_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'LINEAR'],
             ['OGLE-III',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_OGLE-III_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_OGLE-III_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'OGLE-III'],
             ['SuperWASP',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_SuperWASP_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_SuperWASP_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'SuperWASP'],
             ['TrES',
-             os.path.abspath(os.path.join(
-                 '..', 'survey_classifier_data/data/noisified_TrES_model_compressed.pkl')),
+             os.path.abspath('./survey_classifier_data/data/noisified_TrES_model_compressed.pkl'),
              'RandomForestClassifier', {}, 'TrES']]:
         model_path = os.path.abspath(
             shutil.copy(orig_model_path, cfg['paths']['models_folder']))
