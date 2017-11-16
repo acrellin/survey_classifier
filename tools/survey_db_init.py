@@ -74,8 +74,11 @@ def setup_survey_db():
                 # Add the path to the copied file in cesium data directory
                 ts_paths.append(os.path.abspath(shutil.copy(
                     src, cfg['paths']['ts_data_folder'])))
-            meta_features = list(load_ts(ts_paths[0])
-                                 .meta_features.keys())
+            try:
+                meta_features = list(load_ts(ts_paths[0])
+                                     .meta_features.keys())
+            except IndexError: # No TS data on disk
+                meta_features = None
             files = [models.DatasetFile(uri=ts_path) for ts_path in ts_paths]
             dataset = models.Dataset(name=dataset_name, project=p, files=files,
                                      meta_features=meta_features)
