@@ -59,6 +59,13 @@ make baselayer/README.md
 section_end "init.submodules"
 
 
+section "ls.submod.dirs"
+ls survey_classifier_data
+ls survey_classifier_data/data
+ls cesium_web
+section_end "ls.submod.dirs"
+
+
 section "install.cesium_web.requirements"
 make install_cesium_web
 section_end "install.cesium_web.requirements"
