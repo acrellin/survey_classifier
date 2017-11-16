@@ -15,8 +15,8 @@ import os
 
 
 def setup_survey_db():
-    if os.getcwd().endswith('survey_app'):
-        os.chdir('./cesium_web')
+    # if os.getcwd().endswith('survey_app'):
+    #     os.chdir('./cesium_web')
     env, cfg = load_env()
     for data_dir in cfg['paths'].values():
         if not os.path.exists(data_dir):
@@ -70,10 +70,11 @@ def setup_survey_db():
             ts_paths = []
             # As these are only ever accessed to determine meta features, only
             # copy first ten (arbitrary) TS
-            for src in glob.glob(os.path.join(ts_data_dir, '*.npz'))[:10]:
+            for src in glob.glob(os.path.join(os.path.abspath(ts_data_dir),
+                                              '*.npz'))[:10]:
                 # Add the path to the copied file in cesium data directory
                 ts_paths.append(os.path.abspath(shutil.copy(
-                    src, cfg['paths']['ts_data_folder'])))
+                    os.path.abspath(src), cfg['paths']['ts_data_folder'])))
             try:
                 meta_features = list(load_ts(ts_paths[0])
                                      .meta_features.keys())
@@ -123,7 +124,8 @@ def setup_survey_db():
              '../survey_classifier_data/data/noisified_TrES_features_100.npz',
              GENERAL_FEATS + LOMB_SCARGLE_FEATS]]:
         fset_path = os.path.abspath(
-            shutil.copy(orig_fset_path, cfg['paths']['features_folder']))
+            shutil.copy(os.path.abspath(orig_fset_path),
+                        cfg['paths']['features_folder']))
         fset = models.Featureset(name=fset_name, file_uri=fset_path,
                                  project=p, features_list=features_list,
                                  task_id=None, finished=datetime.datetime.now())
