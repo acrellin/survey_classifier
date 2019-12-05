@@ -7,17 +7,44 @@ section "install.base.requirements"
 # Install v1.7 or newer of nginx to support 'if' statement for logging
 sudo apt-add-repository -y ppa:nginx/development
 sudo apt update
-sudo apt install -y nginx
+sudo apt install -y nginx firefox
+
+nginx -v
+firefox --version
 
 pip install --upgrade pip
 hash -d pip  # find upgraded pip
-pip install --retries 3 -q requests
 section_end "install.base.requirements"
+
+section "install.baselayer.requirements"
+npm -g install npm@next
+npm --version
+node --version
+
+# TODO replace w/ baselayer dependent build info
+if [[ -n ${TRIGGERED_FROM_REPO} ]]; then
+    mkdir cesium-clone
+    cd cesium-clone
+    git init
+    git remote add origin git://github.com/${TRIGGERED_FROM_REPO}
+    git fetch --depth=1 origin ${TRIGGERED_FROM_BRANCH}
+    git checkout -b ${TRIGGERED_FROM_BRANCH} ${TRIGGERED_FROM_SHA}
+    pip install .
+    cd ..
+fi
+
+pip list --format=columns
+section_end "install.baselayer.requirements"
 
 
 section "install.python.requirements"
 pip install --retries 3 -r requirements.txt
 section_end "install.python.requirements"
+
+
+section "init.db"
+make db_init
+section_end "init.db"
 
 
 # section "install.yarn"
@@ -32,26 +59,16 @@ section_end "install.python.requirements"
 # section_end "install.npm.requirements.with.yarn"
 
 
-section "install.npm.reqs"
-npm -g install npm@latest
-npm --version
-node --version
-pip list --format=columns
-section_end "install.npm.reqs"
-
-
-section "init.survey_app"
-make db_init
-section_end "init.survey_app"
-
-
-section "install.chromedriver"
-wget https://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip
-sudo unzip chromedriver_linux64.zip chromedriver -d /usr/local/bin
-rm chromedriver_linux64.zip
-which chromium-browser
-chromium-browser --version
-section_end "install.chromedriver"
+section "install.geckodriver.and.selenium"
+GECKO_VER=0.24.0
+wget https://github.com/mozilla/geckodriver/releases/download/v${GECKO_VER}/geckodriver-v${GECKO_VER}-linux64.tar.gz
+sudo tar -xzf geckodriver-v${GECKO_VER}-linux64.tar.gz -C /usr/local/bin
+rm geckodriver-v${GECKO_VER}-linux64.tar.gz
+which geckodriver
+geckodriver --version
+pip install --upgrade selenium
+python -c "import selenium; print(f'Selenium {selenium.__version__}')"
+section_end "install.geckodriver.and.selenium"
 
 
 section "init.submodules"
@@ -74,3 +91,10 @@ section_end "install.cesium_web.requirements"
 section "initialize.cesium_web"
 make cesium_web_init
 section_end "initialize.cesium_web"
+
+
+section "install.deps"
+make dependencies
+pip list --format=columns
+nginx -v
+section_end "install.deps"
