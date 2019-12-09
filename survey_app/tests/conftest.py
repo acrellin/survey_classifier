@@ -19,7 +19,7 @@ print('Loading test configuration from _test_config.yaml')
 basedir = pathlib.Path(os.path.dirname(__file__))/'../..'
 cfg = load_config([basedir/'test_config.yaml'])
 print('\n\n\n', cfg, '\n\n\n')
-set_server_url(cfg['server:url'])
+set_server_url(cfg['server']['url'])
 print('Setting test database to:', cfg['database'])
 print('initing models...')
 models.init_db(**cfg['database'])

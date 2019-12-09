@@ -23,7 +23,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
             while True:
                 preds_info = [
                     requests.get(
-                        '{}/predictions/{}'.format(self.cfg['cesium_app:url'],
+                        '{}/predictions/{}'.format(self.cfg['cesium_app']['url'],
                                                    cesium_app_prediction_id),
                         json={'token': self.get_cesium_auth_token()}).json()['data']
                     for cesium_app_prediction_id in
@@ -84,7 +84,7 @@ class SciencePredictionHandler(GeneralPredictionHandler):
                                  if model_id in science_model_ids_and_probs[ts_name]],
                     'token': self.get_cesium_auth_token()}
             # POST prediction to cesium_web
-            r = requests.post('{}/predictions'.format(self.cfg['cesium_app:url']),
+            r = requests.post('{}/predictions'.format(self.cfg['cesium_app']['url']),
                               json=data).json()
             if r['status'] != 'success':
                 return self.error('An error occurred while processing the request'

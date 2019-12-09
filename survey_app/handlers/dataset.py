@@ -47,7 +47,7 @@ class DatasetHandler(BaseHandler):
                      'tarFile': zipfile,
                      'token': self.get_cesium_auth_token()}
 
-        r = requests.post('{}/dataset'.format(self.cfg['cesium_app:url']),
+        r = requests.post('{}/dataset'.format(self.cfg['cesium_app']['url']),
                           json=json_data).json()
         if r['status'] != 'success':
             return self.error(r['message'])
@@ -79,7 +79,7 @@ class DatasetHandler(BaseHandler):
         d = Dataset.get_if_owned_by(dataset_id, self.current_user)
         # Make request to delete dataset in cesium_web
         r = requests.delete(
-            '{}/dataset/{}'.format(self.cfg['cesium_app:url'], d.cesium_app_id),
+            '{}/dataset/{}'.format(self.cfg['cesium_app']['url'], d.cesium_app_id),
             json={'token': self.get_cesium_auth_token()}).json()
         DBSession().delete(d)
         DBSession().commit()

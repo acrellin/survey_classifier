@@ -12,14 +12,14 @@ class ModelHandler(BaseHandler):
     def get(self, model_id=None):
         if model_id is not None:
             model_info = requests.get(
-                '{}/models/{}'.format(self.cfg['cesium_app:url'], model_id),
+                '{}/models/{}'.format(self.cfg['cesium_app']['url'], model_id),
                 json={'token': self.get_cesium_auth_token()}).json()['data']
         else:
             response = requests.get(
-                '{}/models'.format(self.cfg['cesium_app:url']),
+                '{}/models'.format(self.cfg['cesium_app']['url']),
                 json={'token': self.get_cesium_auth_token()})
             model_info = [model for model in response.json()['data'] if
                           model['project_id'] ==
-                          self.cfg['cesium_app:survey_classifier_project_id']]
+                          self.cfg['cesium_app']['survey_classifier_project_id']]
 
         return self.success(model_info)
