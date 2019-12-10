@@ -23,8 +23,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    token = model_util.create_token_user(
-        args.bot_name, [cfg['cesium_app']['survey_classifier_project_id']])
+    token = model_util.create_token(
+        [], 1, args.bot_name)
 
     token_path = os.path.abspath(os.path.join(
         cfg['paths']['cesium_web_login_token_folder'], 'cesium_web_token'))
