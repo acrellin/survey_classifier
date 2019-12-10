@@ -35,9 +35,9 @@ class Project(Base):
                                cascade='all')
 
 
+user_projects = join_model('user_projects', User, Project)
 User.projects = relationship('Project', secondary='user_projects',
                              back_populates='users', cascade='all')
-user_projects = join_model('user_projects', User, Project)
 
 
 class Dataset(Base):

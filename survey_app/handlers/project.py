@@ -20,10 +20,10 @@ class ProjectHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         data = self.get_json()
-        data.update({'token': self.get_cesium_auth_token()})
         r = requests.post(
             '{}/project'.format(self.cfg['cesium_app']['url']),
-            data=json.dumps(data)).json()
+            data=json.dumps(data),
+            headers={'Authorization': f'token {self.get_cesium_auth_token()}'}).json()
         cesium_app_id = r['data']['id']
         p = Project(name=data['projectName'],
                     description=data.get('projectDescription', ''),
@@ -52,7 +52,7 @@ class ProjectHandler(BaseHandler):
         # Make request to delete project in cesium_web
         r = requests.delete(
             '{}/project/{}'.format(self.cfg['cesium_app']['url'], p.cesium_app_id),
-            json={'token': self.get_cesium_auth_token()}).json()
+            headers={'Authorization': f'token {self.get_cesium_auth_token()}'}).json()
 
         DBSession().delete(p)
         DBSession().commit()

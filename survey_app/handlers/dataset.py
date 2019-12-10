@@ -44,11 +44,13 @@ class DatasetHandler(BaseHandler):
         json_data = {'datasetName': dataset_name,
                      'projectID': cesium_app_project_id,
                      'headerFile': headerfile,
-                     'tarFile': zipfile,
-                     'token': self.get_cesium_auth_token()}
+                     'tarFile': zipfile}
 
         r = requests.post('{}/dataset'.format(self.cfg['cesium_app']['url']),
-                          json=json_data).json()
+                          json=json_data,
+                          headers={'Authorization':
+                                   f'token {self.get_cesium_auth_token()}'}
+        ).json()
         if r['status'] != 'success':
             return self.error(r['message'])
 
@@ -80,7 +82,7 @@ class DatasetHandler(BaseHandler):
         # Make request to delete dataset in cesium_web
         r = requests.delete(
             '{}/dataset/{}'.format(self.cfg['cesium_app']['url'], d.cesium_app_id),
-            json={'token': self.get_cesium_auth_token()}).json()
+            headers={'Authorization': f'token {self.get_cesium_auth_token()}'}).json()
         DBSession().delete(d)
         DBSession().commit()
         return self.success(action='survey_app/FETCH_DATASETS')

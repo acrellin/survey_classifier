@@ -54,7 +54,7 @@ def determine_model_ids(prediction_results, token):
     cfg = load_config()
     model_name_to_id = {model['name']: model['id'] for model in
                         requests.get('{}/models'.format(cfg['cesium_app']['url']),
-                                     json={'token': token})
+                                     headers={'Authorization': f'token {token}'})
                         .json()['data'] if model['project_id'] ==
                         cfg['cesium_app']['survey_classifier_project_id']}
     ts_name_model_ids_and_probs = {}
@@ -103,7 +103,7 @@ def aggregate_pred_results_by_ts(sci_pred_results, science_model_ids_and_probs,
     cfg = load_config()
     model_id_to_name = {model['id']: model['name'] for model in
                         requests.get('{}/models'.format(cfg['cesium_app']['url']),
-                                     json={'token': token})
+                                     headers={'Authorization': f'token {token}'})
                         .json()['data'] if model['project_id'] ==
                         cfg['cesium_app']['survey_classifier_project_id']}
     ts_names = set([ts_name for model_id in sci_pred_results

@@ -25,7 +25,8 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
                 pred_info = requests.get(
                     '{}/predictions/{}'.format(self.cfg['cesium_app']['url'],
                                                prediction.cesium_app_id),
-                    json={'token': self.get_cesium_auth_token()}).json()
+                    headers={'Authorization': f'token {self.get_cesium_auth_token()}'}
+                ).json()
                 if pred_info['data']['finished']:
                     pred_info = pred_info['data']
                     prediction.task_id = None
@@ -76,11 +77,11 @@ class SurveyPredictionHandler(GeneralPredictionHandler):
         cesium_dataset_id = dataset.cesium_app_id
 
         data = {'datasetID': cesium_dataset_id,
-                'modelID': model_id,
-                'token': self.get_cesium_auth_token()}
+                'modelID': model_id}
         # POST prediction to cesium_web
         r = requests.post('{}/predictions'.format(self.cfg['cesium_app']['url']),
-                          json=data).json()
+                          json=data,
+                          headers={'Authorization': f'token {self.get_cesium_auth_token()}'}).json()
         if r['status'] != 'success':
             return self.error('An error occurred while processing the request '
                               'to cesium_web: {}'.format(r['message']))

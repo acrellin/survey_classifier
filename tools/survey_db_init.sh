@@ -6,5 +6,5 @@ make -C ./cesium_web db_init
 PYTHONPATH=./cesium_web python ./tools/survey_db_init.py
 PYTHONPATH=./cesium_web python ./tools/generate_token.py survey_app_bot
 make -C ./cesium_web log &
-make -C ./cesium_web &
+make -C ./cesium_web run &
 sleep 3
