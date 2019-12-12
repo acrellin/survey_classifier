@@ -4,7 +4,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 from survey_app.tests.fixtures import create_test_project
 
-def test_tab_tooltips(driver):
+def DISABLED_test_tab_tooltips(driver):
     driver.get('/')
     with create_test_project(driver) as proj_name:
         driver.refresh()
@@ -26,7 +26,7 @@ def test_tab_tooltips(driver):
             ).is_displayed()
 
 
-def test_file_upload_tooltips(driver):
+def DISABLED_test_file_upload_tooltips(driver):
     driver.get('/')
     with create_test_project(driver) as proj_name:
         driver.refresh()
