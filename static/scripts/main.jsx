@@ -218,7 +218,7 @@ class MainContent extends React.Component {
                 style={{ ...(style.logo.img), ...rotateStyle }}
               />
             </div>
-            <UserProfile style={style.topbar.login}/>
+            <UserProfile style={style.topbar.login} />
           </div>
         </div>
 
